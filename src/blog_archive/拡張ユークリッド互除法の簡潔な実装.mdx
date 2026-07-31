@@ -1,0 +1,25 @@
+---
+title: "拡張ユークリッド互除法の簡潔な実装"
+description: "拡張ユークリッド互除法の簡潔な実装 の過去ブログ記事"
+---
+
+# 拡張ユークリッド互除法の簡潔な実装
+
+> 📅 **投稿日**: 2020-09-24 09:17:18
+
+[mathjax] 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+
+互いに素な自然数 a と b について \\(a^&#123;-1&#125; \\pmod b\\) を \\(O(\\log b)\\) で求めるアルゴリズムとして拡張ユークリッドの互除法があるが、今回はその実装を短くするテクニックを紹介する。拡張ユークリッドの互除法の動作原理自体は知っていることを前提とする。
+
+\\(ax+by=1\\) を満たす \\(0 &lt; x &lt; b\\) を求めれば \\(ax=1 \\pmod b\\) となり \\(a\\) の逆元が求まる。\\(0 &lt; y=b^&#123;-1&#125; \\pmod a&lt; a\\)とすれば \\(1-by\\) は \\(a\\) で割り切れるから \\(x=(1-by)/a\\) は \\(ax+by=1\\) を満たす。あとは \\(0 &lt; x &lt; b\\) を満たすように \\(x\\) に \\(b\\) を足し引きして調節すれば良い。
+
+\\(0 &lt; y=b^&#123;-1&#125; \\bmod a\\ &lt; a\\) のとき \\(by=1+qa \\ ( 0 &lt; q &lt; b )\\) と表せて \\(0 &lt; b+(1-by)/a &lt; b\\) であるから \\(x=(1-by)/a+b\\) とすれば良い。\\(y=b^&#123;-1&#125; \\bmod a\\) は再帰すれば求まる。
+
+Python のコードにすると次のようになる。
+&lt;pre&gt;&lt;code class="python"&gt;def inv(a, b):
+    if a == 1:
+        return 1
+    else:
+        return b + (-b * inv(b % a, a) + 1) // a&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="hitokoto"&gt;短くなってビックリ！　拡張ユークリッドの互除法は再帰・非再帰どちらでも変数が多くなってしまうのが不満だったのですが、この方法であれば楽ですね。&lt;/div&gt;

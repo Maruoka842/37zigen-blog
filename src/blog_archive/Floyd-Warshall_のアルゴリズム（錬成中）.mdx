@@ -1,0 +1,20 @@
+---
+title: "Floyd-Warshall のアルゴリズム（錬成中）"
+description: "Floyd-Warshall のアルゴリズム（錬成中） の過去ブログ記事"
+---
+
+# Floyd-Warshall のアルゴリズム（錬成中）
+
+> 📅 **投稿日**: 2020-10-29 20:20:03
+
+&lt;p&gt;\\(n\\) 頂点重み付き有向グラフ \\(G\\) が与えられたとする。このとき、全頂点間の最短距離を \\(O(n^3)\\) で計算する Floyd-Warshall のアルゴリズムを解説する。&lt;/p&gt;
+&lt;p&gt;頂点集合 \\(V(G):=\\&#123;1,\\ldots,n\\&#125;\\) とする。\\(d[i][j]\\) =（ \\(i\\) から \\(j\\) への有向道の最短距離）となる \\(n \\times n\\) 行列 \\(d\\) を構築したい。最初、各 \\(i,j\\) に対して \\(d[i][j]\\) を 1 辺以下を通って \\(i\\) から \\(j\\) に到達する最短距離としておく（不可能ならば \\(\\infty\\)、\\(i=j\\) ならば \\(0\\)）。すると、次のコード（Python）を実行することで、\\(d\\) が求めたい最短距離の行列になる！&lt;/p&gt;
+&lt;pre&gt;&lt;code class="python"&gt;for k in range(n):
+    for i in range(n):
+        for j in range(n):
+            d[i][j] = min(d[i][j], d[i][k] + d[k][j])
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;/p&gt;
+

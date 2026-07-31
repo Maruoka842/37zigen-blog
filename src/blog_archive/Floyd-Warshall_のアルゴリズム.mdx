@@ -1,0 +1,20 @@
+---
+title: "Floyd-Warshall のアルゴリズム"
+description: "Floyd-Warshall のアルゴリズム の過去ブログ記事"
+---
+
+# Floyd-Warshall のアルゴリズム
+
+> 📅 **投稿日**: 2020-10-29 19:53:12
+
+
+&lt;p&gt;\\(n\\) 頂点重み付き有向グラフ G が与えられたとする。このとき、全頂点間の最短距離を \\(O(n^3)\\) で計算する Floyd-Warshall のアルゴリズムを解説する。&lt;/p&gt;
+
+
+&lt;p&gt;&lt;code&gt;&lt;br&gt;
+for k∈V(G):&lt;br&gt;
+    for i∈V(G):&lt;br&gt;
+        for j∈V(G):&lt;br&gt;
+            d[i][j]=min(d[i][j],d[i][k]+d[k][j])&lt;br&gt;
+&lt;/code&gt;&lt;br&gt;
+&lt;/p&gt;

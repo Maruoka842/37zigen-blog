@@ -1,0 +1,43 @@
+---
+title: "2k正則グラフを2因子に分解"
+description: "2k正則グラフを2因子に分解 の過去ブログ記事"
+---
+
+# 2k正則グラフを2因子に分解
+
+> 📅 **投稿日**: 2021-03-01 22:34:41
+
+&lt;p&gt;[mathjax]2-factor theorem と言われる、次の定理を証明します：&lt;/p&gt;
+&lt;div class="statement"&gt;\\(2k\\)正則グラフである \\(\\Leftrightarrow\\) \\(k\\)個の辺素な\\(2\\)因子で表せる&lt;/div&gt;
+&lt;p&gt;\\(2\\)因子は、全域\\(2\\)正則部分グラフのことです。このような「あるグラフのクラスが、ある操作で生成されるグラフ全体と一致する」というのはグラフ理論の醍醐味だと思います。&lt;/p&gt;
+&lt;div class="proof"&gt;証明：&lt;br&gt;\\(\\Leftarrow\\) は明らかです。ですから、\\(\\Rightarrow\\) を示しましょう。\\(2k\\)正則グラフから1つ\\(2\\)因子を取り除くと\\(2(k-1)\\)正則グラフになります。従って、\\(2k\\)正則グラフは\\(2\\)因子を持つことを示せば十分。\\(2k\\)正則グラフは全ての頂点の次数が偶数だから、オイラー回路が存在します（&lt;a href="https://37zigen.com/euler-tour/"&gt;証明&lt;/a&gt;）。オイラー回路を自然に向きづけて、有向回路にします。ポイントは各頂点 \\(v\\) を、辺が入る頂点 \\(v^-\\) と出る頂点 \\(v^+\\) に2分割することです。&lt;img class="aligncenter size-medium wp-image-5348" src="https://37zigen.com/wp-content/uploads/2021/03/a-1-300x83.png" alt="" width="300" height="83"&gt;\\(v^-\\) 同士には辺がないし、\\(v^+\\) 同士にも辺がないから、2部グラフになっています！　\\(k\\)正則\\(2\\)部グラフですから、Kőnigの定理より\\(k\\)個の\\(1\\)因子に分割できます。\\(1\\)因子を元のグラフに戻せば、次数が\\(2\\)倍になって\\(2\\)因子が得られます。&lt;/div&gt;
+&lt;p&gt;この定理はPetersenが1891年に示しました。Kőnigの定理が示された1931年から40年も前です。グラフ理論の黎明期でした。Petersenは何もないところから示す必要あったのです。Petersenの証明も見てみましょう。ステップ数は増えますが、創意工夫が感じられる証明だと思います。&lt;/p&gt;
+&lt;div class="proof"&gt;証明：&lt;br&gt;Petersenは証明のためにswitchingという操作を考えました。辺AB, CDを消して、辺AC, BDあるいは辺AD, BCを追加する操作です。&lt;img class="aligncenter size-medium wp-image-5340" src="https://37zigen.com/wp-content/uploads/2021/03/switching_black2-300x273.png" alt="" width="300" height="273"&gt;A, B, C, Dで同じ頂点があっても構いません。switchingの逆操作もまた、switchingになっています。switchingは次の2つが成り立つという嬉しい性質があります：&lt;p&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;switchingの前後で2因子を持つことが保存される。&lt;/li&gt;
+&lt;li&gt;switchingを繰り返すことで、任意の\\(2k\\)正則グラフに変形できる。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これらの事実から、2因子を持つことが自明なグラフにswitchingで変形してしまえます。自明に\\(2\\)因子を持つ\\(2k\\)正則グラフは例えば、多重サイクルがあります。&lt;/p&gt;
+&lt;p&gt;一つ一つ証明していきましょう。&lt;/p&gt;
+&lt;p&gt;switching後のグラフが2因子を持つなら、switching前も2因子を持つことを示します。辺AB, CDを辺AC, BDに変更したとしましょう。&lt;/p&gt;
+&lt;p&gt;switching後、辺AC,BDを同時に含む2因子がある場合、この2因子はswitching前もまた、2因子になっています。&lt;/p&gt;
+&lt;p&gt;switching後、辺AC,BDを同時に含む2因子が存在しない場合はどうなるのでしょうか。switching後、2因子に分解できるなら、辺AC, BDをそれぞれ含む２つの2因子があります。switching後、2因子に分解できるなら、辺AC, BDをそれぞれ含む2つの2因子があります。2因子の和は4因子になります。switching前に戻してもなお、4因子です。偶次数より、オイラー回路が取れます（&lt;a href="https://37zigen.com/euler-tour/"&gt;証明&lt;/a&gt;）。握手補題より \\(2E = \\sum d(v)\\) です。右辺が4の倍数だから、Eは偶数。オイラー回路の長さが偶数だから、辺を交互に割り当てて、2因子が二つ取れます。辺をAD, BCにするswitchingでも同様にして示せます。&lt;/p&gt;
+&lt;p&gt;次にswitchingを繰り返して、任意の\\(2k\\)正則グラフに変形できることを示しましょう。switching前のグラフをG、変形して作りたいグラフをFとします。switchingの逆操作もswitchingになっていました。したがって、G、Fの両方をswitchingして、同じグラフにできることを言えばいいです。対称差、つまり辺ごとのXORを取ります。各頂点にはGとFの辺が同じ個数だけ接続しています。DFSすれば、GとFの辺で交互に構成されたオイラー回路が取れます。特に、GとFが異なれば、長さ3の交互小道が取れます。５つのパターンがあります。&lt;img class="aligncenter size-medium wp-image-5342" src="https://37zigen.com/wp-content/uploads/2021/03/trail_black-1-300x230.png" alt="" width="300" height="230"&gt;どの場合も、対称差の辺の個数をswitchingで減らせます。辺の対称差が空集合になるまで、switchingを繰り返しましょう。Fを2因子を持つことが自明なグラフ、例えば、多重グラフにすれば、Gが2因子を持つことが言えました。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;実は、次数分布が同じ任意のグラフはswitchingで移りあうことが言えます。証明に必要だったのは各頂点の次数がGとFで等しいということだけでした。&lt;/p&gt;
+
+
+&lt;figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"&gt;&lt;div class="wp-block-embed__wrapper"&gt;
+https://www.youtube.com/watch?v=P0CUElH0lnA
+&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://projecteuclid.org/journals/acta-mathematica/volume-15/issue-none/Die-Theorie-der-regul%c3%a4ren-graphs/10.1007/BF02392606.full"&gt;Die Theorie der regulären graphs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;グラフ理論（R. ディーステル）&lt;/li&gt;
+&lt;ul&gt;
+&lt;li&gt;​&lt;a href="https://www.amazon.co.jp/gp/product/4431708766/ref=as_li_tl?ie=UTF8&amp;camp=247&amp;creative=1211&amp;creativeASIN=4431708766&amp;linkCode=as2&amp;tag=37zigen-22&amp;linkId=8836d0e730695a1809aacd1e774a3222"&gt;日本語版&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://diestel-graph-theory.com/basic.html"&gt;英語版Preview&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/ol&gt;

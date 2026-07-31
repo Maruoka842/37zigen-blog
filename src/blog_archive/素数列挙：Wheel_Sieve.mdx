@@ -1,0 +1,95 @@
+---
+title: "素数列挙：Wheel Sieve"
+description: "素数列挙：Wheel Sieve の過去ブログ記事"
+---
+
+# 素数列挙：Wheel Sieve
+
+> 📅 **投稿日**: 2021-03-18 07:49:09
+
+\\(N\\) 以下の素数を \\(O(N/\\log\\log(N))\\) で列挙するアルゴリズムである、wheel sieve （車輪の篩？）を紹介します。
+
+&lt;a href="https://37zigen.com/sieve-eratosthenes/"&gt;エラトステネスの篩&lt;/a&gt;は、素数か判断する数を \\(2\\) と奇数に限定すれば、定数倍高速化できました。更に、素数か判断する数を \\(2,3\\) と \\(6k+1,6k+5\\) の形に限定することもできます。各 \\(N\\) に対して、計算量を最小化する最適な前列挙が存在するはずです。この考えを元にしたのが wheel sieve です。
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+素数を小さい方から順に \\(p_1,p_2,\\ldots\\) と置きます。
+
+まず、\\(w:=p_1 p_2 \\cdots p_m \\leq &#123;\\sqrt&#123;N&#125;&#125;\\) となる素数 \\(p_1,p_2,\\ldots,p_m\\) を最大個求めます。\\(N\\) 以下の素数を列挙するのに掛かる計算量は&lt;a href="https://37zigen.com/sieve-eratosthenes/"&gt;エラトステネスの篩&lt;/a&gt;で \\(O(N\\log\\log(N))\\) ですから、\\(p_1,\\ldots,p_m\\) は \\(O(\\sqrt&#123;N&#125;\\log\\log(N))\\) で列挙できます。また、同時に \\(w\\) 以下の自然数のうち、\\(w\\) と互いに素なものの集合 \\(R=\\&#123;r_1,r_2,\\ldots,r_s\\&#125;\\) が得られます（昇順とする）。
+
+\\(w\\) と互いに素な自然数の集合は \\(S:=\\&#123;r+kw : k\\in\\mathbb&#123;Z&#125;_&#123;\\geq 0&#125;,r \\in R\\&#125;\\) の形で書けます。\\(p_1,p_2,\\ldots,p_m\\) 以外に素数判定したい数は全てこの形です。\\(|R|/w=O(1/\\log\\log(N))\\) なので（&lt;a href="https://37zigen.com/prime-complexity/"&gt;フェルミ推定&lt;/a&gt;）、素数判定する数は \\(O(N/\\log\\log(N))\\) 個あります。
+
+\\(p_1,p_2,\\ldots,p_m\\) の合成数は \\(S\\) に含まれないので、素数 \\(p\\) で篩うとき、\\(\\&#123;sp : s \\in S\\&#125;\\) の合成数だけ見ればいいです。素数 \\(p\\) で篩う数は \\(O\\left(\\frac&#123;N&#125;&#123;p\\log\\log(N)&#125;\\right)\\) 個あるので、全体では \\(O(N)\\) です（&lt;a href="https://37zigen.com/prime-complexity/#i-2"&gt;フェルミ推定&lt;/a&gt;）。
+
+更に高速化しましょう。同じ数が二度篩われないために、\\(\\&#123;ps : s \\in S, \\mathrm&#123;lpf&#125;(ps)=p \\&#125;\\) の合成数（\\(\\mathrm&#123;lpf&#125;(x):=x\\)の最小素因数）だけ見たいです。これは逆に \\(s \\in S\\) を固定し、\\(\\&#123;ps : p \\leq \\mathrm&#123;lpf&#125;(s)\\&#125;\\) の合成数を篩えばよいです。計算量は \\(O(N/\\log\\log(N))\\) になります。
+&lt;h2&gt;実装&lt;/h2&gt;
+ 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;\\(O(N / \\log\\log (N))\\) ：Python での実装は次の通りです。
+&lt;pre&gt;&lt;code class="python"&gt;import itertools
+import math
+import operator
+N = 10 ** 5  # [1:N]に含まれる素数を列挙
+
+tiny_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]  # small primes
+ws = list(itertools.accumulate(tiny_primes, func=operator.mul))
+m = 0
+while ws[m + 1] &lt;= math.sqrt(N):
+    m += 1
+w = ws[m]
+tiny_primes = tiny_primes[:m + 1]
+is_coprime = [True] * w
+is_coprime[0] = False
+for p in tiny_primes:
+    for i in range(p, w, p):
+        is_coprime[i] = False
+
+coprimes = [i for i in range(1, w) if is_coprime[i]]
+m = len(coprimes)
+id = [-1] * w
+for i in range(m):
+    id[coprimes[i]] = i
+
+dt = [(w + coprimes[(i + 1) % m] - coprimes[i]) % w for i in range(m)]
+
+
+def get_id(v):
+    return v // w * m + id[v % w]
+
+
+def get_val(v):
+    return v // m * w + coprimes[v % m]
+
+
+n = (N + w - 1) // w * m
+pos = coprimes[1]
+primes = []
+
+lpf = [get_val(i) for i in range(n)]  # 最小素因数
+for i in range(1, n):
+    if pos &gt; N:
+        break
+    if lpf[i] == pos:
+        primes.append(pos)
+    for p in primes:
+        if p &gt; lpf[i] or p * pos &gt; N:
+            break
+        lpf[get_id(pos * p)] = p
+    pos += dt[i % len(dt)]
+primes = tiny_primes + primes  # [1:N] に含まれる素数
+&lt;/code&gt;&lt;/pre&gt;
+\\(O(N)\\) の実装は最後のループを次で置き換えればよいです。区間篩のようにすると、メモリ \\(O(\\sqrt&#123;N&#125;)\\) にもできます（見つけた素数はハードディスクに書き込む）。\\(O(N/\\log\\log(N))\\) にすると、メモリ \\(\\Theta(N/\\log\\log(N))\\) から落ちないので、実は一長一短です。
+&lt;pre&gt;&lt;code class="python"&gt;is_prime = [True] * n
+is_prime[0] = False
+for i in range(1, n):
+    if pos &gt; N:
+        break
+    if is_prime[i]:
+        primes.append(pos)
+        j, multiplier = 1, coprimes[1]
+        while pos * multiplier &lt;= N:
+            is_prime[get_id(pos * multiplier)] = False
+            multiplier += dt[j % m]
+            j += 1
+    pos += dt[i % m]
+primes = tiny_primes + primes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;a href="http://fuuu.be/polytech/INFOF404/Doc/Explaining%20the%20wheel%20sieve.pdf"&gt;Explaining Wheel Sieve.&lt;/a&gt;
+&lt;div class="hitokoto"&gt;誰でも一度は、奇数だけで篩いにかけて計算量半分削減することを思い付きます。でもここで一般化してオーダーレベルで改善するのがプロですね。全く考えたことがありませんでした。&lt;/div&gt;

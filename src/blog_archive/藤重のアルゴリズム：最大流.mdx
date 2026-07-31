@@ -1,0 +1,43 @@
+---
+title: "藤重のアルゴリズム：最大流"
+description: "藤重のアルゴリズム：最大流 の過去ブログ記事"
+---
+
+# 藤重のアルゴリズム：最大流
+
+> 📅 **投稿日**: 2021-10-05 02:59:48
+
+容量が整数の時に使える、藤重悟の最大流のアルゴリズムがある。容量の最大値を \\(U\\)、頂点数を \\(N\\)、辺数を \\(M\\) として \\(O(NM \\log(U))\\) 時間で最大流が求まる。
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+次のような頂点列 \\((v_1, v_2, \\ldots, v_k)\\) が得られたとする。
+&lt;ol&gt;
+ 	&lt;li&gt;列の先頭がソース \\(v_1 = s\\) である。&lt;/li&gt;
+ 	&lt;li&gt;列の末尾がシンク \\(v_k = t\\) である。&lt;/li&gt;
+ 	&lt;li&gt;全ての \\(i\\) について \\(v_1, v_2, \\ldots, v_i\\) から \\(v_&#123;i+1&#125;\\) に入る辺の残余容量の合計が \\(\\alpha\\) 以上。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;img class="aligncenter size-medium wp-image-10796" src="https://37zigen.com/wp-content/uploads/2021/10/fujishige-1-300x173.png" alt="" width="300" height="173"&gt;この頂点列の末尾から順に貪欲に流すことで流量 \\(\\alpha\\) のフローが構成できる。この頂点列は次のように発見する。
+&lt;ol&gt;
+ 	&lt;li&gt;初期状態の列を \\((v_1) = (s)\\) として次の操作を繰り返す。&lt;/li&gt;
+ 	&lt;li&gt;列の末尾 \\(v_i\\) の隣接点 \\(w\\) であって \\(v_1, v_2, \\ldots, v_i\\) から入る辺の容量の合計が \\(\\alpha\\) 以上であるなら \\(v_&#123;i + 1&#125; ← w\\) とする。そのような \\(w\\) が存在しないか、\\(v_&#123;i + 1&#125; = t\\) となれば終了。&lt;/li&gt;
+&lt;/ol&gt;
+この操作で末尾 \\(t\\) の頂点列が見つかれば、流量 \\(\\alpha\\) のフローを流す。見つからなければ、\\(\\alpha \\leftarrow \\lfloor \\alpha / 2 \\rfloor\\) として、再度、頂点列を探索する。\\(\\alpha = 1\\) として何度も上記の頂点列によるフローを流せば、いつか、最大流は求まる。
+
+つまり次のようなアルゴリズムになる。
+&lt;div class="statement"&gt;\\(\\alpha = U\\)
+while (\\(\\alpha &gt; 0\\)) &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;前述のフローを可能な限り流す。
+&nbsp;&nbsp;&nbsp;&nbsp;\\(α ← \\lfloor α / 2 \\rfloor\\)
+&#125;&lt;/div&gt;
+驚くことに、このとき \\(O(NM\\log(U))\\) となるのだ。
+
+&lt;a href="https://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=5940546#1"&gt;37zigenの実装&lt;/a&gt;
+&lt;h2&gt;計算量解析&lt;/h2&gt;
+\\(\\alpha \\leftarrow \\lfloor \\alpha / 2 \\rfloor \\) となる直前の状態を調べよう。
+\\(S = \\&#123;v_1, v_2, \\ldots, v_k \\&#125;\\) とすると \\( \\forall w \\in V \\setminus S\\) について、\\(S\\) から \\(w\\) に入る辺の残余容量の合計は \\(\\alpha\\) 未満である。&lt;img class="aligncenter size-medium wp-image-10798" src="https://37zigen.com/wp-content/uploads/2021/10/fujishige2-1-300x238.png" alt="" width="300" height="238"&gt;
+
+従って、残余ネットワークのカット \\((S, V \\setminus S)\\) の大きさは \\((N - k)\\alpha\\) 未満である。これは流量 \\(\\lfloor α / 2 \\rfloor\\) のフローが高々 \\(3N\\) 回しか見つからないことを意味している。よって、全体の計算量は \\(O(NM \\log U)\\)。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;組合せ最適化（コルテ＆フィーゲン）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="hitokoto"&gt;カットの大きさの評価が面白いですね('ω'). このアルゴリズムは輪読でdokinさんに教えて頂きました。このようなフローの変種で、強多項式時間アルゴリズムが存在するか、言い換えれば、入力が無理数でも多項式時間か、というのは、未だ（調べた範囲では）分かっていません。入力に無理数を含むと Ford-Fulkerson のアルゴリズムが停止せず（強多項式でない）、しかも異なる値に収束するという問題を回避するために、Edmonds-Karp のアルゴリズム（強多項式）が考え出されました。運命を同じくして、藤重にも強多項式verがあるのかもしれませんね。&lt;/div&gt;

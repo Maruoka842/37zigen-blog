@@ -1,0 +1,56 @@
+---
+title: "最悪計算量を最小化した Union Find"
+description: "最悪計算量を最小化した Union Find の過去ブログ記事"
+---
+
+# 最悪計算量を最小化した Union Find
+
+> 📅 **投稿日**: 2020-11-22 01:57:21
+
+Union Find は link by size (または link by rank) と経路圧縮を組み合わせることで、各操作をならし \\(O(\\alpha(n))\\) にできることが知られている（\\(\\alpha\\) はアッカーマンの逆関数、\\(n\\) は頂点数）。このならし計算量は理論的に最良であるが、最悪計算量は \\(O(\\log n)\\) になる（例えば二項木の Find ：&lt;a href="https://37zigen.com/union-find-complexity-1/"&gt;Union Find の計算量 (1)&lt;/a&gt;）。そこで、この記事では理論的に最良な最悪計算量 \\(O(\\log n/\\log\\log n)\\) を実現する Union Find を紹介する[1]。
+
+アイディアは、Union と Find の計算量のトレードオフを傾けることである。ただし、ここでの Union とは、Find で根を見つけた後の操作を指す。Union by Rank (Size) は Union \\(O(1)\\), Find \\(O(\\log(n))\\) であったが、branching factor を \\(\\Theta(\\log(n)/\\log\\log(n))\\) にして、二つの計算量を同量にする。[toc]
+&lt;h2&gt;アルゴリズムの解説&lt;/h2&gt;
+次の三つの条件を満たす根付き木を k-UF 木 (k &gt; 1) と定義する。
+&lt;ol&gt;
+ 	&lt;li&gt;根と葉以外の頂点は \\(k\\) 個以上の子を持つ。&lt;/li&gt;
+ 	&lt;li&gt;根は２個以上の子を持つ。&lt;/li&gt;
+ 	&lt;li&gt;葉の深さは全て等しい。&lt;/li&gt;
+&lt;/ol&gt;
+このような木は葉の数 \\(n\\) に対し高さが \\(O(\\log_k n)\\) である。特に \\(k = O(\\log n)\\) とすると、高さが \\(O(\\log n/ \\log \\log n)\\) になって、Find の計算量削減が期待できる。条件２は最悪計算量の改善に非本質なので、この記事では忘れてもよい。
+
+k-UF 木の根を集合の名前を表す頂点、葉を集合の元を表す頂点とする。それ以外の頂点は根と葉を繋ぐ以外に意味のない頂点とする。根に載せる頂点の名前は代表元のラベルにすることが多い。二つの集合を合併（Union）し新たな集合を作るとき、対応する二つの k-UF 木を合併して新たな k-UF 木を作る。また、ある元 v の属する集合の名前を得る（Find）ときには、v に対応する k-UF 木の葉から根まで親を辿る。
+
+Find の計算量は木の高さ \\(O(\\log_k n)\\) で抑えられる。Union の計算量については、次の事実が成り立つ。
+&lt;div class="statement"&gt;２つの素集合 a, b を合併して新たな集合 c を作る操作を Union Find 上で行う。このとき、a, b を表す k-UF 木 A, B を合併して c を表す k-UF 木が \\(O(k+\\log_k n)\\) で構築できる。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：木の高さ（height）は \\(O(\\log_k n)\\) で分かるから、一般性を失わず height(A) ≦ height(B) を仮定できる。A の根を r 、A と高さの等しい B のいずれかの頂点を v とする。v は B の根から子を辿れば \\(O(\\log_k n)\\) で見つかる。
+
+次のようにすれば、A と B を合併した k-UF 木が \\(O(k)\\) で構築できる：
+&lt;ol type="i"&gt;
+ 	&lt;li&gt;v が B の根でない場合：
+&lt;ol type="1"&gt;
+ 	&lt;li&gt;r の子の数が k 以上ならば r を v の兄弟として繋ぎ替える。&lt;/li&gt;
+ 	&lt;li&gt;r の子の数が k 未満ならば r の子を r から分離して v の子に繋ぎ替える。r は破棄する。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;v が B の根である場合、A より B の方が根の子の数が多いと仮定しても一般性を失わない。
+&lt;ol type="1"&gt;
+ 	&lt;li&gt;r の子の数が k 以上ならば r と v を子とする新しい根を作る。&lt;/li&gt;
+ 	&lt;li&gt;r の子の数が k 未満ならば (i) の (2) と同様である。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+それぞれの場合を図にすると次のようになる。
+&lt;img class="aligncenter size-full wp-image-4028" src="https://37zigen.com/wp-content/uploads/2020/11/k-UF.png" alt="" width="1178" height="1601"&gt;以上で Union が \\(O(k+\\log_k n)\\) でできた。
+
+&lt;/div&gt;
+初期状態の 1 元集合は k-UF 木ではないが、同じように合併できる。最悪計算量 \\(O(k+\\log_k n)\\) は \\(k = \\log n / \\log \\log n \\) のとき最小量 \\(O(\\log n /\\log \\log n)\\) を取る。最悪計算量 \\(O(\\log n /\\log \\log n)\\) の Union Find ができた。
+
+ある種の Union Find っぽい問題設定ではこの計算量が Union Find の最悪計算量を最小化した値として最良であることが示せる。詳しくは参考文献を参照せよ。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;Blum, Norbert. "On the single-operation worst-case time complexity of the disjoint set union problem." SIAM Journal on Computing 15.4 (1986): 1021-1024.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;関連記事&lt;/h2&gt;
+branching factor を調節するアイディアは &lt;a href="https://37zigen.com/persistent-array/#_Union_Find"&gt;永続 Union Find&lt;/a&gt; や &lt;a href="https://37zigen.com/minimum-spanning-tree-prim/#mnm_lognlogmn"&gt;多分ヒープによるプリム法&lt;/a&gt; でも用いられている。
+&lt;div class="hitokoto"&gt;永続 Union Find を調べていて、このアルゴリズムを知りました。永続化においては、ならし計算量は関係ないからです。シンプルなアルゴリズムで面白いですね。実装してみました（&lt;a href="https://old.yosupo.jp/submission/31327"&gt;コード&lt;/a&gt;）。実装も軽い。&lt;/div&gt;

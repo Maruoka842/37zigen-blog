@@ -1,0 +1,85 @@
+---
+title: "二項ヒープ"
+description: "二項ヒープ の過去ブログ記事"
+---
+
+# 二項ヒープ
+
+> 📅 **投稿日**: 2021-09-10 03:48:49
+
+二項ヒープでは次の操作ができます。\\(n\\) はヒープの要素数。
+&lt;ul&gt;
+ 	&lt;li&gt;insert(v)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。ヒープに要素 \\(v\\) を追加する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;find-min()
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(1)\\) 。ヒープの最小要素を返す。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;delete-min()
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(\\log(n))\\) 。ヒープの最小要素を削除する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;delete(v)
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(\\log(n))\\) 。要素 \\(v\\) を削除する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;decrease-key(v, Δ)
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(\\log(n))\\) 。要素 \\(v\\) のキーを \\(\\Delta\\) だけ減算する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;meld(h₁, h₂)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。ヒープ中の二つの木 h₁, h₂ を合体する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;meld(h)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。別のヒープ h と合体する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+二分ヒープでは insert が \\(O(\\log(n))\\) 、meld が \\(O(\\log(n)^2)\\) だったのが、二項ヒープではどちらも、ならし \\(O(1)\\) に改良されています。
+&lt;h2&gt;二項木とは&lt;/h2&gt;
+二項ヒープは、二項木 \\(B_k\\) という根付き木の列で表されます。定義は次の通り。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(B_0\\) は 1 頂点からなる根付き木&lt;/li&gt;
+ 	&lt;li&gt;\\(B_&#123;k+1&#125;\\) は、根の子をそれぞれ新たな根とする部分木が \\(B_0,B_1,\\ldots,B_&#123;k&#125;\\) である根付き木&lt;/li&gt;
+&lt;/ul&gt;
+\\(B_0,B_1,B_2,B_3,B_4\\) は下図のようになります。
+
+&lt;img class="aligncenter size-full wp-image-696" src="https://37zigen.com/wp-content/uploads/2020/09/binomial_tree-5.png" alt="二項木" width="3044" height="908"&gt;
+帰納法から二項木 \\(B_k\\) は頂点数 \\(2^k\\) 、高さ \\(k\\) です。
+
+帰納法から \\(B_&#123;k+1&#125;\\) の構成方法は下図の通り 3 つあります。
+&lt;h2&gt;&lt;/h2&gt;
+&lt;img class="aligncenter  wp-image-700" src="https://37zigen.com/wp-content/uploads/2020/09/binomial_tree-6.png" alt="二項木の構成方法" width="400"&gt;
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+二項ヒープは heap-property（親要素≦子要素）を満たす、二項木の集合の列 \\((L_i)\\) からなります。根の次数が \\(i\\) の二項木は \\(L_i\\) に置きます。次数 \\(i\\) の二項木の頂点数が \\(2^i\\) なので、\\(i \\leq \\log_2(n)\\) です。
+&lt;h3&gt;find-min&lt;/h3&gt;
+いずれかの根付き木の根が最小要素になっているので、その根へのポインタを持つことで、find-min は \\(O(1)\\) でできます。
+&lt;h3&gt;meld&lt;/h3&gt;
+meld(h₁, h₂) は heap-property（親要素≦子要素）を満たすように、大きい方の根を小さい方の根の子として繋げば \\(O(1)\\) でできます。h₁ と h₂ の根の次数が等しいときにしか meld しないので、meld 後の根付き木もまた二項木です。&lt;img class="aligncenter size-medium wp-image-10214" src="https://37zigen.com/wp-content/uploads/2021/09/meld-binomial-1-300x124.png" alt="" width="300" height="124"&gt;meld(h) は、delete-min において、meld する根付き木の列として新たに \\(h\\) を加えればいいです。つまり、根付き木の列は複数本ことになります。実際に meld するのは delete-min まで遅延させます。
+&lt;h3&gt;insert&lt;/h3&gt;
+insert(v) は、要素 \\(v\\) を一頂点の木として、\\(L_1\\) に加えれば \\(O(1)\\) です。一頂点の木は二項木 \\(B_0\\) です。
+&lt;h3&gt;delete-min&lt;/h3&gt;
+delete-min() は、最小要素を削除したあと、その子を根とする部分木を新たに根付き木の列に加えま
+。部分木は再度、二項木になります。根の次数が一意になるまで meld を繰り返します。その後、最小要素へのポインタを更新します。
+
+計算量解析します。二項木 \\(B_k\\) の頂点数 \\(2^k\\) より、\\(k \\leq \\log_2(n)\\) です。従って、最小要素の子は \\(O(\\log(n))\\) 個しか存在せず、切り離すのは \\(O(\\log(n))\\) 時間でできます。二項木は insert 以外では増えないので、meld 前の二項木の個数は insert 回数 \\(p\\) で抑えられます。meld の度に二項木は一つなくなるので、meld 回数は高々 \\(p\\) 回です。\\(L_1,L_2,\\ldots,L_&#123;\\lfloor \\log_2(n) \\rfloor &#125;\\) を走査して、一意であることを確かめるには \\(O(\\log(n))\\) 時間かかります。meld(h) によって追加された根付き木の列（配列）の空の部分を見ることにより、計算量は悪化しないでしょうか。根の次数 i を i ビット目、二項木の有無を 1/0 に対応させると、根付き木の配列は頂点数の二進表記になっています。insertのポテンシャルを2とすると、二進表記における、(0の個数)+(1の個数)×2のポテンシャルを常に持つので、ならせることが分かります。これは、\\(1+\\overbrace&#123;1\\ldots1&#125;^&#123;n\\text&#123;個&#125;&#125;=1\\overbrace&#123;0\\ldots0&#125;^&#123;n \\text&#123;個&#125;&#125;\\) のポテンシャルは \\(2+2n-n=2+n\\)、\\(1+0=1\\) のポテンシャルは \\(2+1-1=2\\) 、\\(0+0=0\\) のポテンシャルは \\(1+1-1=1\\) となることから示されます。以上より、insert で計算量をならすと、delete-min は \\(O(\\log(n))\\) になります。
+&lt;h3&gt;decrease-key(v, Δ)&lt;/h3&gt;
+要素 \\(v\\) で \\(Δ\\) だけ減算してから、heap-property（親要素≦子要素）を満たすまで、親と子を再帰的に交換する。二項木の高さ \\(O(\\log(n))\\) 時間でできる。
+&lt;h3&gt;delete(v)&lt;/h3&gt;
+decrease-key(v, -∞) として、\\(v\\) を根に持ってきてから、delete-min() で削除する。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;組合せ最適化（B. コルテ, J. フィーゲン ）&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://rsk0315.hatenablog.com/entry/2019/10/29/151823"&gt;Fibonacci ヒープを実装しました（えびちゃん）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hitokoto"&gt;二項木の再帰構造が可愛い。meld(h) の計算量解析は熨斗袋さんに教えて頂きました。&lt;/div&gt;

@@ -1,0 +1,50 @@
+---
+title: "DP"
+description: "DP の過去ブログ記事"
+---
+
+# DP
+
+> 📅 **投稿日**: 2022-04-25 02:39:11
+
+&lt;p&gt;[toc]&lt;/p&gt;
+&lt;p&gt;まとめ中………&lt;/p&gt;
+&lt;p&gt;\\(a[i] = g[i] \\oplus \\bigoplus_&#123;j=s[i]&#125;^&#123;t[i]&#125; b[j]\\)&lt;br&gt;b[j] は a[1:j] から計算された元、\\(\\oplus\\) はモノイドの演算。セグメント木に載せる。定数個連ねた\\(a[i] = g[i] \\oplus \\bigoplus_k\\bigoplus_&#123;j=s_k[i]&#125;^&#123;t_k[i]&#125; b_k[j]\\) のような形もある。&lt;br&gt;項の依存関係はDAGで表せる。すでに計算した項についてだけ、積を取るという条件が出てくるが、これは、全ての項を予め単位元で初期化しておくことで無視できる。例えば下の例では min の範囲の条件 \\(j &lt; i\\) は全ての項を \\(\\infty\\) で初期化することにより無視できる。&lt;br&gt;\\begin&#123;align&#125;&lt;br&gt;a[i] &amp;= \\min_&#123;g[j] &lt; g[i], j &lt; i&#125;(a[j] + f_1[i] + f_2[j]) \\\\&lt;br&gt;&amp;= f_1[i]+\\min_&#123;g[j] &lt; g[i]&#125;b[j]&lt;br&gt;\\end&#123;align&#125;&lt;br&gt;区間和の場合は O(1)&lt;br&gt;\\begin&#123;align&#125;&lt;br&gt;a[i] &amp;= \\sum_&#123;j=s[i]&#125;^&#123;t[i]&#125; a[j] \\\\&lt;br&gt;&amp;= b[t[i]]-b[s[i]-1]&lt;br&gt;\\end&#123;align&#125;&lt;/p&gt;
+&lt;h2&gt;区間DP&lt;/h2&gt;
+&lt;p&gt;区間dpは区間の小さい順に更新していく。2次元平面に図示すると更新順序は下のようになる。&nbsp;&lt;br&gt;&lt;img class="aligncenter size-full wp-image-16640" src="https://37zigen.com/wp-content/uploads/2022/04/interval-dp.drawio.png" alt="" width="391" height="379"&gt;&lt;/p&gt;
+&lt;p&gt;\\begin&#123;align&#125;&lt;br&gt;
+dp[i][j]= \\max_&#123;0 \\leq d \\leq w&#125; dp[i+d][j-w+d] + f(i+d)+g(j-w+d)&lt;br&gt;
+\\end&#123;align&#125;(ABC303)&lt;/p&gt;
+&lt;h3&gt;足し算の畳み込み&lt;/h3&gt;
+&lt;p&gt;\\begin&#123;align&#125;&lt;br&gt;a[l][r] &amp;= \\sum_&#123;\\substack&#123;l &lt; s &lt; r,\\\\ g[l] &lt; g[s] &lt; g[r]&#125;&#125; \\left(a[l][s] + a[s][r]\\right)\\\\&lt;br&gt;&amp;= \\sum_&#123;g[l] &lt; g[s] &lt; g[r]&#125; a[l][s] + \\sum_&#123;g[l] &lt; g[s] &lt; g[r]&#125; a[s][r]\\\\&lt;br&gt;&amp;= \\sum_&#123;g[l] &lt; g[s] &lt; g[r]&#125; b_l[s] + \\sum_&#123;g[l] &lt; g[s] &lt; g[r]&#125; c_r[s]\\\\&lt;br&gt;\\end&#123;align&#125;&lt;br&gt;BITを使うと \\(O(n^2 \\log n)\\) になる（&lt;a href="https://atcoder.jp/contests/arc108/tasks/arc108_e"&gt;ARC108E&lt;/a&gt;）。分配法則が成り立たない演算（例えばminや掛け算）だと畳み込みの部分が分けられない。&lt;/p&gt;
+&lt;h3&gt;min plus の畳み込み (Monge)&lt;/h3&gt;
+&lt;p&gt;&lt;img class="aligncenter size-full wp-image-16645" src="https://37zigen.com/wp-content/uploads/2022/04/interval-dp-monge.png" alt="" width="964" height="194"&gt;&lt;/p&gt;
+&lt;p&gt;\\(w_&#123;i, j&#125;\\) が Monge かつ 単調非減少関数 (\\([i, j] \\subset [k, l]\\) ならば \\(w_&#123;i, j&#125; \\leq w_&#123;k, l&#125;\\)) のとき $$dp[i][j]=\\min_&#123;i &lt; s &lt; j&#125;(dp[i][s]+dp[s][j]) + w_&#123;i,j&#125;$$ は Mongeで \\(O(n^2)\\) になる(&lt;a href="”https://dl.acm.org/doi/abs/10.1145/800141.804691″"&gt;ref&lt;/a&gt;)。&lt;/p&gt;
+&lt;p&gt;\\(a \\leq b\\) とする。f が区間上のMongeのとき、優モジュラと同様にして、区間が大きいほど、f の微分も大きくなる。ここから dp がMongeになる。従って、\\(g(a, b) = \\mathrm&#123;argmin&#125;_s ( f(a, s) + f(s, b))\\) と置くと \\(g(a, b-1) \\leq g(a, b) \\leq g(a+1, b)\\). 　すると、$$g(0, d-1) \\leq g(0, d) \\leq g(1, d) \\leq g(1, d+1) \\leq g(2,d+1)\\leq g(2, d+2) \\leq \\cdots$$となるので\\(O(n^2)\\) となる。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;h3&gt;Monge&lt;/h3&gt;
+&lt;p&gt;\\(f\\) が集合上の優モジュラ関数ならば \\(g(L, R):=f([L, R])\\) はMongeになる。例えば、&lt;br&gt;\\(A_&#123;i,j&#125; = \\min_&#123;i \\leq k \\leq j&#125; a_k\\) は Monge（ARC067F）。優モジュラ関数の定義&lt;br&gt;\\begin&#123;align&#125;&lt;br&gt;&amp;\\forall S, \\forall T, f(S \\cap T) + f(S \\cup T) \\geq f(S) + f(T) \\\\&lt;br&gt;\\Leftrightarrow &amp; \\forall A, \\forall c, \\forall d, f(A \\cup c \\cup d) - f(A \\cup c) \\geq f(A\\cup d) - f(A)&lt;br&gt;\\end&#123;align&#125;&lt;br&gt;より \\(f\\) （負も取る）は集合が大きいほど加速的に大きくなる。&lt;/p&gt;
+&lt;h2&gt;整数の積の分割のDP&lt;/h2&gt;
+&lt;p&gt;整数から半環への写像 \\(g\\) について、積の分割の和を取って $$f(n, k) = \\sum_&#123;\\prod \\lambda_i = n, \\lambda_i \\leq \\lambda_&#123;i+1&#125;, \\lambda_i \\leq k&#125; \\prod_&#123;i&#125; g(\\lambda_i)$$ と置くと、$$f(n, k) = f(n,k-1)+g(k)f(n/k,k)$$ が成り立つ。\\(n, k \\leq N\\) について \\(O(N \\log N)\\) で列挙できる（CF1699E）。&lt;/p&gt;
+&lt;h2&gt;凸関数の和&lt;/h2&gt;
+&lt;p&gt;\\(x_1 \\leq x_2 \\leq \\cdots \\leq x_n\\) の下、\\(\\min \\sum f_i(x_i)\\) を求めよ。ただし、\\(f_i(x)\\) は凸関数である(yuki2009)。\\(f_i(x)\\) が最小となる \\(x\\) を \\(\\omega_i\\) とする。\\(\\frac&#123;d&#125;&#123;dx&#125; f_i,\\frac&#123;d&#125;&#123;dx&#125; f_j \\) の符号が互いに相異なるのは、区間 \\([\\omega_i, \\omega_j]\\) (\\(\\omega_i &lt; \\omega_j\\)) だけである。\\(\\omega_&#123;i&#125; &gt; \\omega_&#123;i+1&#125;\\) ならば、\\(x_i = x_&#123;i+1&#125;\\) としてもよい。凸関数の和は凸関数であるから、\\(n\\)が一つ小さい問題に帰着できた。\\(\\omega_1 \\leq \\omega_&#123;2&#125; \\leq \\cdots \\leq \\omega_n\\) ならば \\(x_i = \\omega_i\\) とするのが最適。&lt;/p&gt;
+
+
+&lt;p&gt;&lt;/p&gt;
+
+
+&lt;h2&gt;CHT&lt;/h2&gt;
+&lt;p&gt;
+\\begin&#123;align&#125;&lt;br&gt;
+dp[i]=&amp;\\min (dp[j]+(a_i-a_j)^2)\\\\&lt;br&gt;
+=&amp;a_i^2+\\min (f[j]-2a_ia_j)&lt;br&gt;
+\\end&#123;align&#125;
+&lt;/p&gt;
+&lt;p&gt;ただし \\(f[j]=dp[j]+a_j^2\\)。&lt;/p&gt;
+&lt;p&gt;$$dp[i]=\\min(dp[i-1],\\min_j dp[j-1] + \\sum_&#123;k=i&#125;^j a_k + (i-j)(i-j+1)/2)$$　(ABC066F)&lt;/p&gt;
+&lt;p&gt;区間\\([j,i]\\)に対して重み \\(f[j]+g[i]+x[i]y[j]\\) を割り当てる。\\([1,n]\\)から disjoint ないくつかの区間を取るときの最大重み。左からDPすると$$dp[i] = \\max\\left(dp[i-1], g[i]+\\max_j \\left(dp[j-1]+f[j]+x[j]y[i]\\right)\\right)$$という漸化式が得られる。右からDPしても同様の式が得られる。&lt;/p&gt;
+&lt;p&gt;各 \\(i\\) について \\(i\\) を含む区間が存在する場合/しない場合の最大重みを求めたい。存在しない場合は prefix dp と suffix dp を組み合わせればよい。存在する場合を考える。\\(M\\) と \\(i\\) (\\(i &gt; M\\)) が同じ区間に含まれる場合の最大重みは&lt;br&gt;
+$$dp[i] = \\max\\left(dp[i-1], g[i]+\\max_&#123;j \\leq M&#125; \\left(dp[j-1]+f[j]+x[j]y[i]\\right)\\right)$$ によって計算できる。また、\\(i\\) と \\(M\\) が同じ区間に含まれない場合の最大重みは、\\((M,n]\\) について同様の問題を解けばよい。よって、\\(O(n \\log(n)^2)\\) で計算できる。&lt;/p&gt;
+&lt;p&gt;数列 \\(s\\) をいくつかの連続部分列に分割したときの \\(\\sum \\max(s[a_i..a_&#123;i+1&#125;))-\\min(s[a_i..a_&#123;i+1&#125;))\\) の最大値を求めよ（CodeQUEEN2023）。\\(-1,0,1\\) からなり、prefix 和が 0 以上 1 以下の数列 \\(b\\) に対して \\(\\max b_is_i\\) を求めればよい。&lt;/p&gt;
+
+\\(f(l, r)  = \\max_&#123;l-l'+r-r'=d&#125;\\&#123; f(l',r') + \\sum_&#123;l \\leq i \\leq l'&#125;a(i) + \\sum_&#123;r' \\leq i \\leq r'&#125;a(i)\\&#125;\\) (&lt;a href="https://atcoder.jp/contests/abc303/tasks/abc303_g"&gt;ABC303G&lt;/a&gt;

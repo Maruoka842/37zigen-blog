@@ -1,0 +1,50 @@
+---
+title: "ワーシャル・フロイドのアルゴリズム"
+description: "ワーシャル・フロイドのアルゴリズム の過去ブログ記事"
+---
+
+# ワーシャル・フロイドのアルゴリズム
+
+> 📅 **投稿日**: 2020-10-29 19:55:02
+
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;window.addEventListener("load", function() &#123; hljs.initHighlighting();&#125;);&lt;/script&gt;ワーシャル・フロイド（Floyd-Warshall）のアルゴリズムとは、\\(n\\) 頂点重み付き有向グラフ \\(G\\) の全頂点間の最短道の長さを \\(O(n^3)\\) で計算するアルゴリズムである。より計算量の小さいアルゴリズムも存在する（例えば、負辺が存在しないときは辺の数を \\(m\\) としてダイクストラ法 \\(n\\) 回で \\(O(nm+n^2\\log(n))\\)）ものの、ワーシャル・フロイド法はその実装のシンプルさから多くの場面では有効なアルゴリズムである。
+&lt;h2&gt;アルゴリズムの解説&lt;/h2&gt;
+頂点集合を \\(V(G):=\\&#123;1,\\ldots,n\\&#125;\\) 、各辺 \\((i,j) \\in E(G)\\) の長さを \\(c_&#123;i,j&#125;\\) と定義する。経由する内部頂点を \\(\\&#123;1,2,\\ldots,k\\&#125;\\) に限定したときの \\(i,j\\) 間の最短道の長さを \\(d_k(i,j)\\) とすると求めたいのは \\(d_n\\) である。\\(G\\) に負閉路が存在しないとすれば、初期値は $$d_0(i,j) =\\begin&#123;eqnarray&#125; \\begin&#123;cases&#125;c_&#123;i,j&#125; &amp; ((i,j)\\in E(G)) \\\\0 &amp; ( i=j ) \\\\ \\infty &amp; ( \\text&#123;otherwise&#125;) \\\\ \\end&#123;cases&#125; \\end&#123;eqnarray&#125;$$
+となり、漸化式は
+$$d_&#123;k&#125;(i,j)=\\min(d_&#123;k-1&#125;(i,j),d_&#123;k-1&#125;(i,k)+d_&#123;k-1&#125;(k,j))$$である。負閉路が存在すると漸化式で計算している対象が道ではなくなってしまい正しい結果が得られない。漸化式から、次のコード（Python）にて \\(d[i][j]\\) が\\(d_0(i,j)\\) で初期化されていれば、ループ内で \\(d[i][j] \\leftarrow d_k(i,j)\\) となる。
+&lt;pre&gt;&lt;code class="python"&gt;for k in range(1, n+1): ## 始点
+    for i in range(1, n+1): ## 終点
+        for j in range(1, n+1): ## 経由点
+            if d[i][k] &lt; INF and d[k][j] &lt; INF:
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j])
+&lt;/code&gt;&lt;/pre&gt;
+3重ループの結果として得られる行列 \\(d\\) が求めたい最短距離である。計算量は \\(O(n^3)\\)。
+
+ループの順序を k, i, j から i, j, k にすると正しい値が求まらない。例えば、①→④→③→②というグラフで i, j, k の順に更新すると、① → ② の長さが初期値の \\(\\infty\\) から更新されない。
+&lt;h2&gt;負閉路の検出&lt;/h2&gt;
+ワーシャル・フロイドのアルゴリズムにより負閉路の検出ができる。というのも、負閉路が存在するときに限り３重ループ後の \\(d\\) に \\(d[i][i] &lt; 0\\) なる頂点 \\(i\\) が存在するからである。
+
+負閉路が存在する場合、\\(d\\) の値の絶対値が一番外側のループ回数 \\(k\\) に対して指数関数的に増加する場合があるので、注意が必要である [1]。例えば、\\(k\\) 回目のループで、全ての \\(i,j\\) について \\(d[i][j] &lt; -2^k\\) ならば \\(k+1\\) 回目のループでは \\(d[i][j] &lt;-2^&#123;k+1&#125;\\) が成り立つので絶対値は \\(\\Omega(2^k)\\) で増加する。漸化式を in-place で更新していることから、実際にはもっと速く \\(\\Omega(6^k)\\) で増加するような簡単な場合が存在する[1]。オーバーフローを防ぐには、\\(d[i][i] &lt; 0\\) を満たす \\(i\\) が存在しないか下記コードのように \\(d\\) の更新の度に確認すればよい。
+&lt;pre&gt;&lt;code class="python"&gt;for k in range(1, n+1):
+    for i in range(1, n+1):
+        for j in range(1, n+1):
+            if d[i][k] &lt; INF and d[k][j] &lt; INF:
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j])
+            if i==j and d[i][j] &lt; 0:
+                print("negative cycle is detected")
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;更新順序の変更&lt;/h2&gt;
+足し算を min、掛け算を + に置き換えた行列積を考える（トロピカル半環）。行列 \\(D^&#123;(m)&#125;\\) の第 (i, j) 成分を頂点 \\(i\\) から 頂点 \\(j\\) に \\(m\\) 辺以下で到達する場合の最短距離と定義すると、\\(D^&#123;(i+j)&#125;=D^&#123;(i)&#125;D^&#123;(j)&#125;\\) が成り立つ。負閉路が存在しない場合、最短路は高々 \\(n-1\\) 辺で構成されるから、\\((D^&#123;(1)&#125;)^&#123;2^&#123;\\lceil\\log_2&#123;n&#125;\\rceil&#125;&#125;\\) によって答えが \\(O(n^3\\log&#123;n&#125;)\\) で求まる。これは、ワーシャル・フロイドのアルゴリズムのループ順を k-i-j から i-j-k にして、更新を in-place にしない場合に対応している。行列積の種々の高速化アルゴリズムは加法的逆元（minの逆操作）が存在しないので適用できない。しかしながら、[3] によると更新を in-place にし、k-i-j のループを "3" 回繰り返した次のコードでは正しい結果が得られる。
+&lt;pre&gt;&lt;code class="python"&gt;for _ in range(3):
+    for i in range(1, n+1):
+       for j in range(1, n+1):
+          for k in range(1, n+1):
+            if d[i][k] &lt; INF and d[k][j] &lt; INF:
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j])
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://www.sciencedirect.com/science/article/abs/pii/S002001901000027X"&gt;Hougardy, Stefan. "The Floyd–Warshall algorithm on graphs with negative cycles." Information Processing Letters 110.8-9 (2010): 279-281.&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://mitocw.ups.edu.ec/courses/electrical-engineering-and-computer-science/6-046j-design-and-analysis-of-algorithms-spring-2015/lecture-notes/MIT6_046JS15_lec11.pdf"&gt;Design and Analysis of Algorithms Lecture 11（Erik Demaine）&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://qiita.com/tmaehara/items/f56be31bbb7a468a04ed"&gt;ループの添字順序を間違えた Floyd-Warshall アルゴリズムを３回繰り返すと正しい結果が得られる&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;

@@ -1,0 +1,291 @@
+---
+title: "銀行家のキュー"
+description: "銀行家のキュー の過去ブログ記事"
+---
+
+# 銀行家のキュー
+
+> 📅 **投稿日**: 2020-12-19 04:26:04
+
+[mathjax]  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;全永続 Queue の一種である銀行家のキュー（Banker's queue）を解説する。
+[toc]
+&lt;h2&gt;全永続 Queue とは？&lt;/h2&gt;
+永続データ構造とは、過去のバージョンにアクセス可能なデータ構造のことである。ふつうデータ構造を更新すると、更新元は破壊的に変更されてアクセスできなくなる。しかし、永続データ構造では更新の際に元のデータ構造を全く変更せず、新たに更新後のデータ構造を作成する。永続データ構造のうち、過去のバージョンを更新できるものを全永続、できないものを半永続という。例えるなら、半永続は過去を見る能力、全永続は過去に戻り、パラレルワールドを作る能力（元の世界は不変）である。永続でないデータ構造を短命データ構造という。
+
+この記事で目標とする銀行家の Queue は各操作がならし O(1) の全永続 Queue である。つまり次のような問題を処理するデータ構造である。
+&lt;div class="statement"&gt;問題（永続 Queue）：\\(Q_0\\) を空の Queue とする。以下の \\(T\\) 個のクエリをそれぞれならし O(1) で処理するデータ構造を構築せよ。\\(i\\) 個目のクエリでは次の 3 つのいずれかを計算する。
+&lt;ol&gt;
+ 	&lt;li&gt;\\(Q_i\\) := \\(Q_&#123;t_i&#125;\\).push(\\(x_i\\))
+&lt;ul&gt;
+ 	&lt;li&gt;Queue \\(Q_&#123;t_i&#125;\\) の末尾に \\(x_i\\) を追加した Queue を \\(Q_&#123;i&#125;\\) とする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;\\(Q_i\\) := \\(Q_&#123;t_i&#125;\\).pop()
+&lt;ul&gt;
+ 	&lt;li&gt;Queue \\(Q_&#123;t_i&#125;\\) の先頭を削除した Queue を \\(Q_&#123;i&#125;\\) とする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;\\(Q_&#123;t_i&#125;\\).top()
+&lt;ul&gt;
+ 	&lt;li&gt;Queue \\(Q_&#123;t_i&#125;\\) の先頭を出力せよ。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+ただし \\(0 \\leq t_i &lt; i\\) である。
+
+&lt;/div&gt;
+単に永続 Queue と言ったとき、全永続 Queue を指しているものとする。
+&lt;h2&gt;短命 Queue を 2 個の Stack で作る&lt;/h2&gt;
+銀行家の Queue は 2 本の Stack を用いて構成される。そこでまずは短命な Queue を 2 本の短命な Stack f, r（前方："f"ront, 末尾："r"ear）で構成する方法を解説する。次のようにすればよい：
+&lt;ul&gt;
+ 	&lt;li&gt;Queue への push は r への push で表す。&lt;/li&gt;
+ 	&lt;li&gt;Queue の pop は f の pop で表す。&lt;/li&gt;
+ 	&lt;li&gt;Queue の top は f の top で表す。&lt;/li&gt;
+&lt;/ul&gt;
+ただし、このままでは f が空になると pop と top ができなくなってしまう。そこで pop または top が呼び出されたとき、f が空ならば r の要素の順番を reverse して f に移動する。reverse に必要な計算量は O(|r|) だが、各要素は高々 1 回しか reverse されないから r への push で均すと O(1) になる。従って、この 2 本の Stack による Queue はならし O(1) で各操作ができる。
+&lt;figure&gt;&lt;figcaption&gt;&lt;img class="aligncenter size-full wp-image-3885" src="https://37zigen.com/wp-content/uploads/2020/11/queue_two_stack_.png" alt="" width="500" height="676"&gt;図1：短命 Queue を２つの短命 Stack で構成したときの動作例&lt;/figcaption&gt;&lt;/figure&gt;
+図は 2 つの Stack で Queue を構成した例である。最初 2 つの Stack は f = (8, 2), r = (2, 1, 3) であり、その実態である Queue は f ++ reverse(r) = (8, 2, 3, 1, 2) である（++はリストの連結）。Queue から 2 回 pop する。これはスタック f を 2 回 pop したことと同等である。f が空になる。top を呼び出すと f が空であるから f ← reverse(r), r ← ∅ としてから f の先頭を返す。Queue に 9 を push する。これはスタック r に 9 を push することと同等である。
+
+Java で実装すると次のようになる：
+&lt;pre&gt;&lt;code class="java"&gt;import java.util.Stack;
+class Queue &#123;
+    Stack f = new Stack&lt;&gt;();
+    Stack r = new Stack&lt;&gt;();
+
+    void push(int x) &#123;
+        r.push(x);
+    &#125;
+
+    int top() &#123;
+        normalize();
+        return f.peek();
+    &#125;
+
+    void pop() &#123;
+        normalize();
+        f.pop();
+    &#125;
+
+    void normalize() &#123;
+        if (f.isEmpty()) &#123;
+            while (!r.isEmpty()) f.push(r.pop());
+        &#125;
+    &#125;
+
+&#125;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Stack を永続化する&lt;/h2&gt;
+短命 Queue は 2 個の短命 Stack で作れた。銀行家の Queue はこの 2 個の Stack を永続化することで永続性を獲得する。そこでまずは、Stack を永続化する方法を解説する。
+
+永続 Stack とは次のような問題を処理するデータ構造である。各操作を O(1) にしたい。
+&lt;div class="statement"&gt;問題（永続 Stack）：\\(S_0\\) を空の Stack とする。以下の \\(T\\) 個のクエリを処理するデータ構造を構築せよ。\\(i\\) 回目のクエリは次の 3 つのいずれかの形式で与えられる。
+&lt;ol&gt;
+ 	&lt;li&gt;\\(S_i\\) := \\(S_&#123;t_i&#125;\\).push(\\(x_i\\))
+&lt;ul&gt;
+ 	&lt;li&gt;Stack \\(S_&#123;t_i&#125;\\) の先頭に \\(x_i\\) を追加した Stack を \\(S_&#123;i&#125;\\) とする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;\\(S_i\\) := \\(S_&#123;t_i&#125;\\).pop()
+&lt;ul&gt;
+ 	&lt;li&gt;Stack \\(S_&#123;t_i&#125;\\) の先頭を削除した Stack を \\(S_&#123;i&#125;\\) とする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;\\(S_&#123;t_i&#125;\\).top()
+&lt;ul&gt;
+ 	&lt;li&gt;Stack \\(S_&#123;t_i&#125;\\) の先頭を出力せよ。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+ただし \\(0 \\leq t_i &lt; i\\) である。
+
+&lt;/div&gt;
+各 \\(S_i\\) が個別にスタックの全要素を持つと push に \\(\\Theta(N)\\) 掛かってしまう。そこで、各 \\(S_i\\) は Stack の先頭の値と \\(S_i\\).pop() へのポインタだけを持つことにする。つまり、pop と push を次のように改造する：
+&lt;ul&gt;
+ 	&lt;li&gt;\\(S_i\\).pop() は \\(S_i\\) のポインタの参照先を返す。&lt;/li&gt;
+ 	&lt;li&gt;\\(S_i\\).push(\\(x\\)) は値 \\(x\\) と \\(S_i\\) へのポインタを持つ新たな Stack を返す。&lt;/li&gt;
+&lt;/ul&gt;
+これらは全て O(1) で行える。従って pop, push, top が O(1) でできる永続 Stack ができた。
+
+このとき、 \\(S_i\\) を頂点、ポインタを有向辺と見なすと \\(S_0\\) を根とする有向木になっている。Stack が容易に永続化できたのはこのように木構造をなすからである。
+&lt;figure&gt;&lt;img class="wp-image-3615 size-full" src="https://37zigen.com/wp-content/uploads/2020/11/persistent_stack.png" alt="" width="501" height="704"&gt;
+
+&lt;figcaption&gt;図２：永続 Stack の動作例&lt;/figcaption&gt;&lt;/figure&gt;
+画像は永続 Stack の動作例である。\\(S_1\\)=\\(S_0\\).push(2), \\(S_2\\)=\\(S_1\\).push(8) とする。\\(S_0\\) は空のスタックである。\\(S_3\\)=\\(S_2\\).push(7) とすると \\(S_3\\) のポインタは \\(S_2\\) を参照する。同様に \\(S_4\\)=\\(S_2\\).push(3) とすると \\(S_4\\) のポインタは \\(S_2\\) を参照する。\\(S_5\\)=\\(S_2\\).pop() とすると、\\(S_5\\) のポインタは \\(S_2\\) のポインタの参照先 \\(S_5\\) を指す。\\(S_6\\)=\\(S_0\\).push(1) とすると \\(S_6\\) は \\(S_0\\) を参照するポインタを持つ。
+
+永続 Stack を Java で実装すると次のようになる：
+&lt;pre&gt;&lt;code class="java"&gt;class PersistentStack &#123;
+    PersistentStack next = null;
+    int val;
+
+    public PersistentStack(int val, PersistentStack next) &#123;
+        this.val = val;
+        this.next = next;
+    &#125;
+
+    // 空の Stack を作る
+    public PersistentStack() &#123;
+    &#125;
+
+    int top() &#123;
+        return val;
+    &#125;
+
+    PersistentStack pop() &#123;
+        return next;
+    &#125;
+
+    PersistentStack push(int v) &#123;
+        return new PersistentStack(v, this);
+    &#125;
+
+&#125;
+
+public class Main &#123;
+    public static void main(String[] args) &#123;
+        PersistentStack S0 = new PersistentStack();
+        PersistentStack S1 = S0.push(2);
+        PersistentStack S2 = S1.push(8);
+        PersistentStack S3 = S2.push(7);
+        PersistentStack S4 = S2.push(3);	
+        PersistentStack S5 = S2.pop();
+        PersistentStack S6 = S0.push(1);	
+    &#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;銀行家の Queue&lt;/h2&gt;
+短命 Queue は 2 個の短命 Stack で作れた。前方（front）と後方（rear）の Stack をそれぞれ f, r とする。自然な発想として、短命 Queue を永続化するには短命 Stack f, r を永続化すればよさそうである。しかしそのまま Stack を永続化すると次の２つの厄介事が発生する：
+&lt;ol&gt;
+ 	&lt;li&gt;Queue Q の f が空ならば Q.pop() が繰り返し呼び出されると、その度に reverse(r) を構築する必要がある。&lt;/li&gt;
+ 	&lt;li&gt;Queue Q の f が空ならば Q.push(\\(x_i\\)).pop() が繰り返し呼び出されると、その度に reverse(r ++ (\\(x_i\\))) を構築する必要がある（r ++ (\\(x_i\\)) はリスト r とリスト (\\(x_i\\)) を連結したリスト）。ただし、\\(x_i\\) は呼び出しの度に異なるとする。&lt;/li&gt;
+&lt;/ol&gt;
+reverse(r) の構築には O(|r|) だけ掛かる。つまり１，２のどちらも、 r の各要素の r への push の計算量では reverse の計算量をならしきれない。
+
+この２つの厄介事は一見同じ問題に見えるが、別個に対処法を打つ必要がある。なぜなら、図２のように永続 Stack を根付き木上のパスと捉えたとき、厄介事１は同一パスについての、厄介事２は分岐した複数のパスについての問題だからである。簡単のために問題２の分岐後のパスの長さは 1（リスト (\\(x_i\\)) の長さは 1 ）としたが、分岐後のパスがもっと長い場合でも厄介事になる。
+
+厄介事１は reverse(r) の構築結果をメモ化し、二度目以降はその結果を参照するだけの O(1) にすることで対処する。１度目の呼び出しの reverse は厄介事２のせいでならし O(1) にできるかは分からない。しかし、二度目以降の呼び出しはメモ化で O(1) にできる。
+
+厄介事２は、reverse(r) を f に追加するタイミングを |f|=|r|+1 のときに早め、更に reverse と ++ の実行を必要になるまで遅延させることで対処する（|f|=|r|にしないのは、f と r が空の場合にこの条件を満たしてしまうからである）。reverse(r) を f に追加してから、Queue を |reverse(r)| 回 pop するまで reverse(r) の具体的な構造は必要ない（無在庫販売のようなものである）。すなわち |reverse(r)| 回 pop する間、revese(r) の実行は保留する。この |reverse(r)| 回の pop の計算量で一度目の呼び出しの reverse(r) の計算量をならし O(1) にできる。
+
+reverse(r) の後ろに別のリストの reverse が連なり、|reverse(r)| 回の pop の計算量が後ろに連なる reverse のならしに使われる場合もある。しかし、この場合も pop のならしコストの定数倍を大きく取っておけば問題ない。
+
+++ の計算量を解析する。停止計算 (x ++ y) を 1 step 進めた停止計算は x.top() :: (x.pop() ++ y) とする。（x :: y は x→y の単方向リスト）。停止計算 S=((((a₁ ++ a₂) ++ a₃) ++ a₄) ... ++ aₙ) について、S.pop() を計算するには括弧の入れ子を再帰して一番内に辿り着く必要がある。そこで、停止計算 (x ++ y) を 1 step 進めて x.top() :: (x.pop() ++ y) としたとき :: をメモ化する。二度目以降の S.pop() の呼び出しでは x.pop() ++ y を参照するだけでよい。再帰の深さが S の \\(a_i\\) の位置以上になるのは高々 \\(\\sum_&#123;k=1&#125;^i |a_i| \\leq 2 |a_i|\\) 回である。末尾の stack r に対する \\(a_i\\) の各要素の push でならせば O(1) となる。pop() について解析したが、top() でも全く同様にしてならし O(1) が示せる。
+
+以上を組み合わせることで各操作がならし O(1) の永続 Queue になる。この永続 Queue を銀行家の Queue という。
+
+front の Stack は Stack の要素が頂点、++ とポインタが有向辺、reverse が木の葉以外を覆う disjoint なパス、Stack が木上の重なり得るパス、Stack の末端の null ノードが葉だと見て、根付き木と捉える事もできる。根付き木として見た方が、どこをメモ化してるのかが個人的には分かりやすくなると思う（逆に混乱させてしまったらこの部分は忘れてほしい）。
+
+銀行家の Queue を Java で実装すると下のようになる。メモ化というと引数 r に対して計算結果 reverse(r) を覚えておくことを指すことが多い。しかし、ここでのメモ化は引数 r を忘れて、ポインタの参照先を停止計算から計算済みの結果に貼り替えるだけで行っている（PersistentStack pop() の next = next.eval() の部分）。
+&lt;pre&gt;&lt;code class="java"&gt;class PersistentStack &#123;
+    PersistentStack next = null;
+    int val;
+
+    public PersistentStack(int val, PersistentStack next) &#123;
+        this.val = val;
+        this.next = next;
+    &#125;
+    
+    public PersistentStack() &#123;
+    &#125;
+    
+    int top() &#123;
+        return val;
+    &#125;
+    
+    PersistentStack pop() &#123;
+        return next != null ? (next = next.eval()) : next;
+    &#125;
+    
+    static PersistentStack push(PersistentStack x, int v) &#123;
+        return new PersistentStack(v, x);
+    &#125;
+    
+    static PersistentStack concat(PersistentStack x, PersistentStack y) &#123;
+        if (x == null) return y.eval();
+        else return new PersistentStack(x.val, new PersistentStack() &#123;
+                @Override
+                PersistentStack eval() &#123;
+                    return PersistentStack.concat(x.pop(), y);
+                &#125;
+            &#125;);
+    &#125;
+    
+    static PersistentStack reverse(PersistentStack head) &#123;
+        return new PersistentStack () &#123;
+            @Override
+            PersistentStack eval() &#123;
+                PersistentStack ret = null;
+                for (PersistentStack x=head;x!=null;x=x.pop()) &#123;
+                    ret=PersistentStack.push(ret, x.top());
+                &#125;
+                return ret;
+            &#125;
+        &#125;;
+    &#125;
+    
+    synchronized PersistentStack eval() &#123;
+        return this;
+    &#125;
+&#125;
+
+class PersistentQueue &#123;
+    int fsize = 0;
+    int rsize = 0;
+    PersistentStack f = null;
+    PersistentStack r = null;
+    
+    public PersistentQueue(PersistentStack f, int fsize, PersistentStack r, int rsize) &#123;
+        this.fsize = fsize;
+        this.rsize = rsize;
+        this.f = f;
+        this.r = r;
+    &#125;
+    
+    public PersistentQueue() &#123;
+    &#125;
+    
+    boolean isEmpty() &#123;
+        return fsize == 0;
+    &#125;
+    
+    int top() &#123;
+        return f.top();
+    &#125;
+    
+    PersistentQueue push(int x) &#123;
+        return new PersistentQueue(f, fsize, PersistentStack.push(r, x), rsize+1).normalize();
+    &#125;
+    
+    PersistentQueue pop() &#123;
+        return new PersistentQueue(f.pop(), fsize-1, r, rsize).normalize();
+    &#125;
+    
+    PersistentQueue normalize() &#123;
+        if (fsize &gt;= rsize) return this;
+        else &#123;
+            return new PersistentQueue(PersistentStack.concat(f, PersistentStack.reverse(r)), fsize+rsize, null, 0);
+        &#125;
+    &#125;
+
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;演習問題&lt;/h2&gt;
+&lt;a href="https://judge.yosupo.jp/problem/persistent_queue"&gt;よすぽジャッジ Persistent Queue&lt;/a&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://www.amazon.co.jp/gp/product/4048930567/ref=as_li_tl?ie=UTF8&amp;camp=247&amp;creative=1211&amp;creativeASIN=4048930567&amp;linkCode=as2&amp;tag=37zigen-22&amp;linkId=1e6657dbeaa06e32fbfd548f1f28fb1b" target="_blank" rel="noopener noreferrer"&gt;純粋関数型データ構造（日本語）&lt;/a&gt;&lt;img style="border: none !important; margin: 0px !important;" src="//ir-jp.amazon-adsystem.com/e/ir?t=37zigen-22&amp;l=am2&amp;o=9&amp;a=4048930567" alt="" width="1" height="1" border="0"&gt;、&lt;a href="https://www.cs.cmu.edu/~rwh/theses/okasaki.pdf"&gt;（英語）&lt;/a&gt;
+&lt;ul&gt;日本語書籍の 2.1 リスト, 4章ストリーム, 3.4 銀行家法, 付録A を参考にした。永続データ構造の荒野を共に駆け巡ってくれる本。&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="http://www.kmonos.net/pub/Presen/PFDS.pdf"&gt;20分でわかる Purely Functional Data Structures（k.inaba氏）&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;参考文献１の翻訳者による解説。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://noshi91.hatenablog.com/entry/2019/02/04/175100"&gt;あなたの庭に永続データ構造を飾りませんか？（熨斗袋氏）&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;永続 Stack の丁寧な解説（C++の実装あり）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://github.com/noshi91/Library/blob/master/data_structure/bankers_queue.cpp"&gt;銀行家の Queue の C++ による実装（熨斗袋氏）&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://github.com/aradzie/persistent/blob/master/src/main/java/collection/persistent/BankersQueue.java"&gt;銀行家の Queue の Java による実装（Aliaksandr Radzivanovich 氏）&lt;/a&gt;
+&lt;ul&gt;※reverse された列同士の結合が切れているので計算量は壊れていると思う。&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="hitokoto"&gt;何かと助けてくれた熨斗袋さんありがとうございます。永続データ構造は普段使わない部分の脳みそを使って楽しいです。初めて実践で Override を使いました。&lt;/div&gt;

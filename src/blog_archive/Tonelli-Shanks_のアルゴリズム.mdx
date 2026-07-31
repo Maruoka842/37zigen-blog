@@ -1,0 +1,123 @@
+---
+title: "Tonelli-Shanks のアルゴリズム"
+description: "Tonelli-Shanks のアルゴリズム の過去ブログ記事"
+---
+
+# Tonelli-Shanks のアルゴリズム
+
+> 📅 **投稿日**: 2020-09-09 20:39:05
+
+[mathjax] 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+整数 \\(a\\) と奇素数 \\(p\\) が与えられたとき、\\(x^2 = a \\bmod p\\) を満たす \\(x\\) を \\(O((\\log p)^2)\\) で求める Tonelli-Shanks のアルゴリズムを解説する。計算量は &lt;a href="https://37zigen.com/cipolla-algorithm/"&gt;Cipollaのアルゴリズム&lt;/a&gt; \\(O(\\log p)\\) に劣るが、２乗以外の冪根では Tonelli-Shanks の方が速くなる（&lt;a href="https://yukicoder.me/problems/no/981"&gt;yukicoder981&lt;/a&gt;）。
+&lt;h2&gt;原始根で考える&lt;/h2&gt;
+掛け算は難しいので、足し算に直す。原始根を一つ固定して、その原始根で表したときの冪指数部分に着目して \\(x^2=a \\bmod p\\) を操作する。つまり、\\(\\left((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)\\setminus\\&#123;0\\&#125;,\\times)\\cong(\\mathbb&#123;Z&#125;/(p-1)\\mathbb&#123;Z&#125;,+\\right)\\) の右辺で考える（左辺を \\((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)^\\times\\) と略記する）。
+
+例えば、\\(3 \\cdot 9 = 27 = 1 \\pmod &#123;13&#125;\\) と計算するのではなく、原始根 \\(2\\) を用いて、
+\\begin&#123;align&#125;
+3 \\cdot 9  &amp;= 2^4 \\cdot 2^8 \\\\
+&amp;= 2^&#123;(4 + 8) \\bmod &#123;(13-1)&#125;&#125; \\\\
+&amp;= 2^&#123;0&#125; \\\\
+&amp;= 1 \\\\
+\\end&#123;align&#125;
+のように計算したいのだ。
+
+残念ながら、原始根を実際に求めると計算量が悪化するので、上記のような計算はできない。しかし、原始根で表示したときの情報を通常の \\((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)^\\times\\) での操作から引き出していくことはできる。この発想が Tonelli-Shanks で最も重要だ。左辺でできる軽い操作と、原始根のべき指数の対応は次の通り。ただし、\\(x\\) のべき指数部分を \\(\\mathrm&#123;ind&#125;(x)\\) と置いた。
+&lt;table style="height: 180px;" width="368"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;\\((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)^\\times\\)&lt;/th&gt;
+&lt;th&gt;\\(\\mathbb&#123;Z&#125;/(p-1)\\mathbb&#123;Z&#125;\\)&lt;/th&gt;
+&lt;th&gt;計算量&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(ab\\)&lt;/td&gt;
+&lt;td&gt;\\(\\mathrm&#123;ind&#125;(a)+\\mathrm&#123;ind&#125;(b)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(1)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(ab^&#123;-1&#125;\\)&lt;/td&gt;
+&lt;td&gt;\\(\\mathrm&#123;ind&#125;(a)-\\mathrm&#123;ind&#125;(b)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(\\log(b))\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(a^k\\)&lt;/td&gt;
+&lt;td&gt;\\(k\\cdot\\mathrm&#123;ind&#125;(a)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(\\log(k))\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(a^&#123;2^k&#125;\\)&lt;/td&gt;
+&lt;td&gt;\\(2^k\\cdot\\mathrm&#123;ind&#125;(a)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(k)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(1\\)&lt;/td&gt;
+&lt;td&gt;\\(0\\)&lt;/td&gt;
+&lt;td&gt;\\(O(1)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;中国剰余定理で分解&lt;/h2&gt;
+\\(x^2=a\\) の解の存在判定はオイラーの規準でできる。以下、解が存在すると仮定する。
+
+中国剰余定理により \\(\\mathbb&#123;Z&#125;/(p-1)\\mathbb&#123;Z&#125;\\cong \\mathbb&#123;Z&#125;/q\\mathbb&#123;Z&#125;\\times\\mathbb&#123;Z&#125;/2^Q\\mathbb&#123;Z&#125;\\) （\\(q\\) : 奇数）と分解できる（＋は省略した）。\\(a\\) を中国剰余定理で分解した右辺で見たとき、\\((a_1,a_2)\\) だとする。
+
+\\(x\\) の指数の第一近似として \\(\\mathrm&#123;ind&#125;(x)=\\frac&#123;q+1&#125;&#123;2&#125;(a_1,a_2)\\) を選ぶ。\\((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)^\\times\\) に翻訳すると、\\(a^&#123;(q+1)/2&#125;\\) を \\(x\\) の第一近似として選ぶということである。\\(2\\mathrm&#123;ind&#125;(x)=(a_1,(q+1)a_2)\\) であるから第1成分は \\(a\\) と等しくなる。コードにすると次のようになる。
+&lt;pre&gt;&lt;code class="python"&gt;q = p - 1
+Q = 0
+while q % 2 == 0:
+    Q += 1
+    q //= 2
+# p - 1 = q * 2^Q
+x = pow(a, (q + 1) // 2, p)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;誤差項を0に&lt;/h2&gt;
+あとは第2成分を揃えれば良い。\\(2\\mathrm&#123;ind&#125;(x)-\\mathrm&#123;ind&#125;(a)\\) の第2成分 \\(w\\) を誤差項と呼ぶことにする。\\(w\\) を \\(0\\) にしたい。
+
+誤差項 \\(w\\) を二進法表示したときの最下位ビットは \\(w\\) をいくつ左シフトすると \\(\\bmod 2^Q\\) で 0 になるかを調べることで分かる。この最下位ビットを順に 0 にしたい。\\((\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;)^\\times\\) に翻訳すると \\(k\\) ビット左シフトすることは \\(2^k\\) 乗することに対応し、bit が \\(0\\) になることは \\(1\\) になることに対応する。右シフトの難しさと左シフトの簡単さの非対称性がこのアルゴリズムの肝だと思う。
+
+第2成分を2進法表示したときの一桁目が 1 である数 \\(b\\) をランダムに持ってくる（ヒット率50％）。\\(q\\) は奇数だから \\(b\\) を \\(q\\) 倍すると第1成分が 0 になり、第2成分を2進法表示したときの一桁目は 1 のまま。よって、誤差項の最下位ビットが 0 になるように、\\(bq\\) を左シフトした数を \\(w\\) から引き算すれば誤差項の最下位ビットが 0 になる。
+
+以上の操作を誤差項が 0 になるまで繰り返せば良い。誤差項の桁数が \\(O(\\log p)\\) であり、誤差項の最下位ビットを見つけるのに \\(O(\\log p)\\) かかるから全体で \\(O((\\log p)^2)\\) で求まることが分かった。
+
+コード（Python）は次のようになる：
+&lt;pre&gt;&lt;code class="python"&gt;import random
+
+# a^&#123;-1&#125; mod p を返す。
+def inv(a, p):
+    return pow(a, p - 2, p)
+
+# a = x^2 mod p なる x を返す。
+# そのような x が存在しなければ -1 を返す。
+def tonelli_shanks(a, p) :
+    a %= p
+    if a == 0:
+        return 0
+    if p == 2:
+        return a
+
+    if pow(a, (p - 1) // 2, p) != 1:
+        return -1
+
+    b = 1
+    while pow(b, (p - 1) // 2, p) == 1:
+        b = random.randint(1, p - 1)
+
+    q = p - 1
+    Q = 0
+    while q % 2 == 0:
+        Q += 1
+        q //= 2
+    # p - 1 = q * 2^Q
+    x = pow(a, (q + 1) // 2, p)
+    b = pow(b, q, p)
+
+    shift = 2
+    while pow(x, 2, p) != a:
+        error = inv(a, p) * pow(x, 2, p) % p # 誤差項
+        if pow(error, 1 &lt;&lt; (Q - shift), p) != 1:
+            x = x * b % p
+        b = pow(b, 2, p) % p
+        shift += 1
+    return x&lt;/code&gt;&lt;/pre&gt;
+&lt;div class="hitokoto"&gt;この見方は sugarknri さんに教えてもらいました。工夫するとほかの冪根にも応用できます。より一般の場合について &lt;a href="https://yukicoder.me/problems/no/981"&gt;yukicoder&lt;/a&gt; に問題として投稿しているのでよければ覗いてみてください。&lt;/div&gt;

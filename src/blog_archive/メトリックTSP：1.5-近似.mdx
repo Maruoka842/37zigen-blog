@@ -1,0 +1,67 @@
+---
+title: "メトリックTSP：1.5-近似"
+description: "メトリックTSP：1.5-近似 の過去ブログ記事"
+---
+
+# メトリックTSP：1.5-近似
+
+> 📅 **投稿日**: 2021-10-11 00:46:15
+
+巡回セールスマン問題（Traveling Salesman Problem, TSP）とは、重み最小のハミルトン閉路を求める問題である。一般には、TSPは近似アルゴリズムですら、NP困難であることが知られている。しかし、重み関数が三角不等式を満たし（メトリックであり）、負の重みを含まない場合に限れば、クリストフィードのアルゴリズムによって1.5近似を \\(O(n^3)\\) で求めることができる（\\(n\\)は頂点数）。
+
+三角不等式が成り立つ（メトリックである）とは、任意の３頂点 \\(x, y, z\\) について \\(c(x, z) \\leq c(x, y) + c(y, z)\\) を満たすことである。例えば、ユークリッド距離はメトリックである。
+&lt;h2&gt;2近似&lt;/h2&gt;
+2近似のアルゴリズムは次の通り。
+
+&lt;hr&gt;
+
+&lt;ol&gt;
+ 	&lt;li&gt;\\(G\\) の最小全域木 \\(T\\) を構築する。&lt;/li&gt;
+ 	&lt;li&gt;\\(T\\) の各辺をコピーして二重辺にしたあと、オイラー閉路 \\(C'\\) を構築する。&lt;/li&gt;
+ 	&lt;li&gt;\\(C'\\) の頂点を順番に走査し、二度目以降に出現した同一頂点を削除して、ハミルトン閉路 \\(C\\) を得る。例えば、-x-y-z- というパスが \\(C'\\) に含まれていて、y がすでに出現していたなら y を削除して -x-z- とする。\\(C\\) が2近似のハミルトン閉路になっている。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr&gt;
+
+&lt;div class="proof"&gt;証明: 重み最小のハミルトン閉路 \\(C^\\star\\) から一辺削除すると、全域木になるから、最小全域木 \\(T\\) と比較して、\\(c(T) \\leq c(C^\\star)\\) である。なお、負の重みがあると、破綻することに注意。
+
+メトリックより中継点を削除して距離が増加しないから、\\(c(C) \\leq 2c(T) \\) である。
+
+以上より、
+$$\\frac&#123;c(C)&#125;&#123;c(C^\\star)&#125; \\leq 2 $$となる。
+
+&lt;/div&gt;
+タイトな近似例は下図。\\(K^n\\) の真ん中の頂点から最小全域木を走査すると２近似の例が得られる。\\(c(C)=2n-2, c(C^\\star)=n\\) となるので、\\(\\frac&#123;c(C^\\star)&#125;&#123;c(C)&#125;=\\frac&#123;1&#125;&#123;2-2/n&#125; \\rightarrow \\frac&#123;1&#125;&#123;2&#125;\\ (n\\to \\infty)\\)となる。&lt;img class="aligncenter size-medium wp-image-11083" src="https://37zigen.com/wp-content/uploads/2021/10/double-sweep-300x183.png" alt="" width="300" height="183"&gt; &lt;img class="aligncenter size-medium wp-image-11084" src="https://37zigen.com/wp-content/uploads/2021/10/double-sweep2-300x156.png" alt="" width="300" height="156"&gt;
+&lt;h2&gt;1.5近似：クリストフィードのアルゴリズム&lt;/h2&gt;
+メトリックTSPの1.5近似として、次のクリストフィードのアルゴリズム（Christofides' algorithm）がある&lt;sup&gt;[&lt;a href="#CHR1976"&gt;1&lt;/a&gt;]&lt;/sup&gt;。
+
+&lt;hr&gt;
+
+&lt;ol&gt;
+ 	&lt;li&gt;\\(G\\) の最小全域木 \\(T\\) を構築する。&lt;/li&gt;
+ 	&lt;li&gt;\\(T\\) の奇点（次数が奇数）全体が誘導する \\(G\\) の部分グラフで、重み最小の完全マッチング \\(M\\) を構築する。握手補題より奇点は偶数個存在するので、\\(M\\) は必ず存在する。&lt;/li&gt;
+ 	&lt;li&gt;グラフ \\(T+M\\) は全ての頂点の次数が偶数なので、オイラー回路 \\(C'\\) が構築できる。&lt;/li&gt;
+ 	&lt;li&gt;\\(C'\\) の頂点を順番に走査し、出現した同一頂点を２つ目以降削除して、1.5近似のハミルトン閉路 \\(C\\) を得る。例えば、-x-y-z- というパスが \\(C'\\) に含まれていて、y がすでに出現していたなら y を削除して -x-z- とする。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr&gt;
+
+&lt;div class="proof"&gt;証明: \\(C^\\star\\) 上で \\(T\\) の奇点を繋いだパスを交互に割り当てることで2つの奇数ジョイン \\(M_1,M_2\\) が取れる。&lt;img class="aligncenter size-medium wp-image-11080" src="https://37zigen.com/wp-content/uploads/2021/10/christofides-1-300x262.png" alt="" width="300" height="262"&gt;
+\\(c(M_1),c(M_2) \\leq c(M)\\) なので
+\\begin&#123;align&#125;
+c(C^\\star)&amp;= c(M_1) + c(M_2) \\\\
+&amp; \\leq 2c(M)
+\\end&#123;align&#125;が成り立つ。よって \\(M+T\\) のオイラー回路から得られたハミルトン閉路 \\(C\\) は
+\\begin&#123;align&#125;
+c(C) &amp;\\leq c(M)+c(T) \\\\
+&amp;=\\frac&#123;1&#125;&#123;2&#125;c(C^\\star)+c(C^\\star) \\\\
+&amp;=\\frac&#123;3&#125;&#123;2&#125;c(C^\\star)
+\\end&#123;align&#125;
+つまり$$\\frac&#123;c(C)&#125;&#123;c(C^\\star)&#125; \\leq 1.5 $$となる。&lt;/div&gt;
+&lt;img class="aligncenter size-large wp-image-11102" src="https://37zigen.com/wp-content/uploads/2021/10/double-sweep3-1-1-1024x467.png" alt="" width="512"&gt;タイトな近似例は上図。最適な閉路（OPT)、最小全域木、得られる近似は下図。\\(c(C)=3n-2, c(C^\\star)=2n-2\\) となるので、\\(\\frac&#123;c(C^\\star)&#125;&#123;c(C)&#125;=\\frac&#123;2n-2&#125;&#123;3n-2&#125; \\rightarrow \\frac&#123;2&#125;&#123;3&#125;\\ (n\\to \\infty)\\)となる。
+&lt;img class="wp-image-11094" src="https://37zigen.com/wp-content/uploads/2021/10/double-sweep4-857x1024.png" alt="" width="512"&gt;
+
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li id="CHR1976"&gt;Christofides, Nicos. &lt;i&gt;Worst-case analysis of a new heuristic for the travelling salesman problem.&lt;/i&gt; Carnegie-Mellon Univ Pittsburgh Pa Management Sciences Research Group, 1976.&lt;/li&gt;
+&lt;/ol&gt;

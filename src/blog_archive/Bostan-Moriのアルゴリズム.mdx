@@ -1,0 +1,32 @@
+---
+title: "Bostan-Moriのアルゴリズム"
+description: "Bostan-Moriのアルゴリズム の過去ブログ記事"
+---
+
+# Bostan-Moriのアルゴリズム
+
+> 📅 **投稿日**: 2022-07-30 03:04:05
+
+\\(f, g\\) を高々 \\(N\\) 次の多項式としたときの \\([x^M] f(x) / g(x)\\) を求めたい。分母分子に \\(g(-x)\\) を掛けて
+$$[x^M]\\frac&#123;f(x)&#125;&#123;g(x)&#125; = [x^M]\\frac&#123;f(x)g(-x)&#125;&#123;g(x)g(-x)&#125;$$ とすると、\\(g(x)g(-x)\\) は偶関数なので高々 \\(N\\) 次の多項式 \\(G\\) を用いて \\(g(x)g(-x) = G(x^2)\\) とできる（ここが本質）。\\(f(x)g(-x) = h_1(x^2) + x h_2(x^2)\\) と分けると、\\(M\\) の偶奇に従って、どちらか一方だけを調べればよい。再帰的に処理すると \\(O(\\mathrm&#123;M&#125;(N) \\log(M))\\) になる。
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+
+ 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+&lt;pre&gt;&lt;code class="java"&gt;
+long kth(long[] f, long[] g, long n) &#123;
+  if (f.length == 0) return 0;
+  if (n == 0) return f[0] * inv(g[0]);
+  long[] flipg = IntStream.range(0, g.length).mapToLong(i -&gt; i % 2 == 0 ? g[i] : -g[i]).toArray();
+  long[] a = mul(f, flipg);
+  long[] b = mul(g, flipg);
+  long[] ae = IntStream.range(0, a.length).filter(i -&gt; i%2 == 0).mapToLong(i -&gt; a[i]).toArray();
+  long[] ao = IntStream.range(0, a.length).filter(i -&gt; i%2 == 1).mapToLong(i -&gt; a[i]).toArray();
+  long[] be = IntStream.range(0, b.length).filter(i -&gt; i%2 == 0).mapToLong(i -&gt; b[i]).toArray();
+  if (n % 2 == 0) &#123;
+    return kth(ae, be, n / 2);
+  &#125; else &#123;
+    return kth(ao, be, (n - 1) / 2);
+  &#125;
+&#125;
+&lt;/code&gt;&lt;/pre&gt;

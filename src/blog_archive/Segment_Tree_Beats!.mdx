@@ -1,0 +1,46 @@
+---
+title: "Segment Tree Beats!"
+description: "Segment Tree Beats! の過去ブログ記事"
+---
+
+# Segment Tree Beats!
+
+> 📅 **投稿日**: 2022-06-23 09:34:11
+
+モノイドの列に対する作用 \\(f_i\\) が次の条件を満たすとする。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(f_i(&#123;A_1&#125;^\\frown A_2) = f_i(&#123;A_1&#125;)^\\frown f_i(A_2)\\)&lt;/li&gt;
+ 	&lt;li&gt;モノイドの列 \\(A\\) が性質 X を持つと、その任意の部分列 \\(B \\subseteq A\\) について \\(f_0(B)\\) が \\(T\\) 時間で得られる。\\(f_i\\) (\\(i \\geq 1\\)) は常に高速に計算できる。&lt;/li&gt;
+ 	&lt;li&gt;長さ \\(1\\) の列は性質 X を持つ。&lt;/li&gt;
+ 	&lt;li&gt;性質 X を満たさないセグメント木に含まれる部分列 B について、\\(\\phi(B)\\) 回 \\(f_0\\) を作用させると性質 X を持つとする。\\(\\Phi := \\sum_&#123;B&#125; \\phi(B)\\)とする。
+&lt;ul&gt;
+ 	&lt;li&gt;一回当たり、作用 \\(f\\) によって増加した \\(\\phi\\) の増加量の \\(\\Phi\\) への寄与の総和は高々 \\(H\\) である。&lt;/li&gt;
+ 	&lt;li&gt;一回当たり、作用 \\(f_i\\) (\\(i\\geq 1\\)) によって \\(\\Phi\\) は高々 \\(H\\) しか増加しない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+以上の条件が成り立つとき、\\(f, g\\) の作用がクエリ当たりならし \\(O(HT)\\) で計算できる。
+
+yuki880
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\gcd(a_i, x)\\)
+出力：\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; a_i\\)
+
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\min(a_i, x)\\)
+出力：\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; a_i\\)
+
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\min(a_i, x)\\)
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\max(a_i, x)\\)
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow a_i+x\\)
+出力：\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; a_i\\)
+
+ABC256H
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\lfloor a_i/x \\rfloor\\)
+出力：\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; a_i\\)
+
+CSA70 And or Max
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\text&#123;bitwise_and&#125;(a_i,x)\\)
+更新：\\(L \\leq i &lt; R\\) に対して \\(a_i \\leftarrow \\text&#123;bitwise_or&#125;(a_i,x)\\)
+出力：\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; a_i\\)
+
+CF453E
+\\(\\sum_&#123;i=L&#125;^&#123;R-1&#125; \\min(a_i, x-b_i)\\) を出力した後、\\(L \\leq i &lt; R\\) に対して \\(b_i \\leftarrow \\min(b_i,x)\\) とする。

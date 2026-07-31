@@ -1,0 +1,57 @@
+---
+title: "shallow light tree"
+description: "shallow light tree の過去ブログ記事"
+---
+
+# shallow light tree
+
+> 📅 **投稿日**: 2021-09-25 18:58:57
+
+最小全域木（MST）と最短路木（SPT）は一般には等しくない。例えば、下図のMSTはコスト\\(2\\)だが、\\(a\\) を根とするSPTはコスト\\(2.1\\)である。&lt;img class="aligncenter size-medium wp-image-10492" src="https://37zigen.com/wp-content/uploads/2021/09/shallow-light-tree-example-295x300.png" alt="" width="150"&gt;
+
+このコストの差は非常に大きくできる。&lt;a href="https://link.springer.com/article/10.1007/BF01294129"&gt;Balancing minimum spanning trees and shortest-path trees."&lt;/a&gt;では次のような例が使われている。以下\\(r\\)を根とする。
+
+頂点 \\(r, v, u_1, \\ldots, u_L\\) からなり、コストを\\begin&#123;align&#125;
+&amp;c(\\&#123;r,v\\&#125;)=2-\\varepsilon/2 \\\\
+&amp;c(\\&#123;v,u_i\\&#125;)=\\varepsilon\\ (i=1,2,\\ldots,L) \\\\
+&amp;c(\\&#123;r,u_i\\&#125;)=2\\ (i=1,2,\\ldots,L)
+\\end&#123;align&#125;とすると MSTでは \\(\\&#123;r,v\\&#125;, \\&#123;v,u_i\\&#125;\\) が採用され、SPTでは \\(\\&#123;r,v\\&#125;, \\&#123;r,u_i\\&#125;\\) が採用される。&lt;img class="aligncenter size-medium wp-image-10480" src="https://37zigen.com/wp-content/uploads/2021/09/shallow-light-tree-1-300x158.png" alt="" width="300" height="158"&gt;&lt;img class="aligncenter size-medium wp-image-10481" src="https://37zigen.com/wp-content/uploads/2021/09/shallow-light-tree-2-300x154.png" alt="" width="300" height="154"&gt;
+コストの比は \\begin&#123;align&#125;
+c(\\mathrm&#123;SPT&#125;) / c(\\mathrm&#123;MST&#125;) &amp;= \\frac&#123;2-\\varepsilon/2+\\varepsilon L&#125;&#123;2(1+L)-\\varepsilon/2&#125; \\\\
+&amp;\\to \\infty \\ (L \\to \\infty)
+\\end&#123;align&#125;となる。
+
+\\(∃v, \\mathrm&#123;dist&#125;_&#123;\\mathrm&#123;MST&#125;&#125;(r, v)/\\mathrm&#123;dist&#125;_G(r, v) \\to \\infty \\)となる例もある。頂点\\(v_1, \\ldots, v_n\\)からなり、\\(\\&#123;v_n,v_1\\&#125;\\)のコストを\\(2\\)、それ以外を\\(1\\)とした\\(n\\)頂点閉路を考える。根を\\(v_1\\)とする。&lt;img class="aligncenter size-medium wp-image-10502" src="https://37zigen.com/wp-content/uploads/2021/09/shallow-light-tree-example2-261x300.png" alt="" width="261" height="300"&gt;\\(v_&#123;n&#125;\\)への距離の比は
+\\begin&#123;align&#125;
+&amp;\\mathrm&#123;dist&#125;_&#123;\\mathrm&#123;MST&#125;&#125;(r, v_n)/\\mathrm&#123;dist&#125;_G(r, v_n) \\\\
+= &amp; \\frac&#123;2&#125;&#123;n-1&#125; \\\\
+\\to &amp;  \\infty \\ (n \\to \\infty)
+\\end&#123;align&#125;となる。
+
+MSTとSPTで好きな方に自由に寄せられる木として shallow light tree がある。
+shallow light tree, \\(T\\) は
+\\begin&#123;align&#125;
+&amp;c(T) \\leq (1+2\\varepsilon^&#123;-1&#125;)c(\\mathrm&#123;MST&#125;) \\\\
+&amp;\\mathrm&#123;dist&#125;_T(r, v) \\leq (1+\\varepsilon)\\mathrm&#123;dist&#125;_G(r, v)\\text&#123; for all &#125; v
+\\end&#123;align&#125;を満たす木である。\\(O(E+V\\log(V))\\) で構築できる。
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;最小全域木 \\(T\\) と最短路木 \\(S\\) を構築。\\( R:= S \\) とする。&lt;/li&gt;
+ 	&lt;li&gt;根を \\(v_0\\) とする。\\(T\\) を DFS して、$$\\mathrm&#123;dist&#125;_T(r, v_&#123;i&#125;) + \\mathrm&#123;dist&#125;_T(v_&#123;i&#125;, v) &gt; (1+\\varepsilon)\\mathrm&#123;dist&#125;_G(r, v)$$となる \\(v\\) が見つかる度に、\\(S\\) の \\(r\\)-\\(v\\) パスを \\(R\\) に追加、\\(v_&#123;i+1&#125;:=v\\) とする。&lt;/li&gt;
+ 	&lt;li&gt;R の最短路木 \\(R'\\) を求める。\\(R'\\) がshallow light treeになっている。&lt;/li&gt;
+&lt;/ol&gt;
+本音では \\(\\mathrm&#123;dist&#125;_R(r, v) &gt; (1+\\varepsilon)\\mathrm&#123;dist&#125;_G(r, v)\\) となる \\(v\\) についてだけ \\(r\\)-\\(v\\) パスを追加したいのだが、動的に変化する \\(R\\) の \\(\\mathrm&#123;dist&#125;_R(r, v)\\) の計算を回避するために、上記のような方法で、余分にパスを追加している。
+
+\\(c(T)\\) の評価は次の通り。
+$$\\mathrm&#123;dist&#125;_G(r,v_&#123;i-1&#125;)+\\mathrm&#123;dist&#125;_T(v_&#123;i-1&#125;,v_i) \\leq (1+\\varepsilon)\\mathrm&#123;dist&#125;_G(r,v_i)$$ の両辺で和を取ると \\(2c(\\mathrm&#123;MST&#125;) \\leq \\varepsilon \\sum \\mathrm&#123;dist&#125;_G(r,v_i)\\) となり
+\\begin&#123;align&#125;
+c(T) &amp;= c(\\mathrm&#123;MST&#125;)+\\sum\\mathrm&#123;dist&#125;_G(r, v_i) \\\\
+&amp;\\leq (1+2\\varepsilon^&#123;-1&#125;)c(\\mathrm&#123;MST&#125;)
+\\end&#123;align&#125; となる。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;dl&gt;
+ 	&lt;dt&gt;組合せ最適化（コルテ＆フィーゲン）&lt;/dt&gt;
+ 	&lt;dd&gt;５版で shallow light tree が追加。輪読で shino さんにアルゴリズムを教えてもらった。&lt;/dd&gt;
+ 	&lt;dt&gt;Khuller, Samir, Balaji Raghavachari, and Neal Young. &lt;a href="https://link.springer.com/article/10.1007/BF01294129"&gt;Balancing minimum spanning trees and shortest-path trees."&lt;/a&gt; Algorithmica 14.4 (1995): 305-321.&lt;/dt&gt;
+ 	&lt;dd&gt;MSTとSPTの乖離が激しくなる例はこちらから取ってきた。&lt;/dd&gt;
+&lt;/dl&gt;

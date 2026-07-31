@@ -1,0 +1,51 @@
+---
+title: "多項式補間：アルゴリズム"
+description: "多項式補間：アルゴリズム の過去ブログ記事"
+---
+
+# 多項式補間：アルゴリズム
+
+> 📅 **投稿日**: 2021-03-23 19:45:04
+
+\\(n\\) 次の多項式の補間を \\(O(n \\log(n)^2)\\) で求めるアルゴリズムを紹介します。
+
+ラグランジュ基底の線形結合によって補間は簡単に求まります（ラグランジュ補間）：
+&lt;div class="statement"&gt;ラグランジュ補間：
+\\(x\\) 座標の相異なる \\(n\\) 点 \\((x_1,f(x_1)), (x_2,f(x_2)), \\ldots, (x_n,f(x_n))\\) が与えられます。\\(f\\) を \\(n-1\\) 次以下とすると、\\(f\\) は中国剰余定理より一意に定まり、
+$$f(x)=\\sum_&#123;i=1&#125;^n y_i \\prod_&#123;j \
+eq i&#125;\\frac&#123;x-x_j&#125;&#123;x_i-x_j&#125;$$と書けます。このラグランジュ基底の線形結合による補間をラグランジュ補間といいます。&lt;/div&gt;
+求めたいのは、ラグランジュ基底を単項式に変換した形です。愚直だと \\(O(n^2)\\) で求まります。
+
+各 \\(i=1,2,\\ldots,n\\) に対して、\\(\\prod_&#123;j \
+eq i&#125;(x_i-x_j)\\) は \\(O(n)\\) で求まります。\\(g(x):=\\prod_&#123;i=1&#125;^n (x-x_i)\\) を求めておけば、各 \\(i=1,2,\\ldots,n\\) に対して、\\(\\prod_&#123;j \
+eq i&#125;(x-x_j) = \\frac&#123;g(x)&#125;&#123;x-x_i&#125; \\) は \\(O(n)\\) で求まります。両方合わせて、全体で \\(O(n^2)\\) です。
+[toc]
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+\\(g(x):=\\prod_&#123;i=1&#125;^n (x-x_i)\\) と置くと、ラグランジュ補間は$$f(x) = g(x)\\sum_&#123;i=1&#125;^n \\frac&#123;y_i&#125;&#123;g'(x_i)(x-x_i)&#125;$$と書けます。\\(g(x)\\) は分割統治、\\(g'(x_1), g'(x_2), \\ldots, g'(x_n)\\) は &lt;a href="https://37zigen.com/multipoint-evaluation/"&gt;multipoint evaluation&lt;/a&gt; により \\(O(n\\log(n)^2)\\) で計算できます。\\(n\\) 個の1次式 \\(f_1, .., f_n\\) は前計算 \\(O(n\\log(n)^2)\\) の下で、積 \\(f_lf_&#123;l+1&#125;\\ldots f_&#123;l+d&#125;\\) が \\(O(d\\log(d))\\) で展開できることを用いて、分割統治で計算してもよいです。
+
+\\(a_i := y_i / g'(x_i)\\) と置きます。サイズ半分の二つの同じ問題に分けられます：$$\\sum_&#123;i=1&#125;^n a_i/(x-x_i) = \\sum_&#123;i=1&#125;^&#123;\\lfloor n/2 \\rfloor&#125; a_i/(x-x_i)  +  \\sum_&#123;i=\\lfloor n/2 \\rfloor + 1&#125;^&#123;n&#125; a_i/(x-x_i)$$それぞれ、分母分子は高々次数 \\(n/2\\) の多項式なので、2つの部分問題の結果を通分するのは \\(O(n\\log(n))\\) でできます。\\(\\sum_&#123;i=1&#125;^n a_i/(x-x_i)\\) を通分するのに必要な計算量を \\(T(n)\\) とすると漸化式 \\(T(n) = 2T(n/2) + O(n\\log(n))\\) が成り立ちます。漸化式を解いて、\\(T(n) = O(n\\log(n)^2)\\) です。
+
+全体で \\(O(n\\log(n)^2)\\) です。
+&lt;h2&gt;評価点が等差数列のとき&lt;/h2&gt;
+評価する点が等差数列 \\((x_i)=(ai+b)\\) のとき、ラジグランジュ補間を用いて、ほかの１点 \\(x=c\\) （定数）の評価を \\(O(n)\\) でできます。\\(\\prod_&#123;j=0,i\
+eq j&#125;^&#123;n-1&#125; (x_i-x_j) =a^&#123;n-1&#125;(-1)^&#123;n-i&#125;i!(n-i)!\\) と \\(\\prod_&#123;j=0,i\
+eq j&#125;^&#123;n-1&#125; (c-x_j) = \\frac&#123;1&#125;&#123;c-x_j&#125;\\prod_&#123;j=0&#125;^&#123;n-1&#125; (c-x_j)\\) を \\(i=0,\\ldots,n-1\\) について列挙するのは、\\(O(n)\\) でできるからです（逆元の計算は \\(O(1)\\) と仮定）。
+&lt;div class="statement"&gt;例題：\\(1^k+2^k+\\cdots+n^k \\bmod p\\) (\\(p\\) : 素数) を \\(O(k\\log(p))\\) で求めてください。&lt;/div&gt;
+&lt;h2&gt;評価点が等比数列のとき&lt;/h2&gt;
+評価する点が等比数列 \\((x_i)=(q^i)\\) のとき log を一つ落として、\\(O(n\\log(n))\\) で多項式補間できます[2]。
+
+\\(h(x)=\\prod_&#123;i=1&#125;^&#123;n/2&#125; (x-q^i)\\) とすると、$$q^&#123;(n/2)^2&#125;h(x/q^&#123;n/2&#125;)=\\prod_&#123;i=1+n/2&#125;^&#123;n&#125; (x-q^i)$$なので、\\(g(x)\\) は \\(O(n\\log(n))\\) で求まります。q-2項定理を用いて \\(O(n)\\) で展開することもできます。\\(g'(q^1),g'(q^2),\\ldots,g'(q^n)\\) は評価点が等比数列なので、特殊な multipoint evaluation により \\(O(n\\log(n))\\) で求まります（&lt;a href="https://37zigen.com/multipoint-evaluation/#Chirp_Z-transform"&gt;アルゴリズム&lt;/a&gt;）。\\(O(n)\\) で列挙することもできます（&lt;a href="https://noshi91.github.io/algorithm-encyclopedia/polynomial-interpolation-geometric"&gt;熨斗袋さん&lt;/a&gt;）。等比級数の公式により
+\\begin&#123;align&#125;\\sum_&#123;i=1&#125;^n \\frac&#123;a_i&#125;&#123;x-q^i&#125; &amp;= \\sum_&#123;i=1&#125;^n \\sum_j -a_iq^&#123;-i(1+j)&#125; x^j \\\\ &amp;= \\sum_j A(q^&#123;-(1+j)&#125;) x^j \\end&#123;align&#125;となります。ただし、\\(A(x)=-\\sum a_ix^i\\) と置きました。また、評価点が等比数列になったので、特殊な multipoint evaluation により \\(O(n\\log(n))\\) で求まります（&lt;a href="https://37zigen.com/multipoint-evaluation/#Chirp_Z-transform"&gt;アルゴリズム&lt;/a&gt;）。以上より、評価点が等比数列の多項式補間が \\(O(n\\log(n))\\) でできました。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://www.sciencedirect.com/science/article/pii/S0022000074800292"&gt;Borodin, Allan, and Robert Moenck. "Fast modular transforms." Journal of Computer and System Sciences 8.3 (1974): 366-386&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;\\(O(n\\log(n))\\) の多項式補間が提案された論文&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://www.sciencedirect.com/science/article/pii/S0885064X05000026"&gt;Bostan, Alin, and Éric Schost. "Polynomial evaluation and interpolation on special sets of points." Journal of Complexity 21.4 (2005): 420-446.&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;等比数列が評価点の時のアルゴリズム&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;

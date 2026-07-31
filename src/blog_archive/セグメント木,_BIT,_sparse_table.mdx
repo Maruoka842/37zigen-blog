@@ -1,0 +1,76 @@
+---
+title: "セグメント木, BIT, sparse table"
+description: "セグメント木, BIT, sparse table の過去ブログ記事"
+---
+
+# セグメント木, BIT, sparse table
+
+> 📅 **投稿日**: 2022-06-20 21:04:47
+
+[toc]
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+&lt;h2&gt;セグメント木&lt;/h2&gt;
+\\(\\mathbb&#123;Z&#125;_&#123;\\geq 0&#125;\\) の任意の非空な区間 \\([L, R)\\) は \\begin&#123;eqnarray&#125;
+[L, R)
+=
+\\begin&#123;cases&#125;
+[L,  L+2^&#123;\\mathrm&#123;lsb&#125;(L)&#125;) \\sqcup [L+2^&#123;\\mathrm&#123;lsb&#125;(L)&#125;, R) &amp; (L+2^&#123;\\mathrm&#123;lsb&#125;(L)&#125; &lt; R) \\\\
+[L,  R-2^&#123;\\mathrm&#123;lsb&#125;(R)&#125;) \\sqcup [R-2^&#123;\\mathrm&#123;lsb&#125;(R)&#125;, R) &amp; (\\text&#123;otherwise&#125;)
+\\end&#123;cases&#125;
+\\end&#123;eqnarray&#125; を繰り返し適用することで、\\(O(\\log(R-L))\\) 個の \\([a2^k, (a+1)2^k)\\) の形の区間の disjoint な和で書ける。
+
+セグメント木は区間 \\([a2^k, (a+1)2^k)\\) に添え字 \\(a+2^&#123;\\lceil \\log_2&#123;N&#125; \\rceil-k&#125;\\) を振って \\(1,2,\\ldots, N\\) に直している。  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+&lt;pre&gt;&lt;code class="java"&gt;
+// [L, R) を表すノードの id を返す。
+int id(int L, int R) &#123;
+    int k = Integer.lowestOneBit(L ^ R);
+    int a = L / k;
+    return a + n / k;
+&#125;
+
+public Semiring rangeProduct(int L, int R) &#123;
+    if (L &gt;= R) return identity;
+    int mL = L + Integer.lowestOneBit(L);
+    int mR = R - Integer.lowestOneBit(R);
+    if (mL != L &amp;&amp; mL &lt;= R) &#123;
+        return op.apply(v[id(L, mL)], rangeProduct(mL, R));
+    &#125; else &#123;
+        return op.apply(rangeProduct(L, mR), v[id(mR, R)]);
+    &#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;更新&lt;/h3&gt;
+点 \\(x\\) を含む区間は $$[ \\lfloor x / 2^e \\rfloor 2^e, (\\lfloor x/2^e \\rfloor + 1 )2^e)$$ の形で書ける。幅2以上の区間は$$2^&#123;k + 1&#125;[a, a + 1) = 2^&#123;k&#125;[2a , 2a + 1) \\sqcup 2^&#123;k&#125;[2a+1 , 2a + 2)$$に従って構築する。
+&lt;h2&gt;BIT&lt;/h2&gt;
+任意の非空な区間 \\((0, R]\\) は $$ (0, R] =(0,  R-2^&#123;\\mathrm&#123;lsb&#125;(R)&#125;] \\sqcup (R-2^&#123;\\mathrm&#123;lsb&#125;(R)&#125;, R]$$ を繰り返し適用することで、 \\(O(\\log(R))\\) 個の \\((a-2^&#123;\\mathrm&#123;lsb&#125;(a)&#125;, a]\\) の形の区間の disjoint な和で書ける。
+&lt;h2&gt;Sparse Table&lt;/h2&gt;
+任意の非空な区間 \\([L,R)\\) は$$[L,  R) = [L, L + 2^&#123;\\mathrm&#123;msb&#125;(R-L)&#125;) \\cup [R-2^&#123;\\mathrm&#123;msb&#125;(R-L)&#125;, R)$$より \\([a, a+2^k)\\) の形の2つの区間の和で書ける。
+&lt;h3&gt;Disjoint Sparse Table&lt;/h3&gt;
+&lt;h2&gt;k次元セグメント木&lt;/h2&gt;
+可換な場合のみ扱う。任意の区間は \\(\\prod_&#123;i=1&#125;^&#123;k&#125; [a_i 2^&#123;e_i&#125;, (a_i+1)2^&#123;e_i&#125;)\\) の形の区間 \\(O(\\log(N)^&#123;k&#125;)\\) 個の非交和で書ける。
+&lt;h3&gt;更新&lt;/h3&gt;
+1次元ずつ順番に更新すればよい 。つまり、任意の \\(a, e\\) について \\(\\prod_&#123;i=1&#125;^m [a_i2^&#123;e_i&#125;, (a_i+1)2^&#123;e_i&#125;) \\times \\prod_&#123;i=1&#125;^&#123;m+1&#125; [a_i2^&#123;e_i&#125;, a_i2^&#123;e_i&#125;+1)\\) の積が列挙されている状態を \\(m=0, 1, 2, \\dots\\) と得られる。
+&lt;h3&gt;sparse な場合&lt;/h3&gt;
+\\([N]^k\\) 上に点が \\(M\\) \\(( \\ll N^k)\\) 個しかない場合を考える。
+
+区間の直積 \\(\\tilde A_1 × \\tilde A_2 × \\cdots × \\tilde A_M\\) について、各 \\(\\tilde A_i\\) を \\(A_1 \\times A_2 \\times \\cdots \\times A_&#123;i-1&#125; \\times [N]^&#123;k-(i-1)&#125;\\) に点を制限して、第 \\(i\\) 成分を座標圧縮したときの \\(A_i\\) とする。すると、\\(\\prod [a_i2^&#123;e_i&#125;, (a_i+1)2^&#123;e_i&#125;)\\) の形で表される区間の数が \\(O(N^k)\\) から \\(O(M\\log(M)^&#123;k-1&#125;)\\) になる。
+&lt;h4&gt;fractional cascading&lt;/h4&gt;
+\\(\\tilde A = \\tilde A_L \\sqcup \\tilde A_R\\) のとき、適切な前計算の下、\\(\\tilde A_L,  \\tilde A_R\\) における \\([L, R)\\) の添え字が \\(\\tilde A\\) のそれから \\(O(1)\\) で得られる。従って、二分探索が \\(\\widetilde&#123;[0, N)&#125;\\) における添え字を得るための一度だけで済む。
+&lt;h2&gt;Disjoint Sparse Table&lt;/h2&gt;
+熨斗袋さんの&lt;a href="https://noshi91.hatenablog.com/entry/2018/05/08/183946"&gt;記事&lt;/a&gt;を参考にした。任意の区間 \\([L, R)\\) は \\([L, R) = [L, 2^e+2^&#123;e-1&#125;)\\sqcup[R, 2^e+2^&#123;e-1&#125;)\\) の形で書ける。\\([*, 2^e+2^&#123;e-1&#125;) \\subseteq [2^e, 2^e+2^&#123;e-1&#125;)\\)と\\([2^e+2^&#123;e-1&#125;, *) \\subseteq [2^e, 2^e+2^&#123;e-1&#125;)\\)の形の区間は\\(O(N \\log N)\\)個しかない。
+
+\\([L, R) \\subseteq [a2^e, (a+1)2^e)\\) となる最小の \\(e\\) は
+\\([L, R) \\subseteq \\left[2^e\\left\\lfloor \\frac&#123;L&#125;&#123;2^e&#125;\\right\\rfloor, 2^e\\left(1+\\left\\lfloor \\frac&#123;L&#125;&#123;2^e&#125;\\right\\rfloor\\right)\\right)\\) を満たす最小の \\(e\\) と言い換えられるので \\(R \\leq 2^e\\left(1+\\left\\lfloor \\frac&#123;L&#125;&#123;2^e&#125;\\right\\rfloor\\right)\\) であればよい。\\(R-1 \\leq \\sum_&#123;i=0&#125;^&#123;e-1&#125; 2^&#123;i&#125; + 2^e\\left\\lfloor \\frac&#123;L&#125;&#123;2^e&#125;\\right\\rfloor\\)と書き換えると最小値 \\(e=\\mathrm&#123;msb&#125;(R-1\\ \\mathrm&#123;xor&#125;\\ L)+1\\) が得られる。
+&lt;h2&gt;オンラインFFT&lt;/h2&gt;
+\\((xf(x))(xg(x)) \\pmod &#123;x^n&#125;\\) を計算したいのだが、\\([x^i]fg\\) の計算後にしか、\\([x^&#123;i+1&#125;]f, [x^&#123;i+1&#125;]g\\) が分からない。
+\\(\\mathbb&#123;P&#125;^2\\) を
+&lt;ul&gt;
+ 	&lt;li&gt;\\([a2^k, (a+1)2^&#123;k&#125;) \\times [2^k, 2^&#123;k+1&#125;)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\([2^k, 2^&#123;k+1&#125;) \\times [a2^k, (a+1)2^&#123;k&#125;) \\)&lt;/li&gt;
+&lt;/ul&gt;
+という区間に分割する。\\([1, n]^2\\) にはサイズ \\(2^k \\times 2^k\\) の区間が \\( O(n/2^k)\\) 個現れる。したがって、オンラインFFTの計算量は \\(O(\\sum \\frac&#123;n&#125;&#123;2^k&#125; k2^k ) = O(n \\log(n)^2)\\) である。\\(i \\leq j, 2^k &lt; i \\leq 2^&#123;k+1&#125;\\) とする。\\([x^&#123;i+j&#125;]fg\\) は \\(i+j \\geq j + 2^k\\) までに計算すればよいので、\\(j\\) を \\(2^k\\) ずつ区切って計算すればよい。online畳み込みは \\(f=f_0+x^&#123;n/2&#125;f_1\\, g=g_0+x^&#123;n/2&#125;g_1\\)として、
+\\(f_0g_0, (f_0g_1+g_0f_1), f_1g_1\\) の順に求めていると解釈することもできる。それぞれ、online, semi-online, offlineである。\\(g\\) がoffline の場合、\\(g_0f_0\\) は semi-online、\\(g_1f_0, g_1f_1\\) は offline、\\(g_0f_1\\) は semi-online となる。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(f_0, a\\) が与えられるので、\\(f_n = a_n\\sum_&#123;i+j &lt; n&#125;f_if_j\\) を計算せよ(ABC)。&lt;/li&gt;
+ 	&lt;li&gt;\\(a_i = [x^i] g(x)\\prod_&#123;j=1&#125;^&#123;i-1&#125; (a_j+x)\\) を求めよ(ABC)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;script src="https://gist.github.com/Maruoka842/6ce128c0b65cf17c730cb18778d269db.js"&gt;&lt;/script&gt;

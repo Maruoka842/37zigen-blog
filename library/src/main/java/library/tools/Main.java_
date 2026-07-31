@@ -1,0 +1,964 @@
+import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.PrimitiveIterator;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.DoubleUnaryOperator;
+import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntFunction;
+import java.util.function.LongBinaryOperator;
+import java.util.function.LongToDoubleFunction;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+public class Main implements Runnable {
+
+	public static void main(String[] args) throws IOException {
+//		Runtime runtime = Runtime.getRuntime();
+//		new Thread(null, new Main(), "MainThreadWithLargeStack", (1024 * 1024) * 1024).start();
+//		new Main().test();
+//        new Main().gen();
+		new Main().run();
+//        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+//        System.err.printf("使用メモリ: %.2f MB%n", usedMemory / 1024.0 / 1024.0);
+		MyPrintWriter.getInstance().flush();
+		;
+	}
+
+	
+	
+    @Override
+    public void run() {
+        FastScanner sc = FastScanner.getInstance();
+        MyPrintWriter pw = MyPrintWriter.getInstance();	
+	    int N = sc.nextInt();
+	    long P = sc.nextLong();
+	    long Q = sc.nextLong();
+	    int[][] A = new int[N][N];
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            A[i][j] = sc.nextInt();
+	        }
+	    }
+	    ArrayList<Fraction> list = new ArrayList<Fraction>();
+	    for (int i = 0; i <= 20; i++) {
+	        for (int j = 1; j <= 20; j++) {
+	        	if(MathUtils.gcd(i, j)!=1)continue;
+	            list.add(new Fraction(i, j));
+	        }
+	    }
+	    Collections.sort(list);// 変更に対するコスト係数 U/V
+	
+	    // min Σ |x_{ij}-x_{i'j'}|+U/VΣ|x_{ij}-A_{ij}|
+	    // を
+	    // min VΣ |x_{ij}-x_{i'j'}|+UΣ|x_{ij}-A_{ij}|
+	    int ng = -1;
+	    int ok = list.size();
+	    Fraction PQ = new Fraction(P, Q);
+	    while (Math.abs(ok - ng) != 1) {
+	        int mid = (ok + ng) / 2;
+	        long U = list.get(mid).numerator();
+	        long V = list.get(mid).denominator();
+	        long[][] ans = solve(U, V, A);
+	        long cost = 0;
+	        for (int i = 0; i < N; i++) {
+	            for (int j = 0; j < N; j++) {
+	                cost += Math.abs(ans[i][j] - A[i][j]);
+	            }
+	        }
+	        if (PQ.compareTo(new Fraction(cost, 1)) >= 0) {
+	            ok = mid;
+	        } else {
+	            ng = mid;
+	        }
+	    } 
+	    if (ng == (-1)) {
+	        pw.println(0);
+	        for (int i = 0; i < N; i++) {
+	            for (int j = 0; j < N; j++) {
+	                pw.print(A[i][j] + (j == (N - 1) ? "\n" : " "));
+	            }
+	        }
+	        return;
+	    }
+	    if (ok == list.size()) {
+	        ok = list.size() - 1;
+	    }
+	    var ans0 = solve(list.get(ng).numerator(), list.get(ng).denominator(), A);
+	    var ans1 = solve(list.get(ok).numerator(), list.get(ok).denominator(), A);
+	    long cost0 = 0;
+	    long cost1 = 0;
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            cost0 += Math.abs(ans0[i][j] - A[i][j]);
+	            cost1 += Math.abs(ans1[i][j] - A[i][j]);
+	        }
+	    }
+	    long[][]ans=new long[N][N];
+	    long den = Q * (cost0 - cost1);
+	    if (ng == ok) {
+	        den=1;
+	        for (int i = 0; i < N; i++) {
+	        	for (int j = 0; j < N; j++) {
+	                ans[i][j] = ans0[i][j];
+	            }
+	        }
+	        
+	    } else {
+	    	for (int i = 0; i < N; i++) {
+	            for (int j = 0; j < N; j++) {
+	                ans[i][j] =
+	                		ans0[i][j] * (P - Q * cost1)
+	                      + ans1[i][j] * (Q * cost0 - P);
+	            }
+	        }
+	    }
+	    long sum=0;
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            for (int ni = i; ni <= (i + 1); ni++) {
+	                for (int nj = j; nj <= (j + 1); nj++) {
+	                    if ((Math.abs(i - ni) + Math.abs(j - nj)) != 1) {
+	                        continue;
+	                    }
+	                    if ((ni == N) || (nj == N)) {
+	                        continue;
+	                    }
+	                    sum+=Math.abs(ans[i][j]-ans[ni][nj]);
+	                }
+	            }
+	        }
+	    }
+	    pw.println(1.*sum/den);
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            pw.print(ans[i][j] + (j == (N - 1) ? "\n" : " "));
+	        }
+	    }
+	}
+	
+	long[][] solve(long U, long V, int[][] A) {
+	    int N = A.length;
+	    MinCut cut = new MinCut((11 * N) * N);
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            long[] a = new long[11];
+	            for (int val = 0; val <= 10; val++) {
+	                a[val] = Math.abs(A[i][j] - val);
+	            }
+	            for (int val = 0; val <= 10; val++) {
+	                cut.addCostIfTrue((11 * ((i * N) + j)) + val, U * (a[val] - (val == 0 ? 0 : a[val - 1])));
+	            }
+	        }
+	    }
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            for (int ni = i; ni <= (i + 1); ni++) {
+	                for (int nj = j; nj <= (j + 1); nj++) {
+	                    if ((Math.abs(i - ni) + Math.abs(j - nj)) != 1) {
+	                        continue;
+	                    }
+	                    if ((ni == N) || (nj == N)) {
+	                        continue;
+	                    }
+	                    // V|x-x'|
+	                    for (int k = 1; k <= 10; k++) {
+	                        cut.addPositiveCostIfFalseTrue((11 * ((i * N) + j)) + k, (11 * ((ni * N) + nj)) + k, V);
+	                        cut.addPositiveCostIfFalseTrue((11 * ((ni * N) + nj)) + k, (11 * ((i * N) + j)) + k, V);
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    cut.minCutValue();
+	    boolean[] arr = cut.restoreMinCut();
+	    long[][] ans = new long[N][N];
+	    for (int i = 0; i < N; i++) {
+	        for (int j = 0; j < N; j++) {
+	            for (int k = 0; k <= 10; k++) {
+	                if (arr[(11 * ((i * N) + j)) + k]) {
+	                    ans[i][j] = Math.max(ans[i][j], k);
+	                }
+	            }
+	        }
+	    }
+	    return ans;
+	}
+
+
+}
+
+class FastScanner {
+    private static FastScanner instance = null;
+
+    private final InputStream in = System.in;
+    private final byte[] buffer = new byte[1024];
+    private int ptr = 0;
+    private int buflen = 0;
+
+    private FastScanner() {} 
+    
+    public static FastScanner getInstance() {
+        if (instance == null) {
+            instance = new FastScanner();
+        }
+        return instance;
+    }
+
+    private boolean hasNextByte() {
+        if (ptr < buflen) return true;
+        ptr = 0;
+        try {
+            buflen = in.read(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buflen > 0;
+    }
+
+    private int readByte() {
+        if (hasNextByte()) return buffer[ptr++];
+        else return -1;
+    }
+
+    private boolean isPrintableChar(int c) {
+        return 33 <= c && c <= 126;
+    }
+
+    public boolean hasNext() {
+        while (hasNextByte() && !isPrintableChar(buffer[ptr])) ptr++;
+        return hasNextByte();
+    }
+
+
+    public long nextLong() {
+        if (!hasNext()) throw new NoSuchElementException();
+        long n = 0;
+        boolean minus = false;
+        int b = readByte();
+        if (b == '-') {
+            minus = true;
+            b = readByte();
+        }
+        while (b >= '0' && b <= '9') {
+//            n = n * 10 + (b - '0');
+        	n = (n << 1) + (n << 3) + (b - '0');
+        	b = readByte();
+        }
+        return minus ? -n : n;
+    }
+
+
+    public int nextInt() {
+        return (int) nextLong();
+    }
+
+
+
+
+
+
+
+
+
+}
+
+class MyPrintWriter extends PrintWriter {
+    private static MyPrintWriter instance = null;
+    private MyPrintWriter() {
+    	super(System.out);
+    }
+    public static MyPrintWriter getInstance() {
+        if (instance == null) {
+            instance = new MyPrintWriter();
+        }
+        return instance;
+    }
+
+    
+    public MyPrintWriter(PrintStream out) {
+        super(out);
+    }
+    
+    public void println(char[][] a) {
+    	for (int i = 0; i < a.length; i++) {
+			println(a[i]);
+		}
+    }
+    
+    public void println(int[][] a) {
+    	for (int i = 0; i < a.length; i++) {
+			println(a[i]);
+		}
+    }
+    
+    public void println(long[][] a) {
+    	for (int i = 0; i < a.length; i++) {
+			println(a[i]);
+		}
+    }
+
+    public void println(boolean[][] a) {
+    	for (int i = 0; i < a.length; i++) {
+			println(a[i], " ");
+		}
+    }
+    
+    public void println(long[] a) {
+    	println(a, " ");
+    }
+    
+    public void println(int[] a) {
+    	println(a, " ");
+    }
+    
+    public <T> void println(List<T> a) {
+        println(a, " ");
+    }
+
+    public <T> void println(List<T> a, String separator) {
+        for (int i = 0; i < a.size(); ++i) {
+            super.print(a.get(i) + (i == a.size() - 1 ? "\n" : separator));
+        }
+    }
+    
+    public void println(int[] a, String separator) {
+    	for (int i = 0; i < a.length; ++i) {
+    		super.print(a[i]+(i==a.length-1?"\n":separator));
+    	}
+    }
+    
+    public void println(long[] a, String separator) {
+    	for (int i = 0; i < a.length; ++i) {
+    		super.print(a[i]+(i==a.length-1?"\n":separator));
+    	}
+    }
+    
+    public void println(boolean[] a, String separator) {
+    	for (int i = 0; i < a.length; ++i) {
+    		super.print((a[i]?1:0)+(i==a.length-1?"\n":separator));
+    	}
+    }
+
+    
+    public void print(Object...objects) {
+    	for (int i = 0; i < objects.length; i++) {
+			print(objects[i]+(i==objects.length-1?"\n":" "));
+		}
+    }    
+
+}
+
+class Edge implements Comparable<Edge> {
+	public int src;
+	public int dst;
+	public long cost;
+
+	public Edge(int src, int dst, long cost) {
+		this.src = src;
+		this.dst = dst;
+		this.cost = cost;
+	}
+
+}
+
+class Fraction implements Comparable<Fraction> {
+	long numerator = 1;
+	long denominator = 1;
+	
+	public static final Fraction ZERO = new Fraction(0, 1);
+	public static final Fraction ONE = new Fraction(1, 1);
+	
+	public Fraction(long numerator, long denominator) {
+		if (denominator < 0) {
+			numerator *= -1;
+			denominator *= -1;
+		}
+        long g = MathUtils.gcd(Math.abs(numerator), denominator);
+        numerator/=g; denominator/=g;
+		this.numerator = numerator;
+		this.denominator = denominator;
+	}
+
+
+
+
+
+
+	
+	public Fraction add(Fraction o) {
+		return new Fraction(numerator*o.denominator+o.numerator*denominator, denominator*o.denominator);
+	}
+
+	
+	public Fraction abs(Fraction o) {
+		return new Fraction(Math.abs(numerator), Math.abs(denominator));
+	}
+	
+	@Override
+	public int compareTo(Fraction o) {
+		return FractionUtils.compareFraction(numerator, denominator, o.numerator, o.denominator);
+	}
+
+
+
+
+
+
+	
+}
+
+class FractionUtils {
+
+
+
+	
+	
+	public static int compareFraction(long a, long b, long c, long d) {
+		if(b<0) {
+			a*=-1;
+			b*=-1;
+		}
+		if(d<0) {
+			c*=-1;
+			d*=-1;
+		}
+		if(a==0&&c==0)return 0;
+		if(Long.signum(a)!=Long.signum(c))return Long.compare(a, c);
+		if(a<0&&c<0) {
+			return -compareFraction(-a, b, -c, d);
+		}
+		//a/b vs c/d
+		//a*d vs c*b
+		long hi0=Math.multiplyHigh(a, d);
+		long hi1=Math.multiplyHigh(c, b);
+		int comp=Long.compare(hi0, hi1);
+		if(comp!=0)return comp;
+		return Long.compareUnsigned(a*d, c*b);
+	}
+
+	
+	
+}
+
+/***
+ * lenがa.lengthに比べて小さくなっても配列を取り直さない。
+ * @param <T>
+ */
+class IntDeque implements Iterable<Integer> {
+	@SuppressWarnings("unchecked")
+	int[] a = new int[16];
+	int head = 0;
+	int tail = 0;
+	int len = 0;
+	//[head, tail)に値を持つ。
+	public IntDeque() {
+		
+	}
+
+
+
+	
+	public void addLast(int v) {
+		if (len == a.length) resize(2 * len);
+		a[tail] = v;
+		tail = (tail + 1) & (a.length - 1);
+		++len;
+	}
+	
+	public int pollFirst() {
+		if (len == 0) throw new NoSuchElementException();
+		int ret = a[head];
+		head = (head + 1) & (a.length - 1);
+		len--;
+		return ret;
+	}
+
+	
+	public boolean isEmpty() {
+		return len == 0;
+	}
+
+
+
+	
+	void resize(int size) {
+		@SuppressWarnings("unchecked")
+		int[] na = new int[size];
+		for (int i = 0; i < len; i++) {
+			na[i] = a[(head + i) & (a.length - 1)];
+		}
+		head = 0;
+		tail = len;
+		a = na;
+	}
+
+class MathUtils {
+
+
+
+	public static long gcd(long a, long b, long c) {
+		return gcd(a, gcd(b, c));
+	}
+	
+	public static long gcd(long a, long b) {
+		a = Math.abs(a);
+		b = Math.abs(b);
+		if (a == 0)
+			return b;
+		return gcd(b % a, a);
+	}
+
+	public static int gcd(int a, int b) {
+		a = Math.abs(a);
+		b = Math.abs(b);
+		if (a == 0)
+			return b;
+		return gcd(b % a, a);
+	}
+
+
+
+
+
+
+
+
+
+
+	public static Map<Long, Integer> factor(long n) {
+		Map<Long, Integer> ret = new TreeMap<>();
+		for (long i = 2; 1L * i * i <= n; ++i) {
+			int e = 0;
+			while (n % i == 0) {
+				n /= i;
+				++e;
+			}
+			if (e != 0)
+				ret.put(i, e);
+		}
+		if (n != 1)
+			ret.put(n, 1);
+		return ret;
+	}
+
+record Result<Key, Value>(Key key, Value value) {
+	}
+
+	/**
+	 * 最小値を探す。(r-l)<=tol/2となるまで回す。
+	 * 
+	 * @param f
+	 * @param l
+	 * @param r
+	 * @return
+	 */
+	public static Result<Double, Double> minimizeByTernarySearch(DoubleUnaryOperator f, double l, double r,
+			double tol) {
+		while (r - l > tol / 2) {
+			double lm = l + (r - l) / 3;
+			double rm = r - (r - l) / 3;
+			if (f.applyAsDouble(lm) >= f.applyAsDouble(rm)) {
+				l = lm;
+			} else {
+				r = rm;
+			}
+		}
+		return new Result<Double, Double>(l, f.applyAsDouble(l));
+	}
+
+	/**
+	 * l<=x<=rの下で最小値f(x)とそれを達成するxを探す。
+	 * 
+	 * @param f
+	 * @param l
+	 * @param r
+	 * @return
+	 */
+	public static Result<Long, Double> ternarySearch(LongToDoubleFunction f, long l, long r) {
+		while (r - l >= 3) {
+			long lm = l + (r - l) / 3;
+			long rm = r - (r - l) / 3;
+			if (f.applyAsDouble(lm) >= f.applyAsDouble(rm)) {
+				l = lm;
+			} else {
+				r = rm;
+			}
+		}
+		long argmin = l;
+		double minValue = f.applyAsDouble(l);
+		for (long i = l; i <= r; ++i) {
+			double v = f.applyAsDouble(i);
+			if (v < minValue) {
+				minValue = v;
+				argmin = i;
+			}
+		}
+		return new Result<Long, Double>(argmin, minValue);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static Map<Integer, Integer> factor(int n) {
+		Map<Integer, Integer> ret = new TreeMap<>();
+		for (long i = 2; 1L * i * i <= n && i <= 1000; ++i) {
+			int e = 0;
+			while (n % i == 0) {
+				n /= i;
+				++e;
+			}
+			if (e != 0)
+				ret.put((int) i, e);
+		}
+		IntDeque que=new IntDeque();
+		if (n != 1)
+			que.addLast(n);
+		while (!que.isEmpty()) {
+			int m = que.pollFirst();
+			int a = findFactor(m);
+			if (m == a) {
+				ret.merge(a, 1, Integer::sum);
+			} else {
+				que.addLast(a);
+				que.addLast(m / a);
+			}
+		}
+		return ret;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	/**
+	 * vをfloor(v/2),ceil(v/2)に置き換える操作をv ≥ lowerBoundを保ったまま可能な限り行う。
+	 * 例:v=7,lowerBound=2のとき、2,2,3をMapで返す。
+	 * @param v
+	 * @param lowerBound
+	 * @return
+	 */
+	public static Map<Long, Long> splitWithLowerBound(long v, long lowerBound) {
+		if (v < lowerBound) throw new AssertionError();
+		lowerBound = Math.max(lowerBound, 1);
+		TreeMap<Long, Long> map=new TreeMap<>();
+		if(v==lowerBound) {
+			map.put(v, 1L);
+			return map;
+		}
+		int e=MathUtils.floorLog2(v/lowerBound);
+		map.put(1+(v>>e), v%(1L<<e));
+		map.put((v>>e), (1L<<e)-v%(1L<<e));
+		while (true) {
+			var lastEntry= map.lastEntry();
+			if(lastEntry.getKey() >= 2 * lowerBound) {
+				long lo=lastEntry.getKey() / 2;
+				long hi=lastEntry.getKey() - lo;
+				map.remove(lastEntry.getKey());
+				map.merge(lo, lastEntry.getValue(), Long::sum);
+				map.merge(hi, lastEntry.getValue(), Long::sum);
+			} else {
+				break;
+			}
+		}
+		return map;
+	}
+
+
+}
+
+class MaxFlow {
+	
+	final long INF=Long.MAX_VALUE/3;
+class Edge {
+		public final int v;
+		public final long cap;
+		public long flow;//flowは非負。 flowとie.flowの高々一方のみが正。
+		final int invEdgeId;
+
+		public Edge(int v, long cap, int invEdgeId) {
+			this.v = v;
+			this.cap = cap;
+			this.invEdgeId = invEdgeId;
+		}
+		long res() {
+			return cap-flow+g[v].get(invEdgeId).flow;
+		}
+	}
+	int n;
+	public ArrayList<Edge>[] g;
+	
+	@SuppressWarnings("unchecked")
+	public MaxFlow(int n) {
+		this.n = n;
+		g = new ArrayList[n];
+		Arrays.setAll(g, i->new ArrayList<>());
+	}
+	
+	public void addEdge(int u, int v, long cap) {
+		if(cap<0)throw new AssertionError();
+		Edge e=new Edge(v, cap, g[v].size());
+		Edge ie=new Edge(u, 0, g[u].size());
+		g[u].add(e);
+		g[v].add(ie);
+	}
+	
+	int[] d;
+	int[] itr;
+	int s, t;
+	
+	/**
+	 * 一度最大流を求めた後に、辺を追加して再度呼び出すと、追加でいくつ流せるかが返される。
+	 * O(N^2 M)
+	 * @param s
+	 * @param t
+	 * @return
+	 * verified:https://atcoder.jp/contests/abc263/submissions/71027612
+	 */
+	public long maxFlowValue(int s, int t) {
+		return maxFlowValue(s, t, Long.MAX_VALUE/3);
+	}
+	/**
+	 * 最大流量がcutoff以上になったら打ち切る。
+	 * @param s
+	 * @param t
+	 * @param cutoff
+	 * @return
+	 * verified:https://judge.u-aizu.ac.jp/onlinejudge/review.jsp?rid=11030642#1
+	 */
+	public long maxFlowValue(int s, int t, long cutoff) {
+		if(s==t)return 0;
+		this.s=s;
+		this.t=t;
+		long ans=0;
+		d = new int[n];
+		itr = new int[n];
+		while(ans < cutoff) {
+			IntDeque que=new IntDeque();
+			que.addLast(s);
+			Arrays.fill(itr, 0);
+			Arrays.fill(d, n+1);
+			d[s]=0;
+			//残余ネットワークで最短路を求める
+			while(!que.isEmpty()) {
+				int v=que.pollFirst();
+				if(v==t)break;
+				for(Edge e:g[v]) {
+					if(d[e.v]==n+1&&e.res()>0) {
+						d[e.v]=d[v]+1;
+						que.addLast(e.v);
+					}
+				}
+			}
+			if(d[t]==n+1)break;
+			//最短路上でフローを流す
+			while(ans<cutoff) {//一回につき飽和辺が一つ以上増えるので、高々O(E)回周る。
+				long add=dfs(s, cutoff-ans);
+				ans+=add;
+				if(add==0)break;
+			}
+		}
+		return Math.min(ans, cutoff);
+	}
+	
+	private long dfs(int v, long upper) {
+		if(v==t)return upper;
+		while(itr[v]<g[v].size()) {
+			Edge e=g[v].get(itr[v]);
+			if(e.res()>0&&d[e.v]==d[v]+1) {
+				long add=dfs(e.v, Math.min(upper, e.res()));
+				if(add!=0) {
+					var ie=g[e.v].get(e.invEdgeId);
+					long add0=Math.min(ie.flow, add);
+					ie.flow -= add0;
+					e.flow += add - add0;
+					return add;
+				}
+			}
+			itr[v]++;//e.res()>0&&d[e.v]==d[v]+1はdfsでflowを一回流しただけで満たされなくなるとは限らないなので、ifの前ではなくifの後に呼ぶ。ifの前に置くと遅い。
+		}
+		return 0;
+	}
+
+	
+	/**
+	 * 最大流を計算した後に呼ぶこと
+	 * @return
+	 * https://atcoder.jp/contests/abc239/submissions/71991711
+	 */
+	public boolean[] reachableFromSourceOnResidualNetwork() {
+		boolean[]vis=new boolean[n];
+		IntDeque que=new IntDeque();
+		que.addLast(s);
+		vis[s]=true;
+		while(!que.isEmpty()) {
+			int v = que.pollFirst();
+			for (Edge e : g[v]) {
+				if (e.res() > 0 && !vis[e.v]) {
+					vis[e.v] = true;
+					que.addLast(e.v);
+				}
+			}
+		}
+		return vis;
+	}
+}
+
+class MinCut {
+	MaxFlow mf;
+	int N;
+	int source, sink;
+	long[] trueValue;
+	long[] falseValue;
+	long base=0;
+	ArrayList<long[]> edges;
+	
+	public MinCut(int N) {
+		this.N=N;
+		trueValue=new long[N];
+		falseValue=new long[N];
+		edges=new ArrayList<>();
+	}
+
+	
+	/**
+	 * !a ⋀ b ならばcostを加える。
+	 * @param a
+	 * @param b
+	 */
+	public void addPositiveCostIfFalseTrue(int a, int b, long cost) {
+		if (cost < 0) throw new AssertionError();
+		//!a ⋀ b ⇔ (a ⇒ b)
+		addEdge(a, b, cost);
+	}
+	
+	void addEdge(int a, int b, long cost) {
+		edges.add(new long[] {a, b, cost});
+	}
+
+
+
+	
+
+	
+	/**
+	 * aが真ならばcostを加える
+	 * https://atcoder.jp/contests/abc225/submissions/71972434
+	 * @param a
+	 */
+	public void addCostIfTrue(int a, long cost) {
+		trueValue[a]+=cost;
+	}
+
+	
+	/**
+	 *  O(N^2 M). INFを除いた平均辺容量kのときO(kM^{1.5})
+	 * @return
+	 */
+	public long minCutValue() {
+		mf=new MaxFlow(N+2);
+		source=N;
+		sink=N+1;
+		for (int i = 0; i < N; i++) {
+			long min=Math.min(trueValue[i], falseValue[i]);
+			base+=min;
+			trueValue[i]-=min;
+			falseValue[i]-=min;
+			if(trueValue[i]!=0) {
+				mf.addEdge(source, i, trueValue[i]);
+			}
+			if (falseValue[i]!=0) {
+				mf.addEdge(i, sink, falseValue[i]);
+			}
+		}
+		for (var e : edges) {
+			mf.addEdge((int)e[0], (int)e[1], e[2]);
+		}
+		return mf.maxFlowValue(source, sink, Long.MAX_VALUE/3)+base;
+	}
+	
+	/**
+	 * https://atcoder.jp/contests/abc347/submissions/72267257
+	 * @return
+	 */
+	public boolean[] restoreMinCut() {
+		boolean[] ret=mf.reachableFromSourceOnResidualNetwork();
+		for (int i = 0; i < N; i++) {
+			ret[i]=!ret[i];
+		}
+		return ret;
+	}
+}
+

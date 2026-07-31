@@ -1,0 +1,74 @@
+---
+title: "Subset Convolutionのアルゴリズム"
+description: "Subset Convolutionのアルゴリズム の過去ブログ記事"
+---
+
+# Subset Convolutionのアルゴリズム
+
+> 📅 **投稿日**: 2021-03-09 00:14:17
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;集合の畳み込み（Subset Convolution）
+$$\\sum_&#123;T \\subseteq S&#125; f(T) g(S \\setminus T)$$ を全ての部分集合 \\(S \\subseteq [n]=\\&#123;1,\\ldots,n\\&#125;\\) に対して列挙するアルゴリズムを紹介します[1, 2]。素朴な DP では　\\(O(3^n)\\) ですが、 \\(O(n^22^n)\\) にできます。
+
+\\(n\\) 変数多項式の積 \\(F(x_1,\\ldots,x_n)G(x_1,\\ldots,x_n) \\bmod (x_1^2,\\ldots,x_n^2)\\) を求める問題だと捉えれば、\\(\\mathbb&#123;R&#125;\\) 係数や \\(\\mathbb&#123;Z&#125;/p\\mathbb&#123;Z&#125;\\) 係数（\\(p\\) : 素数）のときは FFT を使って \\(O(n^2 2^n)\\) を達成できます（&lt;a href="https://37zigen.com/truncated-multivariate-convolution/"&gt;多変数畳み込み（切り捨て）&lt;/a&gt;）。しかし、環係数では逆元が存在すると限らないので FFT できません。この記事では環係数で \\(O(n^2 2^n)\\) を達成するアルゴリズムを扱います[1, 2]。
+[toc]
+&lt;h2&gt;結びのゼータ変換・メビウス変換&lt;/h2&gt;
+半順序集合は、任意の単項順序イデアルが有限であるとき、単項順序イデアルの和（ゼータ変換）の逆操作（メビウス変換）が定義できます。それは、メビウス関数を \\(\\mu\\)、\\(f\\) のゼータ変換を \\(f\\zeta \\) と書くと
+\\begin&#123;align&#125;
+f\\zeta (x) &amp;= \\sum_&#123;y \\leq x&#125; f(y) \\\\
+f(x) &amp;= \\sum_&#123;y \\leq x&#125; \\mu(y, x)f\\zeta (y)
+\\end&#123;align&#125;
+の形で書けます。同じ半順序集合上の関数 \\(f_1, f_2\\) で結びを取った \\(f(x) = \\sum_&#123;x_1 \\lor x_2 = x&#125; f_1(x_1) f_2(x_2)\\) のゼータ変換は
+
+\\begin&#123;align&#125;
+f\\zeta(x) &amp;= \\sum_&#123;y \\leq x&#125; f(y) \\\\
+&amp;= \\sum_&#123;x_1 \\lor x_2 \\leq x&#125; f_1(x_1)f_2(x_2) \\\\
+&amp;= \\sum_&#123;x_1 \\leq x&#125; f_1(x_1) \\sum_&#123;x_2 \\leq x&#125; f_2(x_2)\\\\
+&amp;=  f_1\\zeta(x)  f_2\\zeta(x)
+\\end&#123;align&#125;
+となり、\\(f_1, f_2\\) のゼータ変換の積に分解できます。従って、
+&lt;ul&gt;
+ 	&lt;li&gt;\\(f_1, f_2\\) のゼータ変換 \\( f_1\\zeta,  f_2\\zeta\\) を求める。&lt;/li&gt;
+ 	&lt;li&gt;\\( f_1\\zeta,  f_2\\zeta\\) の各点積を計算する。これが \\( f\\zeta\\) に等しい。&lt;/li&gt;
+ 	&lt;li&gt;\\( f\\zeta\\) をメビウス変換する。&lt;/li&gt;
+&lt;/ul&gt;
+というアルゴリズムで \\(f\\) が求まります。各点積を \\(*\\) で書くことにすると、\\(f = ( f_1 \\zeta * f_2\\zeta)\\zeta^&#123;-1&#125;\\) となります。本記事のアルゴリズムが適用できる半順序集合には次のようなものがあります。
+&lt;ul&gt;
+ 	&lt;li&gt; \\(N\\) の約数について、\\(i \\leq j \\Leftrightarrow i \\mid j\\) という順序を定めた半順序集合 \\(D_N\\) 上では \\(f(k)=\\sum_&#123;\\mathrm&#123;lcm&#125;(i, j) = k&#125; f_1(i) f_2(j)\\) となります。&lt;/li&gt;
+ 	&lt;li&gt; \\(\\&#123;1, 2, \\ldots, N\\&#125;\\) の部分集合について、\\(S \\leq T \\Leftrightarrow S \\subseteq T\\) という順序を定めた半順序集合 \\(B_N\\) 上では \\(f(k)=\\sum_&#123;i \\cap j = k&#125; f_1(i) f_2(j)\\) となります。&lt;/li&gt;
+ 	&lt;li&gt; \\(\\mathbb&#123;F&#125;_q\\) 係数 \\(N\\) 次元線形空間の部分空間について、\\(S \\leq T \\Leftrightarrow S \\subseteq T\\) という順序を定めた半順序集合 \\(V_n(q)\\) 上では \\(f(k)=\\sum_&#123;i \\cap j = k&#125; f_1(i) f_2(j)\\) となります。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;ランク付きゼータ・メビウス変換&lt;/h2&gt;
+\\(B_n\\) において、集合 \\(x\\) のサイズ \\(\\rho(x)\\) を不定元 \\(t\\) のべき指数に乗せた
+\\begin&#123;align&#125;
+f(x) &amp;= \\sum_&#123;x_1 \\lor x_2 = x&#125; f_1(x_1) x_1^&#123;\\rho(x_1)&#125; f_2(x_2)x_1^&#123;\\rho(x_2)&#125; \\\\
+&amp;= \\sum_&#123;k&#125; t^&#123;k&#125; \\sum_&#123;x_1 \\lor x_2 = x,\\\\ k = \\rho(x_1)+\\rho(x_2)&#125; f_1(x_1) f_2(x_2)
+\\end&#123;align&#125;
+を求めることができれば、\\([t^&#123;\\rho(x)&#125;]f(x)\\) が subset convolution になっています。これは、\\(f_1(x) t^&#123;\\rho(x)&#125;,  f_2(x)t^&#123;\\rho(x)&#125;\\) をそれぞれゼータ変換して各点積を取ってからメビウス変換すると良いです。普通の高速ゼータ変換・メビウス変換の計算量が \\(O(n2^n)\\) で、今回は高々 \\(n\\) 次の多項式を値に取る関数の高速ゼータ変換、高速メビウス変換なので、計算量は \\(O(2^nn^2)\\) です。
+
+\\(B_n\\) では \\(\\rho(x)\\) は \\(x\\) のサイズ、\\(D_n\\) では \\(\\rho(x)\\) は \\(x\\) の素因数の個数、\\(V_n(q)\\) では \\(\\rho(x)\\) は \\(x\\) の次元とできます。\\(\\rho\\) はランク関数と呼ばれるものです。半順序集合上の各元 \\(x\\) について、\\(x\\) と最小元 \\(\\hat 0\\) を端点に持つ任意の極大鎖の長さが等しいとき、その長さをランク \\(\\rho(x)\\) といいます。また、ランクが定義され、任意の元 \\(s, t\\) について、\\(\\rho(s) + \\rho(t) = \\rho(s\\lor t) + \\rho(s \\land t)\\) が成り立つ束をモジュラー束といいます。モジュラー束では
+$$\\rho(s) + \\rho(t) = \\rho(s \\lor t) \\Leftrightarrow s \\land t = \\hat 0$$となり、意味のある状態が計算できます。\\(B_n, D_n, V_n(q)\\) は全てモジュラー束です。ながたかなさんの&lt;a href="https://ngtkana.hatenablog.com/entry/2021/04/25/135636"&gt;ブログ&lt;/a&gt;でも触れられています。
+
+このような、ランクを持ったゼータ変換・メビウス変換を [1] では ranked zeta transform, ranked Moebius transform と呼んでいます。
+
+3つ以上の積の場合も同様に計算できます。また、和・差に関しては線形性があるので、ゼータ変換した各点で計算できます。各点での多項式の計算は \\(O(n^2)\\) でできればよいです。実用上は n が小さく、FFTは定数倍が大きいので避けるべきです。例えば、exp とlog の変換は
+\\begin&#123;align&#125;
+&amp;f=\\exp(g)\\\\
+\\Longrightarrow&amp;f'=g'f \\\\
+\\iff&amp;f_&#123;n+1&#125;=\\frac&#123;1&#125;&#123;n+1&#125;\\sum_&#123;i=0&#125;^n (i+1)g_&#123;i+1&#125;f_&#123;n-i&#125; \\\\
+\\iff&amp;g_&#123;n+1&#125;=f_&#123;n+1&#125;-\\frac&#123;1&#125;&#123;n+1&#125;\\sum_&#123;i=0&#125;^&#123;n-1&#125; (i+1)g_&#123;i+1&#125;f_&#123;n-i&#125;
+\\end&#123;align&#125;
+のようにして \\(O(n^2)\\) で計算できます。ただし、\\(f_0=1, g_0=0\\) に注意。
+&lt;h2&gt;練習問題&lt;/h2&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題1】&lt;/b&gt; グラフ \\(G\\) が与えられる。\\(G\\) の彩色数が \\(m\\) 以下であるか判定せよ。&lt;/div&gt;
+【解答】頂点集合 \\(S\\) が独立集合であるとき、\\(f(S)=1\\) さもなくば \\(f(S)=0\\) となる関数 \\(f\\) を用意します。\\(f\\) の subset convolution の \\(m\\) 乗を求めればよいです。\\(m\\) 乗を各点積で行うことにより、\\(n\\) を頂点数として \\(O(2^nn^2)\\) です。各点で、\\(m\\) 乗以外にも \\(\\exp\\) を取ったり、\\(\\log\\) を取ったりすることもできます（次の問題）。
+
+※\\(m\\) が定数である場合、より効率的なアルゴリズムが存在しないか検討するべきです（例：ABC 199 問題D）。
+&lt;div class="statement"&gt;&lt;b&gt;【問題2】&lt;/b&gt; グラフ \\(G\\) が与えられる。すべての誘導部分グラフ \\(G[S]\\) に対して、\\(G[S]\\) の全域部分グラフの個数を求めよ。（出典：&lt;a href="https://twitter.com/noshi91/status/1339077655715430401"&gt;熨斗袋さん&lt;/a&gt;）&lt;/div&gt;
+&lt;b&gt;【解答】&lt;/b&gt;&lt;a href="https://37zigen.com/exponential-generating-function"&gt;指数型母関数&lt;/a&gt;の問題21で解説しています。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://people.csail.mit.edu/rrw/presentations/subset-conv.pdf"&gt;Fourier Meets Mobius: Fast Subset Convolution&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://www.slideshare.net/wata_orz/ss-12131479"&gt;指数時間アルゴリズム入門&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://judge.yosupo.jp/problem/subset_convolution"&gt;Library Checker : Subset Convolution&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;

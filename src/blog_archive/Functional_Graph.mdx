@@ -1,0 +1,46 @@
+---
+title: "Functional Graph"
+description: "Functional Graph の過去ブログ記事"
+---
+
+# Functional Graph
+
+> 📅 **投稿日**: 2022-07-03 00:47:49
+
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+&lt;pre&gt;&lt;code class="java"&gt;
+class FunctionalGraph &#123;
+	int[] f;// [N] から [N] への写像
+	int[] pre;
+	int[] order;
+	int[] period;
+	
+	public FunctionalGraph(int[] f, int src) &#123;
+		this.f=f;
+		int N=f.length;
+		pre=new int[N];
+		order=new int[N];
+		period=new int[N];
+		Arrays.fill(order, -1);
+		for (int i=0;; ++i, src=f[src]) &#123;
+			if (order[src]!=-1) &#123;
+				period=Arrays.copyOfRange(pre, order[src], i);
+				pre=Arrays.copyOf(pre, order[src]);
+				break;
+			&#125;
+			pre[i]=src;
+			order[src]=i;
+		&#125;
+	&#125;
+	
+	// f^x(src) 
+	int get(long x) &#123;
+		if (x&gt;=pre.length) &#123;
+			x-=pre.length;
+			return period[(int)(x%period.length)];
+		&#125; else &#123;
+			return pre[(int)x];
+		&#125;
+	&#125;
+&#125;
+&lt;/code&gt;&lt;/pre&gt;

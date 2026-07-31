@@ -1,0 +1,67 @@
+---
+title: "歩道、道、小道、閉路、回路の定義"
+description: "歩道、道、小道、閉路、回路の定義 の過去ブログ記事"
+---
+
+# 歩道、道、小道、閉路、回路の定義
+
+> 📅 **投稿日**: 2021-03-02 19:00:51
+
+&lt;p&gt;[mathjax]グラフ理論の用語の定義は人によって揺れがあります。些細な差ではなくて、まったく異なるものを指していることがあります。&lt;img class="aligncenter size-medium wp-image-5364" src="https://37zigen.com/wp-content/uploads/2021/03/155698-300x300.png" alt="" width="300" height="300"&gt;。例えば、Wikipediaの閉路の記事は以前「閉路（英：cycle, circuit, closed walk）」となっていました。cycle, circuit, closed walk は全て異なるものだと思います。僕が思う歩道、道、小道、閉路、回路、オイラー小道、オイラー回路の定義は次の通りです（厳密ではないですが、ご容赦ください）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;歩道（walk）
+&lt;ul&gt;
+&lt;li&gt;グラフ上の頂点と辺を交互に並べた列 \\(v_0e_0v_1e_1\\ldots e_&#123;k-1&#125;v_&#123;k-1&#125;\\) s.t. \\(e_i=\\&#123;v_i,v_&#123;i+1&#125;\\&#125;\\)。グラフではない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;道（path）
+&lt;ul&gt;
+&lt;li&gt;同じ頂点を2回以上通らない歩道（からなる部分グラフ）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;小道（trail）
+&lt;ul&gt;
+&lt;li&gt;同じ辺を2回以上通らない歩道（からなる部分グラフ）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;回路（circuit）
+&lt;ul&gt;
+&lt;li&gt;閉じた小道。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;閉路（cycle）
+&lt;ul&gt;
+&lt;li&gt;始点・終点以外で同じ頂点を2回以上通らない閉じた小道。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;オイラー回路
+&lt;ul&gt;
+&lt;li&gt;全ての辺を丁度一回通る回路&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;オイラー小道
+&lt;ul&gt;
+&lt;li&gt;全ての辺を丁度一回通る小道&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;図書館に行き、これらがどのように定義されているか調べました。図書館にある本は全部見ましたが、逆に言うと、ない本は分かりません。下記の8冊です：&lt;/p&gt;
+
+
+
+&lt;p&gt;[1]数学小事典第二版増補, [2]最短経路の本, [3]グラフ理論とフレームワークの幾何, [4]グラフ理論入門:基本とアルゴリズム, [5]やさしく学べる離散数学, [6]応用事例とイラストで分かる離散数学, [7]ヴァン・リント＆ウィルソン 組合せ論, [8] R. Diestel. グラフ理論&lt;/p&gt;
+
+
+&lt;p&gt;上で定義した用語がどのように呼ばれているかは次の通りです。異なる呼ばれ方をしている部分は赤色にしています。ネットの記事に比べれば少ないですが、揺れはあります。ですが、何となくコンセンサスは見えるんじゃないでしょうか。&lt;/p&gt;
+
+
+&lt;ul&gt;&lt;li&gt;歩道（walk） &lt;ul&gt;&lt;li&gt;[1]歩道、[4]歩道、[5]歩道・経路、[6]歩道・経路、[7]歩道、[8]歩道 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;道（path） &lt;ul&gt;&lt;li&gt;[1]道、[3]パス、[4]道、[5]道、[6]道、[7]&lt;strong&gt;&lt;span class="has-inline-color has-vivid-red-color"&gt;単純道&lt;/span&gt;&lt;/strong&gt;（注釈：「基本通路」という用語が使われることがある）、[8]道 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;小道（trail） &lt;ul&gt;&lt;li&gt;[3]小道、[4]小道、[5]小道、[6]小道、[7]&lt;strong&gt;&lt;span class="has-inline-color has-vivid-red-color"&gt;道&lt;/span&gt;&lt;/strong&gt;（注釈：テキストによっては「道」の代わりに「単純通路」や「小道」ということもある） &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;回路（circuit） &lt;ul&gt;&lt;li&gt;[1]回路、[3]回路、[4]回路 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;閉路（cycle） &lt;ul&gt;&lt;li&gt;[1]閉路、[2]閉路・サイクル・&lt;span class="has-inline-color has-vivid-red-color"&gt;&lt;strong&gt;回路&lt;/strong&gt;&lt;/span&gt;、[3]閉路・サイクル、[5]閉路、[6]閉路、[7]&lt;strong&gt;&lt;span class="has-inline-color has-vivid-red-color"&gt;閉単純道&lt;/span&gt;&lt;/strong&gt;、[8]閉路 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;オイラー回路 &lt;ul&gt;&lt;li&gt;[1]オイラー回路、[3]周遊路・オイラー回路、[4]オイラー回路（注釈：慣習上オイラー閉路と呼ばれることがある）、[6]オイラー&lt;span class="has-inline-color has-vivid-red-color"&gt;&lt;strong&gt;閉路&lt;/strong&gt;&lt;/span&gt;、[7]オイラー&lt;span class="has-inline-color has-vivid-red-color"&gt;&lt;strong&gt;閉路&lt;/strong&gt;&lt;/span&gt;、[8]オイラー周遊 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;li&gt;オイラー小道 &lt;ul&gt;&lt;li&gt;[2]オイラー小路、[3]オイラー小道、[4]オイラー小道、[5]周遊小道・オイラー小道 &lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;&lt;/ul&gt;
+
+
+
+&lt;p&gt;&lt;/p&gt;
+
+
+&lt;div class="hitokoto"&gt;Y.Yさんから「歩道（walk）は散歩や歩行という訳を当てるべきだと思う」と言われて、確かにと思いました。この walk は random walk の walk っぽいです。&lt;/div&gt;

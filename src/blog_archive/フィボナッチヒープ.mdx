@@ -1,0 +1,115 @@
+---
+title: "フィボナッチヒープ"
+description: "フィボナッチヒープ の過去ブログ記事"
+---
+
+# フィボナッチヒープ
+
+> 📅 **投稿日**: 2021-10-07 15:37:28
+
+&lt;h2&gt;フィボナッチヒープとは&lt;/h2&gt;
+フィボナッチヒープは Dijkstra 法の計算量を改善する目的で、Fredman と Tarjan により発明されたヒープである。Dijkstra 法の計算量改善とは、decrease-key （キーの値の減少）を&lt;a href="https://37zigen.com/binomial-heap/"&gt;二項ヒープ&lt;/a&gt;の \\(O(\\log(n))\\) から \\(O(1)\\) にすることであった（\\(n\\) はヒープの要素数）。
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;ヒープ&lt;/th&gt;
+&lt;th&gt;フィボナッチヒープ&lt;/th&gt;
+&lt;th&gt;二項ヒープ&lt;/th&gt;
+&lt;th&gt;二分ヒープ&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;キーの値を減少&lt;/td&gt;
+&lt;td&gt;ならし \\(O(1)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(\\log n)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(\\log n)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;値の追加&lt;/td&gt;
+&lt;td&gt;ならし \\(O(1)\\)&lt;/td&gt;
+&lt;td&gt;ならし \\(O(1)\\)&lt;/td&gt;
+&lt;td&gt;\\(O(\\log n)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2つのヒープの合体&lt;/td&gt;
+&lt;td&gt;ならし \\(O(1)\\)&lt;/td&gt;
+&lt;td&gt;ならし \\(O(1)\\)&lt;/td&gt;
+&lt;td&gt;ならし \\(O((\\log n)^2)\\)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+フィボナッチヒープ、二項ヒープ、二分ヒープの計算量の関係は上の図のようになる。
+[toc]
+&lt;h2&gt;フィボナッチヒープのアイディア&lt;/h2&gt;
+頂点 \\(v\\) の decrease-key を \\(O(1)\\) にする単純な方法は、その頂点 \\(v\\) を根とする部分木を切り離してから decrease-key することである。こうすれば、頂点 \\(v\\) についての heap-property（親要素≦子要素）は壊れない。しかし、何度も切断を繰り返すと、木がアンバランスになって、ほかの操作の計算量が悪化してしまう。
+
+そこで、根以外の頂点は、子を一つしか切り離せないとしたのがフィボナッチヒープである。
+
+出次数 \\(k\\) の頂点 \\(v\\) から到達可能な頂点数の lower bound を \\(L_k\\) とする。手を動かしてみる（下画像）と、見事に、\\(L_i\\) が \\(i + 2\\) 番目のフィボナッチ数 \\(F_&#123;i+2&#125;\\) で下から抑えられていることが分かる。&lt;img class="aligncenter size-large wp-image-10892" src="https://37zigen.com/wp-content/uploads/2021/10/fibonacci-heap-1024x441.png" alt="" width="1024" height="441"&gt;これが、”フィボナッチ”ヒープという名前の由縁である。
+&lt;div class="statement"&gt;出次数 \\(k\\) の頂点 \\(v\\) （根とは限らない）から到達可能な頂点数は \\(F_&#123;k+2&#125;\\) 以上である。つまり、\\(v\\) の部分木のサイズが \\(F_&#123;k+2&#125;\\) で下から抑えられる。\\(F_i\\) は \\(i\\) 番目のフィボナッチ数で \\(F_0=0,F_1=1,F_i=F_&#123;i-1&#125;+F_&#123;i-2&#125;\\) を満たす。
+
+&lt;/div&gt;
+&lt;div class="proof"&gt;証明：関数 \\(\\phi(v)\\) を、頂点 \\(v\\) とその子を切り離したことがあれば \\(1\\) 、さもなくば \\(0\\) として定める。\\(i\\) 番目の根の子 \\(u_i\\) の出次数が \\(i-1-\\phi(u_i)\\) 以上になるように子の順序を並べ替えられる。この事実が各操作で保たれることは容易に確かめられる（考えてみよ）。
+
+帰納法で \\(L_k \\geq F_&#123;k+2&#125;\\) を示したい。\\(k=0,1\\) での成立は自明である。\\(k \\leq n\\) での成立を仮定する。出次数 \\(k\\) の根 \\(v\\) には、出次数 \\(k-1-\\phi(v) \\geq k-2\\) 以上の子 \\(u\\) が存在し、辺 \\((v, u)\\) を削除すると、出次数 \\(k-1\\) の根 \\(v\\) と出次数 \\(k-2\\) の根 \\(u\\) に分かれる。辺を削除した後の \\(v, u\\) に対して帰納法の仮定を用いると、
+\\begin&#123;align&#125;
+L_n &amp;\\geq L_&#123;n-1&#125;+L_&#123;n-2&#125; \\\\
+&amp; \\geq F_&#123;n+1&#125;+F_&#123;n&#125; \\\\
+&amp; = F_&#123;n+2&#125;
+\\end&#123;align&#125;が得られ、\\(k = n+1\\) で成立。
+
+&lt;/div&gt;
+ちなみに \\(F_n=1+\\sum_&#123;i=0&#125;^&#123;n-2&#125; F_i\\) という分解を用いても示せる（考えてみよ）。
+
+フィボナッチヒープでは以下の操作ができる。decrease-key 以外は、&lt;a href="https://37zigen.com/binomial-heap/"&gt;二項ヒープ&lt;/a&gt;と同じアルゴリズムを用いている。
+&lt;ul&gt;
+ 	&lt;li&gt;insert(v)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。ヒープに要素 \\(v\\) を追加する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;find-min()
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(1)\\) 。ヒープの最小要素を返す。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;delete-min()
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(\\log(n))\\) 。ヒープの最小要素を削除する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;delete(v)
+&lt;ul&gt;
+ 	&lt;li&gt;実時間 \\(O(\\log(n))\\) 。要素 \\(v\\) を削除する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;decrease-key(v, Δ)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。要素 \\(v\\) のキーを \\(\\Delta\\) だけ減算する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;meld(h₁, h₂)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。ヒープ中の二つの木 h₁, h₂ を合体する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;meld(h)
+&lt;ul&gt;
+ 	&lt;li&gt;ならし \\(O(1)\\) 。別のヒープ h と合体する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;decrease-key&lt;/h2&gt;
+前述の通り、heap-property（親要素≦子要素）を保つため、decrease-key(v, Δ) では \\(v\\) と親を切り離してから、\\(v\\) のキーを \\(Δ\\) だけ減らす。木のバランスを保つために、根以外の頂点は、子を一度しか切り離せないという条件があった。もし、\\(v\\) の親 \\(p\\) がすでに子を切り離したことがあったならば、つまり、\\(\\phi(p) = 1\\) であったならば、\\(p\\) は根でなければならない。そこで、\\(\\phi(p)=1\\) であれば、再帰的に、\\(p\\) も親と切り離す。この操作を再帰的に繰り返す。
+
+つまり、decrease-key(v, Δ) は次のようなアルゴリズムになる。
+&lt;div class="statement"&gt;
+\\(v\\) と parent(\\(v\\)) を切り離す。
+key(\\(v\\)) \\(\\leftarrow\\) key(\\(v\\))\\(-\\)\\(Δ\\)
+\\(p \\leftarrow \\) parent(\\(v\\))
+while (\\(\\phi(p)=1\\)) &#123;
+&nbsp;&nbsp;&nbsp;&nbsp;\\(p\\) と parent(\\(p\\)) を切り離す。
+&nbsp;&nbsp;&nbsp;&nbsp;\\(p\\) \\(\\leftarrow\\) parent(\\(p\\))
+&#125;
+\\(\\phi(p) \\leftarrow 1\\)&lt;/div&gt;
+根を除いた \\(\\phi(v)=1\\) となる頂点数は decrease-key の回数以下なので、再帰的に切り離す操作の回数も decrease-key の回数以下になる。よって、decrease-key はならし \\(O(1)\\) になる。
+&lt;div class="hitokoto"&gt;一回だけ切り離してもよいというアイディアが見事。&lt;/div&gt;

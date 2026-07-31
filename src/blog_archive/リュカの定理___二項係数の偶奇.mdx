@@ -1,0 +1,82 @@
+---
+title: "リュカの定理 : 二項係数の偶奇"
+description: "リュカの定理 : 二項係数の偶奇 の過去ブログ記事"
+---
+
+# リュカの定理 : 二項係数の偶奇
+
+> 📅 **投稿日**: 2022-03-20 02:15:37
+
+&lt;div class="statement"&gt;リュカの定理（Lucas's theorem）：\\(A\\) の \\(p\\) 進数表示の \\(k\\) 桁目を \\(A^&#123;(k)&#125;\\) とすると、$$&#123;n \\choose m&#125; = \\prod &#123;n^&#123;(i)&#125; \\choose m^&#123;(i)&#125;&#125; \\pmod p$$ となる。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：\\(p\\) を素数とすると、フロベニウス写像より
+$$(1+x)^&#123;p&#125; = 1+x^p \\pmod p$$である。これを繰り返すと、$$(1+x)^&#123;p^e&#125; = 1+x^&#123;p^e&#125; \\pmod p$$である。従って、\\(A\\) の \\(p\\) 進数表示の \\(k\\) 桁目を \\(A^&#123;(k)&#125;\\) とすると、
+$$(1+x)^&#123;n&#125; = \\prod(1+x^&#123;p^i&#125;)^&#123;n^&#123;(i)&#125;&#125; \\pmod p$$となり、二項展開することで、$$&#123;n \\choose m&#125; = \\prod &#123;n^&#123;(i)&#125; \\choose m^&#123;(i)&#125;&#125; \\pmod p$$ となる。&lt;/div&gt;
+\\(p=2\\) のときの別証明：\\(n\\) を \\(2\\) で割り切れる回数 \\(v_2(n)\\) は
+\\begin&#123;align&#125;
+v_2(n) &amp;= \\sum_&#123;i=1&#125;^\\infty \\left\\lfloor \\frac&#123;n&#125;&#123;2^i&#125; \\right\\rfloor\\\\
+&amp;= -|n|+\\sum_&#123;i=1&#125;^\\infty \\frac&#123;n&#125;&#123;2^i&#125;\\\\
+&amp;= -|n| + n
+\\end&#123;align&#125;である（\\(|\\cdot|\\)はbitCount）。従って、
+\\begin&#123;align&#125;
+&#123;n \\choose k&#125; \\text&#123; is odd&#125; &amp; \\Leftrightarrow v_2\\left(&#123;n \\choose k&#125;\\right)=0 \\\\
+&amp;\\Leftrightarrow n-|n|-k+|k|-(n-k)+|n-k|=0 \\\\
+&amp;\\Leftrightarrow |n|=|k|+|n-k| \\\\
+&amp;\\Leftrightarrow n = (n-k) \\ \\dot\\cup \\ k
+\\end&#123;align&#125; となる（別証明終わり）。
+リュカの定理は多変数の場合に一般化できて、
+$$(x_1+x_2+\\ldots+x_e)^&#123;n&#125; = \\prod(x_1^&#123;p^i&#125;+x_2^&#123;p^i&#125;+\\ldots+x_e^&#123;p^i&#125;)^&#123;n^&#123;(i)&#125;&#125; \\pmod p$$より、二項展開することで、$$&#123;n \\choose &#123;m_1, \\ldots, m_e&#125;&#125; = \\prod &#123;n^&#123;(i)&#125; \\choose m_1^&#123;(i)&#125;, \\ldots, m_e^&#123;(i)&#125;&#125; \\pmod p$$ となる。p = 2 のときは
+$$&#123; n \\choose m_1, m_2, \\ldots, m_e&#125; \\text&#123; is odd&#125; \\Leftrightarrow n = m_1\\ \\dot\\cup\\ m_2\\ \\dot\\cup\\ \\cdots\\ \\dot\\cup\\ m_e$$となる。特に、\\(e=2\\) のときは、\\(n = m \\ \\dot\\cup\\ (n-m) \\Leftrightarrow m \\subset n\\) だから n&amp;m==m により \\(O(1)\\) で偶奇が分かる。
+&lt;h2&gt;演習問題&lt;/h2&gt;
+&lt;div class="statement"&gt;
+\\(&#123;n \\choose 0&#125;, \\ldots, &#123;n \\choose k&#125;\\) に何個の奇数が含まれるか、\\(O(\\log(n))\\) で求めよ。&lt;/div&gt;
+解答 : 桁DP
+&lt;div class="statement"&gt;
+\\(N\\) 個の相異なる整数 \\(a_1, \\ldots, a_N\\) からなる列がある。長さ \\(k\\) の整数であって、各数が \\(a\\) の項のいずれかであり、総和が \\(s\\) であるものの個数を \\(O(k \\max (a_i)\\log N)\\) で求めよ。（出典 : GP of Tokyo G）&lt;/div&gt;
+解答 : 多変数のリュカの定理より \\begin&#123;align&#125;
+&amp;\\sum_&#123;s=\\sum m_ia_i&#125; &#123;k \\choose m_1, m_2, \\ldots, m_e&#125; \\\\
+=&amp;\\left|\\left\\&#123;(m_i):s=\\sum m_ia_i, k=m_1 \\ \\dot\\cup\\ m_2\\ \\dot\\cup\\ \\cdots \\ \\dot\\cup\\ m_e \\right\\&#125;\\right|
+\\end&#123;align&#125;である。kのbitが立っている部分をどの \\(a_i\\) に割り振るかで dp する。i bit 目まで決めたとする。残り足されるのは \\(2^&#123;i+1&#125;\\) の倍数のみだから、この時点で \\(\\bmod 2^&#123;i+1&#125;\\) が \\(s\\) と一致していなければならない。\\(1+2+\\cdots+2^i&lt;2^&#123;i+1&#125;\\) と合わせると、問題文の計算量になる。
+&lt;div class="statement"&gt;
+\\(\\sum_&#123;K=a \\ \\dot\\cup \\ b&#125; \\sum_&#123;L=c \\ \\dot\\cup \\ d&#125; 1 \\) を \\(O(1)\\) で求めよ。（出典：yukicoder1531）&lt;/div&gt;
+解答 : \\begin&#123;align&#125;
+\\sum_&#123;K=a \\ \\dot\\cup \\ b&#125; \\sum_&#123;L=c \\ \\dot\\cup \\ d&#125; 1 &amp; = \\sum_i &#123;K \\choose i&#125; \\bmod 2 \\sum_j &#123;L \\choose j&#125; \\bmod 2\\\\
+&amp; = \\sum_i \\left(&#123;&#123;K+L&#125; \\choose i &#125; \\bmod 2\\right)\\\\
+&amp; = \\sum_&#123;K+L = a \\ \\dot\\cup \\ b&#125; 1 \\\\
+&amp;= 2^&#123;|K+L|&#125;
+\\end&#123;align&#125;
+&lt;div class="statement"&gt;
+\\(\\sum_&#123;i=0&#125;^k &#123; m+k-i \\choose k-i&#125;a_i\\) の偶奇を \\(m=0,1,\\ldots,M\\) について列挙せよ。（ARC137D）&lt;/div&gt;
+解答 : リュカの定理を用いると次のようになる。\\begin&#123;align&#125;
+&#123; m+k-i \\choose k-i&#125; \\text&#123; is odd&#125; &amp;\\Leftrightarrow m+k-i=m \\ \\dot\\cup\\ (k-i) \\\\
+&amp; \\Leftrightarrow m \\cap\\ (k-i) = \\emptyset
+\\end&#123;align&#125;最後の同値変形は下の桁から決定すれば分かる。これを用いると、求める式は
+\\begin&#123;align&#125;
+\\sum_&#123;i=0&#125;^k &#123; m+k-i \\choose k-i&#125;a_i &amp;= \\sum_&#123;m \\cap\\ (k-i) = \\emptyset&#125;a_i \\\\
+&amp;= \\sum_&#123;m \\cap\\ i = \\emptyset&#125;a_&#123;k-i&#125;\\\\
+&amp;= \\sum_&#123;(U-m) \\supset\\ i&#125;a_&#123;k-i&#125;
+\\end&#123;align&#125;となる。ただし、\\(U\\) は全体集合。これは、高速ゼータ変換により求まる。
+&lt;h2&gt;フロベニウス写像&lt;/h2&gt;
+リュカの定理はフロベニウス写像が本質であった。他にも計算を効率的にする場合を見ていく。
+&lt;h3&gt;二項係数の和&lt;/h3&gt;
+\\(A\\) の \\(p\\) 進数表示の \\(k\\) 桁目を \\(A^&#123;(k)&#125;\\) とする。
+次の計算
+\\begin&#123;align&#125;
+&amp;[x^&#123;q_1p+r_1&#125;](1+x)^&#123;q_2p+r_2&#125; \\frac&#123;1&#125;&#123;1-x&#125; \\\\
+=&amp;[x^&#123;q_1p&#125;](1+x)^&#123;q_2p&#125;\\left(\\sum_&#123;i=0&#125;^&#123;r_1&#125; &#123;r_2 \\choose i&#125; + \\frac&#123;2^&#123;r_2&#125;x^p&#125;&#123;1-x^p&#125; \\right)
+\\end&#123;align&#125;
+
+により \\(O(p^2)\\) の前計算により \\(\\sum_&#123;i=0&#125;^m &#123;n \\choose i&#125;\\) が \\(O(\\log n / \\log p)\\) で求まる。&lt;a href="https://atcoder.jp/contests/abc251/editorial/3983"&gt;kyopro_friends&lt;/a&gt;さんは \\(O(\\sqrt&#123;n&#125;+p)\\) の前計算、クエリ \\(O(1)\\) で求めている。
+&lt;h3&gt;XOR ピラミッド&lt;/h3&gt;
+（&lt;a href="https://atcoder.jp/contests/dwacon2018-final-open/tasks/dwacon2018_final_c"&gt;dwacon2018-final-c&lt;/a&gt;）\\(f(x) = 1 + x + x^2\\) と置く。\\(\\bmod 2\\) の下、
+\\begin&#123;align&#125;
+&amp;[x^m]f(x)^&#123;2n+1&#125; \\frac&#123;1&#125;&#123;1-x&#125; \\\\
+=&amp;[x^m]f(x)^&#123;2n&#125; \\frac&#123;1+x+x^2&#125;&#123;1-x&#125; \\\\
+=&amp;[x^m]f(x)^&#123;2n&#125; \\frac&#123;1+x^3&#125;&#123;1-x^2&#125; \\\\
+=&amp;\\left([x^&#123;m/2&#125;]+[x^&#123;(m-3)/2&#125;]\\right)f(x^2)^&#123;n&#125; \\frac&#123;1&#125;&#123;1-x&#125; \\\\
+\\end&#123;align&#125;
+である。同様に、
+\\begin&#123;align&#125;
+&amp;[x^m]f(x)^&#123;2n&#125; \\frac&#123;1&#125;&#123;1-x&#125; \\\\
+=&amp;[x^m]f(x^2)^&#123;n&#125; \\frac&#123;1+x&#125;&#123;1-x^2&#125; \\\\
+=&amp;\\left([x^&#123;m/2&#125;]+[x^&#123;(m-1)/2&#125;]\\right)f(x)^&#123;n&#125; \\frac&#123;1&#125;&#123;1-x&#125; \\\\
+\\end&#123;align&#125;である。\\(x\\) と \\(x-1, x-3\\) の偶奇は異なるので、\\(O(\\log n)\\) で求まる。

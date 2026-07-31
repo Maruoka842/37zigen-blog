@@ -1,0 +1,909 @@
+---
+title: "組合せゲーム"
+description: "組合せゲーム の過去ブログ記事"
+---
+
+# 組合せゲーム
+
+> 📅 **投稿日**: 2022-03-21 19:45:33
+
+&lt;p&gt;今の所、過去問並べただけ。&lt;br /&gt;[toc]&lt;/p&gt;
+&lt;h2&gt;後退解析&lt;/h2&gt;
+&lt;p&gt;次(Next)の手番が勝つとき \\(\\mathcal&#123;N&#125;\\), 前(Previous)の手番が勝つとき \\(\\mathcal&#123;P&#125;\\), 引き分けのとき \\(\\mathcal&#123;D&#125;\\) と書く。非不偏ゲームの遷移は、各ゲームを頂点とする有向グラフ \\(G\\) で表すことができる。勝敗は \\(v \\in V(G)\\) について&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(v\\) が \\(\\mathcal&#123;P&#125;\\) のとき、任意の \\(v' \\in v\\) は \\(\\mathcal&#123;N&#125;\\)&lt;/li&gt;
+&lt;li&gt;\\(v\\) について、任意の \\(v' \\in v\\) が \\(\\mathcal&#123;N&#125;\\) のとき、\\(v\\) は \\(\\mathcal&#123;P&#125;\\)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;である。\\(\\mathcal&#123;P&#125;\\) であることが確定している頂点から順に決定すればよい。勝敗の確定しなかった頂点は勝敗の確定しなかった頂点に遷移するのが最適である。従って、永遠に勝敗が決まらず、\\(\\mathcal&#123;D&#125;\\) である。&lt;/p&gt;
+&lt;h2&gt;generalized Sprague Grundy Theorem&lt;/h2&gt;
+&lt;p&gt;loopのないゲームを finite rank, loopのあるゲームを infinite rankと呼ぶ。finite rankたちについては、先後最善を尽くしたときの終局までの手数をrankとする。有向グラフ \\(G, H\\) で表される二つのゲームの和は、有向グラフ \\(G \\times H\\) で表せる。&lt;/p&gt;
+&lt;p&gt;ニム数が未確定の頂点は、暫定的にニム数を \\(\\infty\\) として、帰納的にニム数を計算していく。\\(m = \\mathrm&#123;mex&#125;_&#123;v' \\in v&#125;(\\mathcal G(v'))\\) とする。任意の \\(v' \\in v\\) について \\(\\mathcal&#123;G&#125;(v') &gt; m\\) ならば有限回で打ち消し可能な選択肢であることが分かっているとき、\\(\\mathcal&#123;G&#125;(v) = m\\) としていく。すなわち、その時点で \\(\\mathcal&#123;G&#125;(v'') = m\\) である \\(v'' \\in v'\\) が存在するならばよい。それ以上更新ができなくなったところで、ニム数が \\(\\infty\\) である頂点 \\(v\\) は \\(\\mathcal&#123;G&#125;(v) = \\infty(\\&#123;\\mathcal&#123;G&#125;(v') : \\text&#123;$v' \\in v$, $\\mathrm&#123;rank&#125;(v')$ is finite&#125;\\&#125;)\\) とする。\\(\\infty\\)のゲームからは必ず\\(\\infty\\)のゲームに遷移できるが、ゲームの値に影響しないので \\(\\&#123;\\cdot\\&#125;\\) には含めない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(\\mathcal&#123;G&#125;(v) = 0\\) \\(\\Leftrightarrow\\) \\(v\\) は \\(\\mathcal&#123;P&#125;\\) 局面&lt;/li&gt;
+&lt;li&gt;\\(\\mathcal&#123;G&#125;(v)\\) が正整数ならば \\(v\\) は \\(\\mathcal&#123;N&#125;\\) 局面&lt;/li&gt;
+&lt;li&gt;\\(\\mathcal&#123;G&#125;(v) = \\infty(\\mathcal&#123;A&#125;)\\) で \\(0 \\in \\mathcal&#123;A&#125;\\) ならば、\\(v\\) は \\(\\mathcal&#123;N&#125;\\) 局面&lt;/li&gt;
+&lt;li&gt;\\(\\mathcal&#123;G&#125;(v) = \\infty(\\mathcal&#123;A&#125;)\\) で \\(0 \
+ot\\in \\mathcal&#123;A&#125;\\) ならば、\\(v\\) は \\(\\mathcal&#123;D&#125;\\) 局面&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ゲームの和のニム数は&lt;br /&gt;$$\\mathcal&#123;G&#125;(u + v) = \\mathcal&#123;G&#125;(u) \\oplus \\mathcal&#123;G&#125;(v)$$となる。ただし、\\(\\infty(\\mathcal&#123;A&#125;)\\oplus \\infty(\\mathcal B) = \\infty(\\emptyset), \\infty(\\mathcal&#123;A&#125;)\\oplus b = \\infty(\\mathcal&#123;A&#125;\\oplus b) = \\infty(\\&#123;a \\oplus b : a \\in \\mathcal&#123;A&#125;\\&#125;)\\) とする。\\(\\mathrm&#123;rank&#125;(u) = \\infty\\) ならば \\(v\\) に関わらず \\(\\mathrm&#123;rank&#125;(u+v) = \\infty\\) であることを用いた。この事実の証明：\\(a,b\\in\\mathbb&#123;N&#125;\\)について\\(\\infty(\\mathcal&#123;A&#125;)\\oplus a = b\\)ならば\\(\\infty(\\mathcal&#123;A&#125;)=a\\oplus b\\)なので矛盾。\\(\\infty(\\mathcal&#123;A&#125;)\\oplus \\infty(\\mathcal&#123;B&#125;)\\) が rank最小のfinite rank とすると、u'+v, u+v'がfinite rankよりu',v'がinfinite rankだが、rankが減少する遷移先が必ずあり、rankの最小性に反する。&lt;img class="aligncenter size-medium wp-image-19538" src="https://37zigen.com/wp-content/uploads/2022/03/generalized_sprague_grundy_example-300x104.png" alt="" width="300" height="104" /&gt;&lt;/p&gt;
+&lt;p&gt;非不偏ゲームで A から B の遷移があり、A の帰結類を求める場合、A の選択肢と B の選択肢の共通部分に \\(\\mathcal&#123;P&#125;\\) がある場合とそうでない場合で場合分けができる。前者の場合、A は \\(\\mathcal&#123;N&#125;\\) である。後者の場合は、共通部分を全て存在しないものとしてゲームを解析できる。&lt;/p&gt;
+
+
+&lt;figure class="wp-block-image size-large"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2022/11/FiGlfK1UcAAUMQh-1024x484.png" alt="" class="wp-image-16399"/&gt;&lt;/figure&gt;
+
+
+
+&lt;figure class="wp-block-image size-large"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2022/11/FiGlZjGUAAIa05M-1024x438.png" alt="" class="wp-image-16401"/&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;\\(\\mathcal P\\) に接続する頂点は全て \\(\\mathcal N\\) である。例えば Wythoff’s game で同じx座標の \\(\\mathcal P\\) 局面が二つ以上ないのはこの事実からすぐに分かる。&lt;img class="aligncenter size-full wp-image-16458" src="https://37zigen.com/wp-content/uploads/2022/03/p-position-vertex.png" alt="" width="262" height="248" /&gt;&lt;/p&gt;
+&lt;p&gt;ニム数 \\(n\\) の頂点が存在する最小のグラフは \\(K^&#123;n+1&#125;\\) を頂点番号の小さい方から大きい方へ向きづけたグラフである。従って、辺は少なくとも \\(\\Theta(n^2)\\) 個必要である。ニム数は、ゲームの誕生日の順に頂点を貪欲に彩色したときの色数に等しい。&lt;/p&gt;
+&lt;h3&gt;DAGの後退解析&lt;/h3&gt;
+&lt;p&gt;DAGの場合、後退解析は簡略化できる。閉路が存在しないので、勝敗が決まらない頂点は存在しない。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ゲームの終了状態に、勝敗を割り振る。&lt;/li&gt;
+&lt;li&gt;勝敗が未確定の頂点を、一時的に、負け状態と仮定する。&lt;/li&gt;
+&lt;li&gt;トポロジカル順序の逆順に頂点 \\(v\\) を見る。&lt;/li&gt;
+&lt;li&gt;\\(v\\) が勝ちなら何もしない。\\(v\\) が負けなら、\\(v\\) に遷移可能な頂点を勝ちにする。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;トポロジカル順序が自明ならば、手で勝敗が簡単に書き下せる場合がある。&lt;/p&gt;
+&lt;div class="statement"&gt;問題1:石が \\(N\\) 個ある。交互に \\(1\\) 個以上 \\(K\\) 個以下の石を取り去る。どちらが勝つか。\\(O(1)\\)で求めよ。（有名問題、yukicoder 8）&lt;/div&gt;
+&lt;p&gt;DAGの後退解析をすればよい。先手の敗北条件は \\(N = 0 \\pmod &#123;K+1&#125; \\) である。&lt;/p&gt;
+&lt;div class="statement"&gt;問題2:問題1において、取り去ったあとの石の個数が \\(x_1, x_2, \\ldots, x_M\\) のいずれかになる操作が禁止されたとするとする。勝敗を \\(O(N+M)\\) で求めよ。（yukicoder 1313）&lt;/div&gt;
+&lt;p&gt;DAGの後退解析。&lt;/p&gt;
+&lt;div class="statement"&gt;問題3:問題1において、相手が直前に取り除いた石と同数の石が取り除けない場合の勝敗を \\(O(N)\\) で求めよ。（yukicoder 1770）&lt;/div&gt;
+&lt;p&gt;DAGの後退解析。「直前に相手が \\(x\\) 個取り除いてなければ」勝ちという条件を論理和で配るので、各頂点の状態は&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;負け&lt;/li&gt;
+&lt;li&gt;直前に相手が \\(x\\) 個取り除いなければ、勝ち&lt;/li&gt;
+&lt;li&gt;直前に相手が何個取り除いていようが、勝ち&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;のいずれか。１つ目の状態が最短でも \\(K+1\\) 個おきにしか起きないので、更新回数は全体で \\(O(N)\\) になる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題1において、K+1の倍数でも取り除けるとするとどちらが勝つか。（Russia 2011, adapted）&lt;/div&gt;
+&lt;div class="statement"&gt;問題6:有向グラフ G の各頂点には数字が書いてある。頂点 1 に駒を置き、交互に
+&lt;ul&gt;
+&lt;li&gt;駒を辺に沿って動かす。&lt;/li&gt;
+&lt;li&gt;ゲームを終了する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;のどちらかを選ぶ。十分長いターンが経ってもまだゲームが終了していないときは、後手の手番後に強制終了する。ゲームが終了したときに、駒が置いてある頂点の数字を先手は最大化、後手は最小化したい。数字はいくつになるか。（ARC038D）&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;スコアについて二分探索すると後退解析になる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題11:&lt;br /&gt;いくつかの根付き木が与えられる。交互に次のいずれかの操作を繰り返す。
+&lt;ul&gt;
+&lt;li&gt;1ターン目ならば駒を好きな木の根に置く。&lt;/li&gt;
+&lt;li&gt;葉でなければ、駒を子に移動する&lt;/li&gt;
+&lt;li&gt;葉であれば、まだ選ばれていない木の根に駒を移動する&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;操作できなくなったほうが負け。どちらが勝つか。&lt;br /&gt;（Kupc2019E）&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;木の根を選び、葉まで駒を動かしてから、次の根を選ぶのが先手後手のどちらになっているか考える。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;先手の意思で、先手後手を入れ替えることができる&lt;/li&gt;
+&lt;li&gt;先手の意思で、先手後手をそのままにすることができる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;(True, True) を選ぶと先手の勝ち。(False, False) を選ぶと後手の勝ち。従って (False, False) が選ばれるのは最後。(True, False) ならば先手後手は必ず入れ替わる。(False, True) ならば先手後手は必ずそのまま。従って、(False, True) は勝敗と無関係。&lt;/p&gt;
+&lt;h2&gt;勝敗の単調性&lt;/h2&gt;
+&lt;p&gt;あるパラメータ A が大きいほど先手が有利ならば、&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(f_1(S, a) :=\\) 状態 S でパラメータ A = a のときの勝敗&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を持つ dp から&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(f_2(S) :=\\) 状態 S のとき、先手が勝つための A の最小値&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;を持つ dp に変更でき、状態数が減らせる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題13:&lt;br /&gt;N 個の石が相異なる非負整数座標 \\(x_1, x_2, \\ldots, x_N\\) (\\(0 &lt; x_1 \\leq \\cdots &lt; x_N\\)) に置かれている。交互に、最も大きい座標に置かれている石を、他の石と重ならないように、より小さい非負整数座標に置き換える。どちらが勝つか。&lt;br /&gt;(&lt;a href="https://atcoder.jp/contests/arc137/tasks/arc137_c"&gt;ARC137C&lt;/a&gt;)&lt;/div&gt;
+&lt;p&gt;単調性より、\\(x_N\\) が大きいほど先手が有利。戦略盗みにより、\\(x_N-x_&#123;N-1&#125; \\geq 2\\) ならば先手の勝ち。さもなくば、\\(x_N-x_&#123;N-1&#125; =1\\) を保ちながら遷移するしかないので、最適手は \\(O(N)\\) でシミュレートできる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題14:木の根以外の頂点に得点が書き込まれている。駒が根においてある。次の手順をゲーム終了まで繰り返す。
+&lt;ul&gt;
+&lt;li&gt;先手は好きな頂点を1つ選び書き込まれた数字を零にする。&lt;/li&gt;
+&lt;li&gt;後手は子に駒を移動する。葉に移動した場合はゲーム終了。葉でもなくとも、後手の意思で終了にできる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ゲーム終了時点で駒がある頂点に書き込まれた数字が得点になる。先手は得点を最小化、後手は得点を最大化したい。何点になるか。(ABC246G)&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;得点はX点以上か？について二分探索して、後退解析。取り除ける頂点が多いほど先手は有利なので、dp[v] := (頂点 v の部分木でゲームをしたとき得点を X 未満にするには、予め何個の頂点の得点を零にしておく必要があるか) について dp ができる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題12:&lt;br /&gt;\\(a_1, a_2, \\ldots, a_N\\) 個の石からなる山が \\(N\\) 個ある。Aさんは右端の山から好きな個数の石を取ることができ、Bさんは左端の山から好きな個数の石を取ることができる。交互に操作を行う。どちらが勝つか。&lt;br /&gt;(AGC048D)&lt;/div&gt;
+&lt;p&gt;指せる手の単調性より&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(a_1\\) が大きいほど A さんが有利&lt;/li&gt;
+&lt;li&gt;\\(a_N\\) が大きいほど B さんが有利&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;だから、操作は&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;山から石を一つだけ取る&lt;/li&gt;
+&lt;li&gt;山から石を全て取る&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;のどちらかであるとしても勝敗は変化しない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;残っている山が \\(l, \\ldots, r\\) 番目で、\\(l\\) 番目の山以外は初期状態と石の個数が同じである。A さん先手で、A さんの勝ちとなる \\(a_l\\) の最小値 \\(f(l, r)\\)&lt;/li&gt;
+&lt;li&gt;残っている山が \\(l, \\ldots, r\\) 番目で、\\(r\\) 番目の山以外は初期状態と石の個数が同じである。B さん先手で、B さんの勝ちとなる \\(a_r\\) の最小値 \\(g(l, r)\\)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;\\(f(l, r-1), g(l+1, r)\\) から \\(f(l, r), g(l, r)\\) が \\(O(1)\\) で求まる。&lt;/p&gt;
+&lt;h2&gt;不変量に着目する&lt;/h2&gt;
+&lt;h3&gt;二部グラフ&lt;/h3&gt;
+&lt;p&gt;二部グラフ上のゲームの場合、各部集合が何らかの不変量と関連していることが多い。特に、グリッドグラフが頻出である。&lt;/p&gt;
+&lt;div class="statement"&gt;問題8:\\(H\\) 行 \\(W\\) 列のマスがある。N 個の駒を置いた。交互に駒を一つ選んで一つ左か下に動かすことを繰り返す。同じマスに複数の駒をおいてはいけない。どちらが勝つか。（&lt;a href="https://yukicoder.me/problems/no/819"&gt;yukicoder2951&lt;/a&gt;）&lt;/div&gt;
+駒が一つで一次元の場合を考え、それを一般化するとよい。
+&lt;ul&gt;
+&lt;li&gt;\\((x+y) \\bmod 2 = 0\\) に置かれた駒の個数 A&lt;/li&gt;
+&lt;li&gt;\\((x+y) \\bmod 2 = 1\\) に置かれた駒の個数 B&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;と置く。(A, B) の勝敗を2次元平面にプロットすると、&lt;img class="aligncenter size-full wp-image-16128" src="https://37zigen.com/wp-content/uploads/2022/03/yuki2951.drawio.png" alt="" width="561" height="361" /&gt;のようになる。青マスが勝ち。端のはてなのマスは、はてな同士を行き来することで勝敗が決まらないように思えるが、最終的に \\(x = y\\) 方向に移動せざるを得なくなることから、外側のはてなの方が勝ちになる。よって、\\(A-B = 0 \\pmod 3 \\Leftrightarrow \\) 後手勝ち。N次元に拡張できる。&lt;/p&gt;
+&lt;div class="statement"&gt;問題15:グリッドグラフの部分グラフと、非隣接な頂点 s, t が与えられる。交互にグラフの頂点を削除する。自分の操作で頂点 s, t を非連結にした方が勝ち。先手と後手のどちらが勝つか。(UTPC2021L)&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;s, t の点連結度が1のとき先手の勝ち。&lt;/li&gt;
+&lt;li&gt;s, t の点連結度が2のとき、点連結度を1にしたほうが負けなので、その直前では、2つの内素な s-t パスだけになる。二部グラフなので、このときの頂点数はそれまでの操作によらない。従って勝敗も O(1) で分かる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;グリッドグラフ&lt;/h3&gt;
+&lt;div class="statement"&gt;先手は1×1の白のパーツ、後手は1×1の黒のパーツをお互いに重ならないように置く。2×2の自分の色ができた方が勝ち。引き分けになることを示せ。&lt;/div&gt;
+&lt;p&gt;上手くマッチングを作る。&lt;/p&gt;
+&lt;h3&gt;偶奇&lt;/h3&gt;
+&lt;p&gt;偶奇が不変量に関連していることがある。&lt;/p&gt;
+&lt;div class="statement"&gt;問題7:正整数列が与えられる。次のどちらかの操作を交互に行う。
+&lt;ul&gt;
+&lt;li&gt;すべての要素を 1 減らす。全ての要素が正整数である場合のみこの操作ができる。&lt;/li&gt;
+&lt;li&gt;正整数を一つ選び、1 減らす。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;操作ができなくなった方が負け。どちらが勝つか O(1) で求めよ。&lt;/p&gt;
+&lt;p&gt;（KUPC2020春E）&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;Nが奇数の時は、どちらの操作でも総和の偶奇が変化するので簡単。Nが偶数のときは、最小値, 総和が両方偶数 ⇔ 後手勝ち。&lt;/p&gt;
+&lt;div class="statement"&gt;問題9:\\(\\gcd(A) = 1\\) の数列 \\(A\\) がある。先手と後手は交互に 「\\(2\\) 以上の要素を選んで \\(1\\) 減らしてから全体を \\(\\gcd(A)\\) で割ること」を繰り返す。どちらが勝つか。（&lt;a href="https://atcoder.jp/contests/agc010/tasks/agc010_d"&gt;AGC010D&lt;/a&gt;）&lt;/div&gt;
+&lt;p&gt;gcd で割らなければ、\\(\\sum (A_i-1)\\) 回操作ができる。A の要素に奇数が含まれていれば gcd は奇数で、\\(A_i, A_i/\\mathrm&#123;gcd&#125;(A)\\) の偶奇は同じ。従って、\\(\\sum (A_i-1)\\) が不変。A の要素に奇数が一つ以上含まれていれば、奇数を二つ以上にして相手に渡せる。従って、 gcd(A) = 1 より奇数は必ず含まれているので \\(\\sum (A_i-1) = 1 \\pmod 2\\) ならば先手の勝ち。A に奇数が一つだけ含まれていて、\\(\\sum (A_i-1) = 0 \\pmod 2\\) ならば、その奇数から 1 引いて gcd で割ってから相手に渡すことになる。このような操作は \\(O(\\log(\\max(A))\\) 回しか行われない。&lt;/p&gt;
+&lt;div class="statement"&gt;問題10:それぞれ、\\(a_i\\) 個の石（\\(1 \\leq i \\leq N\\)）からなる山がある。先手と後手は交互に次のどちらかの操作をする。
+&lt;ul&gt;
+&lt;li&gt;山を２つに分割する。&lt;/li&gt;
+&lt;li&gt;各山から石を一つ取り除く。ただし、各山に2つ以上の石がなくてはならない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;どちらが勝つか。（&lt;a href="https://yukicoder.me/problems/no/1852"&gt;yukicoder1852&lt;/a&gt;）&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;(i) : \\(\\min(a)=1\\) のとき、 \\(S := \\sum (a_i-1)=1 \\Leftrightarrow \\) 先手の勝ち。&lt;br /&gt;(ii) : \\(\\min(a) &gt; 1\\) のとき、\\(a_1\\) を \\(1, a_1-1\\) に分割すると、(i) の \\(S \\leftarrow S-1\\) の場合に帰着される。従って、\\(S\\) が奇数なら先手の勝ち。さもなくば、\\(\\forall i, a_i \\leftarrow a_i-1\\) の操作しか先手はできず、後手に \\(S \\leftarrow S-N\\) の状態で渡される。\\(N\\) が奇数なら、先手の負け。\\(N\\) が偶数なら、\\(\\min(a)\\) の偶奇で勝敗が決する。&lt;/p&gt;
+&lt;div class="statement"&gt;問題16:&lt;br /&gt;グラフGが与えられる。交互に辺を追加する。連結になった方が負け。どちらが勝つか。&lt;br /&gt;(&lt;a href="https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=2376"&gt;AOJ2376&lt;/a&gt;)&lt;/div&gt;
+&lt;p&gt;連結になる直前の連結成分の大きさが \\(k, n-k\\) とすると、追加された辺の本数は \\(n(n-1)/2-|E|-k(n-k)\\) である。従って \\(k(n-k)\\) の偶奇によって勝敗が決まることが分かる。\\(n\\) が奇数ならば、\\(k(n-k) \\bmod 2\\) は \\(k\\) に依らず決定する。従って、以降は \\(n\\) が偶数の場合のみを考える。先手は、偶成分が2つの状態を作ると勝ち、あるいは、奇成分が2つの状態を作ると勝ちのどちらかに排反でなる。次の三つの数をパラメータにして考察する。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;偶成分の個数&lt;/li&gt;
+&lt;li&gt;奇成分の個数&lt;/li&gt;
+&lt;li&gt;連結成分の個数を変えずに追加できる辺の個数の偶奇&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;この三つの数は、各操作によって次のように変化する。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;偶成分と偶成分をマージ \\((-1, 0, 1)\\)&lt;/li&gt;
+&lt;li&gt;偶成分と奇成分をマージ \\((0, -1, 1)\\)&lt;/li&gt;
+&lt;li&gt;奇成分と奇成分をマージ \\((1, -2, 0)\\)&lt;/li&gt;
+&lt;li&gt;連結成分内で辺を追加 \\((0, 0, 1)\\)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ところで$$(-1, 0, 1) + (1, -2, 0) = (0, -2, 1)$$だから&lt;br /&gt;偶成分2つより、奇成分2つの方が作りにくい。先手が偶成分2つの状態を作りたいとする。奇成分は常に偶数個あるから、偶成分が一つでもある状態で回ってこれば、偶成分が2つ以上にして相手に渡せる。相手は偶成分を高々一つしか減らせないので、これは勝ちである。奇成分しかない場合を考える。相手に偶成分を作ってもらうために、奇成分のみの状態で手番を相手に渡す必要がある。つまり、連結成分内の辺の追加で手番を入れ替えなければならない。頑張って場合分け。&lt;/p&gt;
+&lt;div class="statement"&gt;問題:&lt;br /&gt;グラフGが与えられる。偶点を交互に取り除く。行動できなくなったほうが負け。どちらが勝つか。&lt;/div&gt;
+&lt;p&gt;\\(\\sum_v d(v) = 2|E|\\) より奇点は偶数個あるのでＮの偶奇で勝敗が決まる。&lt;/p&gt;
+&lt;h2&gt;グラフ理論&lt;/h2&gt;
+&lt;div class="statement"&gt;グラフGが与えられる。先手と後手は交互に辺を選ぶ。全ての操作が終わった後、後手が選んだ辺が全域グラフであれば後手の勝ち。後手が勝つための必要十分条件はGに辺素な2つの全域木が取れることであることを示せ（Lehman）。&lt;/div&gt;
+&lt;p&gt;後手が勝つならば、先手はその戦略を採用することで、先後どちらも2つの全域木が取れる。逆にこの時、後手が勝てることは、木がマトロイドであることと基交換定理から従う。Nash-Williamsの定理より、2個の辺素な全域木が取れる⇔任意の頂点集合の分割Pについて、Pのcross edgeの個数が \\(2(|P|-1)\\) 以上。全域木が取れないのなら、cross edgeの個数が2(|P|-1)未満の分割がある。このcross edgeを先手は取ると後手の勝ちを阻止できる。辺素な全域木を取る&lt;a href="https://www.jstor.org/stable/3689437"&gt;アルゴリズム&lt;/a&gt;&lt;/p&gt;
+&lt;div class="statement"&gt;グラフGが与えられる。先手は1本の辺、後手はb本の辺を交互に選ぶ。全ての操作が終わった後、先手が選んだ辺が全域グラフをなしていたら、後手の勝ち。Gに辺素なb+1個の全域木が取れることが先手勝ちの十分条件であることを示せ（&lt;a href="https://www.sciencedirect.com/science/article/pii/S0097316506001634"&gt;Hefetz&lt;/a&gt;）。&lt;/div&gt;
+&lt;p&gt;先手が全域木に含まれる辺を選んだ時、その辺でほかの全域木にできる基本サイクルを壊すように後手が辺を選べばよい。&lt;/p&gt;
+&lt;h2&gt;Nim&lt;/h2&gt;
+&lt;h3&gt;一山崩し&lt;/h3&gt;
+&lt;div class="statement"&gt;与えられた \\(S \\subseteq \\mathbb&#123;N&#125;\\) から好きな数 \\(x\\) を選んで交互に \\(N \\leftarrow N-x\\) とする。それ以上操作できなくなった方が負け。\\(S = \\&#123;s_1, s_2, \\ldots, s_n \\&#125;_&#123;&lt;&#125;\\) として、このゲームを&lt;br /&gt;\\(\\mathrm&#123;sub&#125;(S)\\) あるいは \\(\\mathrm&#123;sub&#125;(s_1, s_2, \\ldots, s_n)\\)&lt;br /&gt;と書くことにする。また、\\(S\\) が有限集合の時、\\(\\mathrm&#123;allbut&#125;(S)=\\mathrm&#123;sub&#125;(\\mathbb&#123;N&#125; \\setminus S)\\) と書く。&lt;/div&gt;
+&lt;p&gt;\\(\\forall x \\in S, \\exists y ∈ S, x + y = C\\) ならば周期 \\(C\\) と分かる。また、\\(\\&#123;1, 2, \\ldots, k\\&#125; \\subseteq S\\) かつ \\(\\forall x ∈ S \\setminus \\&#123;1, 2, \\ldots, k\\&#125;, (k + 1) | x\\) ならば、\\(N = 0 \\pmod &#123;k + 1&#125;\\) ⇔ 後手勝ち である。&lt;/p&gt;
+&lt;p&gt;\\(\\#S \\leq 2\\) の時の勝敗は？&lt;br /&gt;\\(S = \\&#123;a, b\\&#125;\\) と置く。\\(a &lt; b\\) としてよい。\\(N \\leftarrow N \\bmod &#123;(a+b)&#125;\\) としても勝敗は変わらない。\\(N &lt; b\\) かつ \\(\\lfloor N/a \\rfloor =1 \\pmod 2\\) または \\(b \\leq N &lt; a + b\\) のとき先手勝ち。&lt;/p&gt;
+&lt;p&gt;\\(S = \\&#123;s_1, s_2, \\ldots, s_n\\&#125;_&#123;&lt;&#125;\\) とする。\\(s_&#123;i+1&#125; \\leq s_i + s_1\\) とするとニム列は \\(0^&#123;s_1&#125;1^&#123;s_2-s_1&#125;2^&#123;s_3-s_2-s_1&#125; \\cdots\\) のようになって、周期はある \\(i\\) を用いて \\(s_1+s_i\\) となる。&lt;/p&gt;
+&lt;p&gt;\\(\\mathrm&#123;sub&#125;(S)\\) のニム列が純周期的で周期 \\(p\\) のとき、\\(\\mathrm&#123;sub&#125;(S\\cup \\&#123;mp\\&#125;) \\) \\((m \\geq 0)\\) と同じニム列を持つ。&lt;/p&gt;
+&lt;p&gt;ある \\(n_0, a\\) が存在して、任意の \\(n \\geq n_0\\) について \\(\\mathcal&#123;G&#125;(n)=\\mathcal&#123;G&#125;(n+a)\\) であるとき、周期的という。ある \\(n_0, a, b\\) が存在して、任意の \\(n \\geq n_0\\) について \\(\\mathcal&#123;G&#125;(n)+b=\\mathcal&#123;G&#125;(n+a)\\) であるとき、算術周期的という。sub のニムは周期的、allbut のニムは算術周期的になる。\\(\\mathrm&#123;sub&#125;(S)\\) について \\(\\mathcal&#123;G&#125;(n)\\) は \\(f(n)=(\\mathcal&#123;G&#125;(n-1), \\mathcal&#123;G&#125;(n-2), \\ldots, \\mathcal&#123;G&#125;(n-\\max(S)))\\) のみから決まる。\\(\\max\\mathcal&#123;G&#125;(n) \\leq |S|\\) なので\\(f(n)=f(m)\\) となる \\(n,m\\) が存在する。従って周期的。\\(\\mathrm&#123;allbut&#125;(S)\\)について, 暫定的に全ての\\(n\\)について\\(\\mathcal&#123;G&#125;(n)=\\infty\\)としてニムを値の昇順に埋める。\\(k\\) 未満のニムが全て定まったとする。\\(\\mathcal&#123;G&#125;(n) = \\infty\\) となる最小の \\(n\\) を取り、\\(\\mathcal&#123;G&#125;(n)=k\\) とする。ニム\\(k\\)への遷移が不可能なものを順にニム\\(k\\)で確定していく。このようなアルゴリズムから、\\(k\\) 以上のニムは、\\(\\&#123;i : \\mathcal&#123;G&#125;(i) &lt; k, i \\geq n\\&#125;\\) のみで定まる。この集合が有限個しかないので算術周期的（&lt;a href="https://arxiv.org/abs/1201.3299"&gt;Sleator&lt;/a&gt;）&lt;/p&gt;
+&lt;p&gt;\\(2s_n &lt; b\\) のとき \\(G=\\mathrm&#123;allbut&#125;(s_1, s_2, \\ldots, s_n)\\) と \\(H=\\mathrm&#123;allbut&#125;(s_1, s_2, \\ldots, s_n, b)\\) のニム列は等しい。&lt;/p&gt;
+&lt;p&gt;帰納法で示す。\\(n &lt; b\\) ならば明らかに\\(\\mathcal&#123;G&#125;_H(n)=\\mathcal&#123;G&#125;_G(n)\\) である。\\(n &lt; k\\) で成り立つとする。\\(\\mathcal&#123;G&#125;_G(k) \
+eq \\mathcal&#123;G&#125;_H(k)\\) ならば \\(\\mathcal&#123;G&#125;_H(n-b) = g_H(n)\\) である。&lt;br /&gt;帰納法の仮定より&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;\\mathcal&#123;G&#125;_G(n-b) \\leq \\mathcal&#123;G&#125;_G(n-b+s) \\\\&lt;br /&gt;\\Leftrightarrow \\mathcal&#123;G&#125;_H(n-b) \\leq \\mathcal&#123;G&#125;_H(n-b+s) \\\\&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;である。&lt;br /&gt;\\(n-b &lt; n-b+s_n &lt; n-s_n\\) より \\(n-b+s_n\\) は \\(H\\) の選択肢であるから、\\(\\mathcal&#123;G&#125;_H(n-b) &lt; \\mathcal&#123;G&#125;_H(n-b+s)\\) であるが、これは \\(x \
+eq n-b, x &lt; n-s_n\\) で \\(\\mathcal&#123;G&#125;_H(x) = \\mathcal&#123;G&#125;_H(n-b)\\) の存在をしているので矛盾。&lt;/p&gt;
+&lt;p&gt;\\(ax+by &gt; 0\\) となる格子点の集合 \\(U\\) を考える。sub(a, b) は \\(N = ax + by\\) となる格子点 \\((x, y)\\) から格子点 \\((x-1, y), (x, y-1) \\in U\\) のどちらかに移動を繰り返すゲームだともいえる（&lt;a href="https://atcoder.jp/contests/arc144/tasks/arc144_f"&gt;ARC144F&lt;/a&gt;）。&lt;/p&gt;
+&lt;div class="statement"&gt;\\(0 &lt; a &lt; m\\) とする。\\(\\mathcal&#123;g&#125;(n) = \\mathrm&#123;mex&#125;_&#123;j \\geq 0&#125; \\mathcal&#123;g&#125;(n-a-mj)\\) を求めよ（&lt;a href="https://atcoder.jp/contests/arc144/tasks/arc144_f"&gt;ARC144F）&lt;/a&gt;&lt;/div&gt;
+&lt;p&gt;\\(0 &lt; a \\leq m /2\\) の場合：順に計算することで
+\\(0 \\leq i &lt; a\\),\\(0 \\leq j\\),
+について\\begin&#123;align&#125;
+\\mathcal&#123;G&#125;(i) &= 0 \\\\
+\\mathcal&#123;G&#125;(i + a + mj) &\
+eq 0 \\\\
+\\mathcal&#123;G&#125;(i + 2a + mj) &= 0 \\\\
+\\mathcal&#123;G&#125;(i + 3a + mj) &= 1 \\\\
+\\mathcal&#123;G&#125;(i + 4a + mj) &= 0 \\\\
+\\vdots & \\\\
+\\mathcal&#123;G&#125;(i + ka+mj) &= \\delta_&#123;k \\bmod 2, 0&#125;
+\\end&#123;align&#125;が得られる。ただし、\\(k\\) は \\(i+ka \\geq m \\iff k \\geq (m-i)/a\\) を満たす最小の整数とする。\\(i\\) を固定して、\\(G_q = (\\mathcal&#123;G&#125;(i + qa+mj))_&#123;j \\geq 0&#125;\\) と置くと、\\(
+\\delta_&#123;k \\bmod 2,0&#125;=0\\) のときは \\(G_0=(0,0,\\ldots), G_1 = (1,1,\\ldots)\\)、\\(\\delta_&#123;k \\bmod 2,0&#125;=1\\) のときは \\(G_0=(0,1,1,1,\\ldots)\\), \\(G_1 = (1,2,2,2,\\dots)\\) となる。&lt;/p&gt;
+&lt;p&gt;\\(m/2 &lt; a &lt; m\\) の場合：順に計算することで \\(0 \\leq j\\) について&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;\\mathcal&#123;G&#125;(i) &amp;= 0 &amp; (0 \\leq i \\lt a)\\\\&lt;br /&gt;\\mathcal&#123;G&#125;(i+a+mj) &amp;\
+eq 0 &amp; (0 \\leq i \\lt a)\\\\&lt;br /&gt;\\mathcal&#123;G&#125;(i+a+mj) &amp;= 0 &amp; (a \\leq i &lt; m)\\end&#123;align&#125;&lt;br /&gt;が得られる\\(a \\leq i &lt; a + b\\) のとき
+\\(a - b\\leq i + a - m &lt; a\\) である。
+よって、\\(\\mathcal&#123;G&#125;(i+mj) = 0\\) for \\(a-b \\leq i &lt; a\\)である。
+\\(G_&#123;k&#125; = (\\mathcal&#123;G&#125;(i-bk+mj)_&#123;j \\geq 0&#125;)\\) と置くと \\(G_&#123;0&#125; = (0,0,\\ldots,), G_&#123;1&#125;=(0,1,1,1),G_&#123;2&#125;=(0,1,2,2,\\ldots)\\) となり、\\(i - bk \\geq 0\\) で成立。
+\\(\\mathcal&#123;G&#125;(i+mj)\\) for \\(a \\leq i\\) については、\\(\\mathcal&#123;G&#125;(i+mj) = 1 + \\mathcal&#123;G&#125;(i-a+mj)\\)。&lt;/p&gt;
+&lt;p&gt;(m,a)=(35, 30)としてG(ah+mw)を(h,w)にプロット(&lt;a href="https://wandbox.org/permlink/k8dBjuCEbz5bjmiD"&gt;code&lt;/a&gt;)&lt;br /&gt;xxxxxxxxxxxxxxxxxxx01222222222222222222222222222&lt;br /&gt;xxxxxxxxxxxxxxxxxx01233333333333333333333333333&lt;br /&gt;xxxxxxxxxxxxxxxxx01234444444444444444444444444&lt;br /&gt;xxxxxxxxxxxxxxxx01234555555555555555555555555&lt;br /&gt;xxxxxxxxxxxxxxxx1234566666666666666666666666&lt;br /&gt;xxxxxxxxxxxxxxx0000000000000000000000000000&lt;br /&gt;xxxxxxxxxxxxxx0111111111111111111111111111&lt;br /&gt;xxxxxxxxxxxxx01222222222222222222222222222&lt;br /&gt;xxxxxxxxxxxx01233333333333333333333333333&lt;br /&gt;xxxxxxxxxxx01234444444444444444444444444&lt;br /&gt;xxxxxxxxxx01234555555555555555555555555&lt;br /&gt;xxxxxxxxxx1234566666666666666666666666&lt;br /&gt;xxxxxxxxx0000000000000000000000000000&lt;br /&gt;xxxxxxxx0111111111111111111111111111&lt;br /&gt;xxxxxxx01222222222222222222222222222&lt;br /&gt;xxxxxx01233333333333333333333333333&lt;br /&gt;xxxxx01234444444444444444444444444&lt;br /&gt;xxxx01234555555555555555555555555&lt;br /&gt;xxxx1234566666666666666666666666&lt;br /&gt;xxx0000000000000000000000000000&lt;br /&gt;xx0111111111111111111111111111&lt;br /&gt;x01222222222222222222222222222&lt;/p&gt;
+&lt;h3&gt;二山崩し&lt;/h3&gt;
+&lt;div class="statement"&gt;\\(n\\) 個の石からなる山がある。A, B は交互に山から石を取る。直前に相手が石を \\(k\\) 個取ったならば、\\(f(k)\\) 個まで石を取れる。ただし、初手ですべての石を取ってはいけない。\\(f(k)=2k\\) の場合、\\(f(k)=2k-1\\) の場合、\\(f\\) が単調増加な関数の場合についてそれぞれ解け（フィボナッチニム）&lt;/div&gt;
+&lt;p&gt;&lt;a href="https://library.slmath.org/books/Book70/files/1002.pdf&gt;後でチェック&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;\\(f(k)=2k\\)の場合：\\(n\\) がフィボナッチ数であることと \\(\\mathcal&#123;P&#125;\\) が同値。必勝側はゼッケンドルフ表示のLSBを引けばよい。この操作ができるには、任意の二つのフィボナッチ数 \\(F_a, F_b\\) \\((a &gt; b)\\) について、\\(F_a-F_b\\) のゼッケンドルフ表示のLSBが \\(2F_b\\) 以下であることを言えばよい。それはゼッケンドルフ表示による次のような計算により分かる。\\begin&#123;align&#125;&lt;br /&gt;101010 + 1 &amp;= 101011 \\\\&lt;br /&gt;&amp;= 101100 \\\\&lt;br /&gt;&amp;= 110000 \\\\&lt;br /&gt;&amp;= 1000000 \\\\&lt;br /&gt;\\end&#123;align&#125;&lt;/p&gt;
+&lt;p&gt;\\begin&#123;align&#125;&lt;br /&gt;10101001 + 10 &amp;= 10101011 \\\\&lt;br /&gt;&amp;= 10101100\\\\&lt;br /&gt;&amp;= 10110000\\\\&lt;br /&gt;&amp;= 11000000\\\\&lt;br /&gt;&amp;= 100000000\\\\&lt;br /&gt;\\end&#123;align&#125;
+&lt;/p&gt;
+&lt;p&gt;\\(f(k)=2k-1\\)の場合：\\(n\\) が２冪であることと\\(\\mathcal&#123;P&#125;\\)が同値。&lt;/p&gt;
+&lt;p&gt;\\(f\\)が単調増加な場合(&lt;a href="https://www.fq.math.ca/Scanned/8-3/schwenk-a.pdf"&gt;Allen&lt;/a&gt;)：\\(H_1=1, H_&#123;i+1&#125; = H_i + \\min_&#123;j \\leq i&#125; \\&#123;H_j : f(H_j) \\geq H_i\\&#125;\\) によって定義される数列 \\(H\\) の項で \\(n\\) が表せることとと \\(\\mathcal&#123;P&#125;\\) が同値（\\(f(H_i) &lt; H_i\\) となる \\(H_i\\) が末尾)。任意の非負整数 \\(n\\) が \\(n=\\sum_i H_&#123;j_i&#125;\\) かつ (\\(f(H_&#123;j_i&#125;) &lt; H_&#123;j_&#123;i+1&#125;&#125;\\) for all i) として一意に表せて、必勝側はLSBを引けばよい。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;&amp;H_&#123;j_1&#125; + H_&#123;j_2&#125; + \\cdots + H_&#123;j_n&#125; \\\\&lt;br /&gt;&lt; &amp;H_&#123;j_2+1&#125; + H_&#123;j_3&#125; + \\cdots H_&#123;j_n&#125; \\\\&lt;br /&gt;\\leq &amp;H_&#123;j_3+1&#125;+H_&#123;j_4&#125;+\\cdots H_&#123;j_n&#125;\\\\&lt;br /&gt;\\vdots\\\\&lt;br /&gt;\\leq&amp;H_&#123;j_n+1&#125;&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;よって、貪欲に大きい方から取ることで一意な表示になる。またここから、\\(H_a - H_b\\) (\\(a &gt; b\\)) の LSB \\(H_c\\) は \\(f(H_b) \\geq H_c\\) を満たし、必勝側の戦略が実行可能である。&lt;a href="https://library.slmath.org/books/Book29/files/zieve.pdf"&gt;Michael&lt;/a&gt;ではこのような分解を用いない方法が取られている。&lt;/p&gt;
+&lt;div class="statement"&gt;石の個数が \\(a, b\\) の山がある。「片方から好きな個数の石を取り除く」「両方から同じ個数の石を取り除く」の何れかができる。操作できなくなった方が負けである場合、どちらが勝つか(Wythoff's game)&lt;/div&gt;
+&lt;p&gt;\\((x,y)\\) が \\(\\mathcal&#123;P&#125;\\) ならば \\((x+i, y),(x,y+i),(x+i,y+i)\\) は \\(\\mathcal&#123;N&#125;\\). 遷移をマス目上に書いてみると、\\begin&#123;align&#125; x_i &amp;= \\mathrm&#123;mex&#125;\\&#123;x_j, y_j\\&#125;\\\\ y_i &amp;= x_i + i\\end&#123;align&#125; によって定まる山 \\((x_i, y_i), (y_i, x_i)\\) が負けであることが分かる。&lt;img class="aligncenter  wp-image-16140" src="https://37zigen.com/wp-content/uploads/2022/03/Wythoff.png" alt="" width="230" height="220" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img class="aligncenter  wp-image-16331" src="https://37zigen.com/wp-content/uploads/2022/03/wythoff-1.png" alt="" width="326" height="116" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://wandbox.org/permlink/jiexpFHr1BoBUxnf"&gt;code&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;レイリーの定理：\\(\\alpha, \\beta\\) が無理数で \\(1 / \\alpha + 1 / \\beta = 1\\) ならば \\(\\&#123; \\lfloor i\\alpha \\rfloor : i \\in \\mathbb&#123;N&#125;\\&#125;, \\&#123;\\lfloor i\\beta \\rfloor : i \\in \\mathbb&#123;N&#125;\\&#125;\\) は \\(\\mathbb N\\) の分割である。&lt;/p&gt;
+&lt;p&gt;（証明）無理数 \\(\\alpha, \\beta\\) が \\(1 / \\alpha + 1 / \\beta = 1\\) を満たすとする。\\(A := \\&#123;i\\alpha : i \\in \\mathbb&#123;N&#125;\\&#125;, B := \\&#123;i\\beta : i \\in \\mathbb&#123;N&#125;\\&#125;\\) と置く。\\(i \\alpha = j \\beta \\Leftrightarrow \\alpha / \\beta = j / i\\) は、左辺 \\(\\alpha / \\beta = \\alpha-1\\) が無理数、右辺 \\(j/i\\) が有理数なので、起こりえない。従って、\\(A, B\\) は交わらない。\\(f(x) = \\#\\&#123;y \\in A \\cup B : y \\leq x\\&#125;\\) とすると、\\(f:A\\cup B \\rightarrow \\mathbb&#123;N&#125;\\) の全単射である。\\(j\\beta \\leq i\\alpha\\) を満たす \\(j\\) の個数は \\(\\lfloor i\\alpha / \\beta\\rfloor = \\lfloor i(\\alpha-1)\\rfloor\\) なので \\(f(i\\alpha) = \\lfloor i \\alpha \\rfloor, f(i\\beta) = \\lfloor i\\beta \\rfloor \\). 従って \\(\\&#123;\\lfloor i \\alpha \\rfloor : i \\in \\mathbb&#123;N&#125;\\&#125;\\) と \\(\\&#123;\\lfloor i \\beta \\rfloor : i \\in \\mathbb&#123;N&#125;\\&#125;\\) は相補的である■&lt;br /&gt;\\(\\mathbb&#123;N&#125;\\) の分割 \\(A = \\&#123;a_1, a_2, \\ldots,\\&#125;_&lt;, B = \\&#123;b_1, b_2, \\ldots, \\&#125;_&lt;\\) が \\(b_i = a_i + i, a_1 = 1\\) を満たすならば、そのような数列は明らかに一通りしかなく、レイリーの定理はその表現を与える。黄金比 \\(\\phi\\) は \\(1 / \\phi + 1 / \\phi^2 = 1\\) を満たし、\\(x_i = \\lfloor i\\phi \\rfloor, y_i = \\lfloor i \\phi^2\\rfloor\\) となる。確かに、\\begin&#123;align&#125; &amp; i + x_i = \\lfloor i (\\phi +1)\\rfloor = \\lfloor i \\phi^2\\rfloor = y_i \\\\ &amp;\\lfloor n\\phi \\rfloor = \\mathrm&#123;mex&#125;\\&#123;\\lfloor i\\phi  \\rfloor, \\lfloor i \\phi^2 \\rfloor : i &lt; n\\&#125;\\end&#123;align&#125; となっている。一方、フィボナッチ進法を使って、そのような集合を別の方法で表現することができる。\\(x \\leq y\\) の先手負けの状態 \\((x, y)\\) のゼッケンドルフの表現は次の様になっている。&lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;i&lt;/th&gt;
+&lt;th&gt;x&lt;/th&gt;
+&lt;th&gt;y&lt;/th&gt;
+&lt;th&gt;i のゼッケンドルフの表現&lt;/th&gt;
+&lt;th&gt;x のゼッケンドルフの表現&lt;/th&gt;
+&lt;th&gt;y のゼッケンドルフの表現&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;00000000&lt;/td&gt;
+&lt;td&gt;00000000&lt;/td&gt;
+&lt;td&gt;000000000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;00000010&lt;/td&gt;
+&lt;td&gt;00000010&lt;/td&gt;
+&lt;td&gt;000000100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;00000100&lt;/td&gt;
+&lt;td&gt;00001000&lt;/td&gt;
+&lt;td&gt;000010000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;00001000&lt;/td&gt;
+&lt;td&gt;00001010&lt;/td&gt;
+&lt;td&gt;000010100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;00001010&lt;/td&gt;
+&lt;td&gt;00010010&lt;/td&gt;
+&lt;td&gt;000100100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;00010000&lt;/td&gt;
+&lt;td&gt;00100000&lt;/td&gt;
+&lt;td&gt;001000000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;00010010&lt;/td&gt;
+&lt;td&gt;00100010&lt;/td&gt;
+&lt;td&gt;001000100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;18&lt;/td&gt;
+&lt;td&gt;00010100&lt;/td&gt;
+&lt;td&gt;00101000&lt;/td&gt;
+&lt;td&gt;001010000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;20&lt;/td&gt;
+&lt;td&gt;00100000&lt;/td&gt;
+&lt;td&gt;00101010&lt;/td&gt;
+&lt;td&gt;001010100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;23&lt;/td&gt;
+&lt;td&gt;00100010&lt;/td&gt;
+&lt;td&gt;01000010&lt;/td&gt;
+&lt;td&gt;010000100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;16&lt;/td&gt;
+&lt;td&gt;26&lt;/td&gt;
+&lt;td&gt;00100100&lt;/td&gt;
+&lt;td&gt;01001000&lt;/td&gt;
+&lt;td&gt;010010000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;17&lt;/td&gt;
+&lt;td&gt;28&lt;/td&gt;
+&lt;td&gt;00101000&lt;/td&gt;
+&lt;td&gt;01001010&lt;/td&gt;
+&lt;td&gt;010010100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;\\(\\mathcal&#123;P&#125;\\) ポジションは \\((0, 0)\\) または \\((\\overleftarrow&#123;x&#125;, x)\\) の形をしている。また、\\(x\\) の正規ゼッケンドルフ表現の LSB は偶数の位置に、\\(\\overleftarrow&#123;x&#125;\\) の LSB は奇数の位置にある。LSB の偶奇性と、\\(\\overleftarrow&#123;x&#125;, x\\) は一方からもう一方が定まることから、\\((\\overleftarrow&#123;x&#125;-i,x), (\\overleftarrow&#123;x&#125;,x-i), \\) は \\(\\mathcal&#123;P&#125;\\) にならない。&lt;br /&gt;\\(x = \\overrightarrow x + \\overrightarrow&#123;\\overrightarrow&#123;x&#125;&#125;\\) なので、\\begin&#123;align&#125;&lt;br /&gt;&amp; \\overleftarrow x-x \\\\&lt;br /&gt;=&#123;&#125;&amp; (y + \\overrightarrow x)-x \\\\&lt;br /&gt;=&#123;&#125;&amp; \\overrightarrow&#123;x&#125;&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;である。\\(\\overrightarrow&#123;x&#125;\\) は LSB が奇数の位置にあるゼッケンドルフ表現で表せる。各正整数 \\(n\\) に対して、このような表現はただ一つ存在し、第二正規ゼッケンドルフ表現と呼ぶ。第二正規ゼッケンドルフ表現は \\(n-1\\) の正規ゼッケンドルフ表現に \\(1\\) を足せば得られる。例えば、\\(1010 + 1 = 10000\\)　である。一意性は、第二正規ゼッケンドルフ表現 \\(1\\) を引くと \\(n-1\\) の正規ゼッケンドルフ表現になり、正規ゼッケンドルフ表現が一意であることから従う。以上から、\\((\\overleftarrow x, x)\\) が \\(\\mathcal P\\) ならば \\((\\overleftarrow x-i, x-i)\\) は \\(\\mathcal&#123;P&#125;\\) でない。&lt;/p&gt;
+&lt;p&gt;\\((y, x) \\) (\\(y \\geq x\\)) が \\(\\mathcal&#123;N&#125;\\) だとする。(i) \\(x\\) の LSB が偶数の場合：\\(y \\geq \\overleftarrow&#123;x&#125;\\) ならば \\((y-i, x)\\) で \\(\\mathcal&#123;P&#125;\\) に遷移できる。そうでないとする。\\(\\overrightarrow&#123;d&#125;:=y-x &lt; \\overleftarrow&#123;x&#125;-x\\) なので、\\((\\overleftarrow d, d) = (y-i, x-i)\\) となる \\(i\\) が存在して \\(\\mathcal&#123;P&#125;\\) に遷移できる。ただし、\\(\\overrightarrow d\\) は第二正規表現とする。(ii) \\(x\\) の LSB が奇数の場合：\\(x\\) のLSBは1番目にはならないことに注意。\\(y \\geq x \\geq \\overrightarrow &#123;x&#125;\\) なので \\((y-i, x)\\) で \\(\\mathcal&#123;P&#125;\\) に遷移できる。&lt;/p&gt;
+&lt;p&gt;\\(F_0=F_1=1, F_&#123;n&#125;=F_&#123;n-1&#125;+F_&#123;n-2&#125;\\) の母関数 \\(f\\) は&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;f&amp;=\\sum_&#123;i \\geq 0&#125; F_ix^i \\\\&lt;br /&gt;&amp;= \\frac&#123;1&#125;&#123;1-x-x^2&#125; \\\\&lt;br /&gt;&amp;= \\frac&#123;1&#125;&#123;(1-\\phi x)(1+\\phi^&#123;-1&#125;x)&#125;&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;\\(\\lfloor \\phi x\\rfloor \\) のゼッケンドルフ表示を求める。\\(\\phi xf-f = -\\frac&#123;1&#125;&#123;1+\\phi^&#123;-1&#125;x&#125;\\) と \\(\\phi^&#123;-2&#125; &lt; \\frac&#123;1&#125;&#123;2&#125;\\) より \\(-1&lt; \\phi x - \\overleftarrow&#123;x&#125; &lt; 1\\) で \\(x\\) の LSB が (0-indexed) 奇数桁目のときは負、偶数桁目の時は正。従って、\\(\\lfloor \\phi x\\rfloor\\) のゼッケンドルフ表示は、\\(x\\) のゼッケンドルフ表示を左シフトしたあと、LSBが (0-indexed) 偶数番目ならば \\(1\\) 引くことで得られる。\\(\\lfloor \\phi^2 x\\rfloor = x + \\lfloor \\phi x\\rfloor\\) は \\(x\\) が \\(\\lfloor \\phi x\\rfloor \\) の右シフトになっていることに注意すると、\\(\\lfloor\\phi^2x\\rfloor\\) は \\(\\lfloor \\phi x\\rfloor\\) の左シフト。&lt;/p&gt;
+&lt;div class="statement"&gt;\\(\\phi = (1+\\sqrt&#123;5&#125;)/2\\) として正整数 \\(x\\) を \\(x-1\\) か \\(\\lfloor x / \\phi \\rfloor \\) で置き換えることを交互に繰り返す。ただし、\\(x\\) より小さい非負整数で置き換えなくてはならない。ニム数を求めよ。&lt;/div&gt;
+&lt;p&gt;\\(k = \\lfloor i \\phi \\rfloor \\) と置くと、\\(i\\phi &lt; k + 1 \\Leftrightarrow i - 1/\\phi &lt; k\\) なので \\(\\lfloor \\lfloor i\\phi \\rfloor /\\phi \\rfloor = i - 1\\) である。示すべき式は
+\\begin&#123;align&#125;
+&k=\\lfloor\\lfloor i\\phi^2 \\rfloor/\\phi\\rfloor\\\\
+\\iff&k \\leq \\lfloor i\\phi^2 \\rfloor/\\phi &lt; k + 1 \\\\
+\\iff &k \\leq (i+k )/\\phi &lt; k + 1\\\\
+\\iff &(\\phi-1)k \\leq i&lt; (\\phi-1)k + \\phi\\\\
+\\iff &k/\\phi \\leq i&lt; k/\\phi + \\phi\\\\
+\\end&#123;align&#125;
+となる。左側の不等式は自明。右側の不等式は、 \\(k \\leq i \\phi &lt; k + 1\\) より \\(i &lt; k/\\phi + 1/\\phi\\) だから良い。それぞれのフィボナッチ進法を考えることで、ニム数が求まる。&lt;img class="aligncenter size-large wp-image-16523" src="https://37zigen.com/wp-content/uploads/2022/03/hos-fibonacci-1024x704.png" alt="" width="1024" height="704" /&gt;&lt;/p&gt;
+&lt;h3&gt;複数山崩し&lt;/h3&gt;
+&lt;div class="statement"&gt;石の個数が \\(x_1, x_2, \\ldots, x_n\\) 個の山がある。先手は山を一つ以上選びそれぞれから \\(a\\) 個の石を取り去る。後手は山を一つ以上選びそれぞれから \\(b\\) 個の石を取り去る。操作できなくなった方が負けであるとき、勝つのはどちらか（&lt;a href="https://atcoder.jp/contests/arc143/tasks/arc143_c"&gt;ARC143C&lt;/a&gt;）。&lt;/div&gt;
+&lt;p&gt;真似っこ戦略により、\\(x_i \\leftarrow x_i \\bmod (a+b)\\) としても結果は変わらない。全ての要素が \\(a\\) 未満ならば先手の負け。さもなくば、先手は可能な限り多くの山から \\(a\\) 個ずつ石を取り去って、相手に渡す。このとき、\\(b\\) 個以上の山があれば後手の勝ち、さもなくば先手の勝ち。&lt;/p&gt;
+&lt;h2&gt;非不偏ゲーム&lt;/h2&gt;
+&lt;p&gt;左右のそれぞれが先手のときの勝敗を個別に分析する必要はない。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;左右のうち、右が先手の時の勝敗が完全に分かっている。&lt;/li&gt;
+&lt;li&gt;そのことから、左が先手のときの最善の一手目が得られる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;このとき、左が先手の時の勝敗が完全に得られる。（Xならば確実に勝つ/負ける）という条件が存在する方が条件が簡単になりやすく、そちらを主にして勝敗を分析するとよい。&lt;/p&gt;
+&lt;div class="statement"&gt;k (\\(\\geq 3\\)) 個の相異なる素数の積からなる数 \\(N\\) が与えられる。A, B は交互にNの約数である合成数を書く。&lt;br /&gt;Nを書いてはいけない。また、すでに書かれた数に対して、互いに素な数や、約数・倍数である数は書けない。どちらが勝つか。（Saint Petersburg 1997）&lt;/div&gt;
+&lt;p&gt;まずAは相異なる2つの素数の積 \\(pq\\) を書く。Bは \\(p\\) か \\(q\\) の倍数であって、\\(pq\\) の倍数でないものを書く。 \\(pk\\) を書いたとする。Aは常に続いて \\(qk\\) が書ける。従って先手の勝ち。N/pを書いた後、相手のkpに対して N/kを答える方法もある。&lt;/p&gt;
+&lt;div class="statement"&gt;\\(2k \\times 2k\\) のマスに A,B は交互に有理数を書き込む。全て書き終わった後に、各行で最大の数を黒く塗る。\\(1\\) 行目と \\(2k\\) 行目を繋ぐ、黒く塗られたパスができると A の勝ち、さもなくば A の負けである。どちらが勝つか。(USAMO　2004-4)&lt;/div&gt;
+&lt;p&gt;各行について、B は k 個のマスを選び、そのどれかを黒くすることができる。これは、A が書いたマスの行について、応手することでできる。各行 k 個のマスを非連結になるように選べるので、Aの負け。&lt;/p&gt;
+&lt;div class="statement"&gt;五目並べ&lt;br /&gt;\\(5 \\times 5\\) のマスで、A, B は交互に白と黒の駒を置く。Aは白の駒が5個並んだ列・行・対角の何れかが作れると勝ち、さもなくば負けである。どちらが勝つか。&lt;/div&gt;
+&lt;p&gt;下のようなペアが作れるので後手の勝ち。&lt;br /&gt;x626y&lt;br /&gt;5ccd3&lt;br /&gt;1bod1&lt;br /&gt;5baa3&lt;br /&gt;y424x&lt;/p&gt;
+&lt;div class="statement"&gt;\\(5 \\times 5\\) のマスで A, B は交互に 1 と 0 を書き込む。\\(3 \\times 3\\) の部分マスのうち、書き込まれた数の和の最大値がAの得点である。Aの得点を 6 点以下に抑えるようなBの戦略を示せ。（IMO Shortlist 1994, C1）&lt;/div&gt;
+&lt;p&gt;ペアリング。&lt;/p&gt;
+&lt;div class="statement"&gt;1*4000のマスにA,Bは交互にSかOを書き込む。先にSOSを作ったほうが勝ち。どちらが勝つか（USAMO 1999-5）&lt;/div&gt;
+&lt;p&gt;書き込める場所が全てS..Sの形になると何を書き込んでもSO.かS.Sができて、相手がSOSを作れるので負け。負けるときは全てこのパターンである。先手は最初の二手で S..S の形を少なくとも一箇所作ることができ、マスの偶奇性も合わせると先手の勝ち。また、2i-1と2iをペアにして同じ文字を書くと後手は最低でも引き分けにできることが簡単に分かる。&lt;/p&gt;
+&lt;div class="statement"&gt;\\(1000000\\) が書かれている。書かれている数を \\(n\\) として、A, B は交互に \\(n-1, \\lfloor (n+1)/2 \\rfloor\\) のどちらかで \\(n\\) を置き換える。先に 1 を書いた方が勝ち。どちらが勝つか（Saint Petersburg 2001）&lt;/div&gt;
+&lt;p&gt;\\(n\\) が偶数とする。偶数 \\(n\\) を持ったとき、\\(\\lfloor(n+1)/2\\rfloor\\) を渡すと負けるとする。&lt;br /&gt;\\(\\lfloor(n-1)+1)/2\\rfloor = \\lfloor (n+1)/2\\rfloor\\)&lt;br /&gt;であるから、 \\(n-1\\) に対して、相手の応手は \\((n-1)-1\\) である。\\(n=2\\) のときに勝ちであるから帰納法により、任意の偶数 \\(n\\) で勝ちである。&lt;img class="aligncenter  wp-image-16407" src="https://37zigen.com/wp-content/uploads/2022/03/saintpersburg2001.png" alt="" width="188" height="524" /&gt;nが奇数の時も含む完全な答えとしては2進法表示したとき \\(..0\\) または \\(..10^&#123;2k+1&#125;1\\) ならば勝ち。&lt;/p&gt;
+&lt;div class="statement"&gt;交互に、現在書かれている数をnとして2nかn+1で書き換える。ただし、Nより大きい数を書くことはできない。最初はn=1。書き換えられなくなったほうが負け。どちらが勝つか（IMO Shortlist 2004, C5）&lt;/div&gt;
+&lt;p&gt;後退解析。偶奇性よりNが奇数なら\\(\\mathcal&#123;P&#125;\\)。Nが偶数とする。\\(N = 4k\\) のとき、\\([2k+1, 4k]\\) には勝ちと負けが交互に現れる。\\(i \\in [k+1, 2k]\\) は \\(2i\\) に遷移できるので勝ち。\\(i \\in [1, k]\\) は \\([k+1, 2k]\\) に遷移しても仕方がないので、ここでゲームが閉じている。従って、\\(4k, k\\) のゲームの勝敗が一致する。\\(N = 4k+1\\) のとき、\\([2k+1, 4k+1]\\) には負けと勝ちが交互に現れる。\\(i \\in [k+1, 2k]\\) は \\(2i\\) に遷移できるので勝ち。\\(i \\in [1, k]\\) は \\([k+1, 2k]\\) に遷移しても仕方がないので、ここでゲームが閉じている。従って、\\(4k+1, k\\) のゲームの勝敗が一致する。以上より二進法表示で1が偶数桁にある場合のみ\\(\\mathcal&#123;N&#125;\\)&lt;/p&gt;
+&lt;div class="statement"&gt;\\(\\mathbb&#123;Z&#125;/5\\mathbb&#123;Z&#125;\\) 上の5頂点サイクルの上でA, Bがゲームをする。各頂点 i には変数 \\(x_i \\in \\mathbb&#123;R&#125;\\) が定まっている。初期値は 0 である。各ターンでは、まずAが変数の値を合計で1だけ増やす。Bはある\\(k\\)を選び、\\(x_k,x_&#123;k+1&#125;\\)を0にする。ある時点で\\(x_i&gt;2\\) となる i があればAの勝ち、そのようなことが永劫起きなければBの勝ち。どちらが勝つか。(IMO Shortlist 2009, C5)&lt;/div&gt;
+&lt;p&gt;まずは、色々なBの戦略とそれに対するＡの応答を考察するべき。1増やすことでaが3つからa+(1-2a)/5が5つにできる。従って、\\(1/2-\\varepsilon\\)が5つにできる。\\(1/2-\\varepsilon,1/2-\\varepsilon,1/2-\\varepsilon\\)から\\(1-\\varepsilon,1/2-\\varepsilon,1-\\varepsilon\\)ができ、\\(1-\\varepsilon,0,0\\)から\\(2-\\varepsilon,0,0\\)ができる。&lt;/p&gt;
+&lt;p&gt;\\(\\max (x_i + x_&#123;i+1&#125;)\\) を \\(0\\) にする戦略は最適ではない。良以下のような進行が存在する。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;&amp;0.5, 0.5,0.5,0.5,0.5 \\\\&lt;br /&gt;&amp;0.5, 0.5, 0.5, 0, 0\\\\&lt;br /&gt;&amp;0.5, 0.75, 0.5, 0.75, 0\\\\&lt;br /&gt;&amp;0.5, 0, 0, 0.75, 0\\\\&lt;br /&gt;&amp;1.125, 0, 0, 1.125, 0\\\\&lt;br /&gt;&amp;1.125, 0, 0, 0, 0\\\\&lt;br /&gt;&amp;2.125, 0, 0, 0, 0\\\\&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;\\(0.5, 0.75, 0.5, 0.75, 0\\) から \\(0.5, 0.75, 0, 0, 0\\) としたい。適当にラベルを回転して A の手番で \\(x_0 = x_1 = 0, x_4 + x_2 \\leq 1, x_3 \\leq 1\\) が常に成り立つようにしたい。B の手番では \\(x_0+x_1+x_2+x_4 \\leq 2\\) が成り立つので、\\(x_0 + x_2 \\leq 1\\) として一般性を失わない。\\(x_4=x_3=0\\) とすると \\(x_1 \\leq 1\\) なので ok.&lt;/p&gt;
+&lt;div class="statement"&gt;無限に続く2次元マス目上で、A, Bは交互にそれぞれ o, x を書く。Aはn個の連続する o を縦・横・斜めのいずれかを作れたら勝ちである。BはAの勝ちを阻止できるか。(IMO Shortlist 1994, C6)&lt;/div&gt;
+&lt;div&gt;&lt;img class="aligncenter size-medium wp-image-19069" src="https://37zigen.com/wp-content/uploads/2022/03/H-tile-280x300.png" alt="" width="280" height="300" /&gt;n=9のとき勝利を阻止できる。H型のタイルを敷き詰める。H中では、斜め・縦・横の長さ3の列が作れないのでOK(Pollak and Shannon). また、８×８サイズのトーラス上でペアを作るHales jewett pairingがある。&lt;/div&gt;
+&lt;div class="statement"&gt;石の山が2つある。どちらか片方の山から \\(2x\\) 個取り出して、もう一方の山に \\(x\\) 個加える操作が許されている。A, B が交互に操作して、先に操作できなくなったほうが負け。先手が勝つ条件を求めよ(Russia 1999) また, ax個取り出し、bx個加えるという設定に一般化せよ。&lt;/div&gt;
+&lt;p&gt;2つの山の個数をそれぞれ \\(x, y\\) と置くと \\(|x-y| \\geq 2\\) が先手が勝つための条件。&lt;/p&gt;
+&lt;p&gt;真似っこ戦略により、\\((x,y)\\) と \\((x-(a-b),y-(a-b))\\) の勝敗が同じ。\\(0 \\leq x,y &lt; b\\) が敗北条件。十分条件であることは明らか。敗北条件を満たさないとする。\\(0 \\leq x &lt; a - b\\) かつ \\(b \\leq y\\) を仮定しても一般性を失わない。このとき \\(0 \\leq x + b &lt; b \\) なので勝利条件を満たすまで再帰的に操作できる。&lt;/p&gt;
+&lt;div class="statement"&gt;A, B は交互に \\(\\mathbb&#123; F&#125;_&#123;2&#125;^n\\) の元を取る。取り終わると、それぞれ自身が取った元の集合から元を一つ捨てる。残った元の和が \\(0\\) になったほうが勝ち。どちらも \\(0\\) になった場合は引き分け。A が最初に取るカードが \\(x\\) のとき、A は勝つことができるか。（Shortlist 2014/C8）&lt;/div&gt;
+&lt;p&gt;\\(a\\) を固定して \\(\\mathbb&#123;F&#125;_2^n\\) の元を \\(a, a + x\\) でペアリングする。各ペアから一つずつ選んで二つの集合 \\(A, B\\) を作る。\\(S_A = \\sum_&#123;i \\in A&#125; i, S_B = \\sum_&#123;i \\in B&#125; i\\) と置くと、\\(S_A = 0 \\lor S_A = a\\).&lt;br /&gt;\\(\\mathbb&#123;F_2&#125;^n\\) を２つの集合に分けたとき、要素の和 \\(w\\) は等しい。よって、\\(w\\) を持っている方が勝ち。最初に 0 を取ると後手勝ち。先手が選んだ元は \\((0, B, x_1, x_2, \\ldots)\\), 後手が選んだ元は \\((A, A+B, x_1 + B, x_2 + B, \\ldots)\\) とできる。\\((A+B, B, x_1, x_2, \\ldots), (A, 0, x_1 + B, x_2 + B, \\ldots) \\) だと和が \\(0\\) または \\(B\\) なので元の和は \\(A\\) または \\(A+B\\) でどちらも後手が持っている。最初に 0 以外を取ると先手勝ち。&lt;/p&gt;
+&lt;div class="statement"&gt;A, B は半順序集合 \\(\\mathbb&#123;Z&#125;_&#123;\\geq 0&#125; \\times \\mathbb&#123;Z&#125;_&#123;\\geq 0&#125;\\) から交互に点を選び、その点の上位集合を取り除く。先に操作できなくなったほうが負けである。このゲームは有限回で終了することを示せ。（chomp）&lt;/div&gt;
+&lt;p&gt;ヒルベルトの基底定理&lt;/p&gt;
+&lt;div class="statement"&gt;Aは要素の合計がMの正整数列 \\((a_1, \\ldots, a_&#123;60&#125;)\\) を自由に選ぶ。その後、次の操作を繰り返す。
+&lt;ul&gt;
+&lt;li&gt;Bはある整数 \\(1 \\leq i \\leq 59\\) を選ぶ。A は\\(a_1, \\ldots, a_i\\) または \\(a_&#123;i+1&#125;, \\ldots, a_&#123;60&#125;\\) に 1 足し、足されなかった方から 1 引く。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;途中で 0 ができるとAの負け。Aが勝つための条件を求めよ（2019 ISL C7）&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;\\(a=(30,29,..,1,2,3,..,31)\\) がAが勝利できる最小のMを与える。これが勝利できるのは明らか。勝利する最小のMを考える。\\(i &lt; j\\) について、\\(a_1,\\ldots, a_i\\) に 1 を足し、\\(a_&#123;i+1&#125;, \\ldots, a_&#123;60&#125;\\) に -1 を足す操作の直後に、\\(a_1,\\ldots, a_j\\) に -1 を足し、\\(a_&#123;j+1&#125;, \\ldots, a_&#123;60&#125;\\) に 1 を足しても勝てるなら M の最小性に反するのでそのような操作は考えない。位置を 1, 2,.., i-1 と指定すると、1 または i に -i が足される。従って、長さ i の区間の端のどちらかは i 以上。最小の要素から区間を伸ばすことで、30,29,..,1,2,..,31 の場合のM未満にはできないことが分かる。&lt;/p&gt;
+&lt;div class="statement"&gt;無限に続くマス目上でA, Bは交互にそれぞれo, xを書き込む。Aは連続する5個の縦・横のいずれかのoができると勝ちである。Bがこれを阻止できることを示せ。（1995 Israeli Math Olympiad）&lt;/div&gt;
+&lt;div class="statement"&gt;n人が円環に座っている。最初一人だけがk個の石を持っている。各ターンでは石を2つ以上持っているある人が、両隣の人に一つずつ石を渡す。そのような人がいなければゲームは終了する。\\(k \\leq n\\) のときゲームはいつか終了し、さもなくば永劫続くことを示せ。&lt;/div&gt;
+&lt;p&gt;chip-firing game。隣接する頂点に石を配ることを発火（fire）と呼ぶ。&lt;br /&gt;操作が終わらないとする。頂点vが無限回発火すると、その隣接頂点も無限回発火する。従って、サイクルの頂点全てが発火する。各石を区別することにすると、各辺eを通る石を固定しても一般性を失わない。従って、操作が終わらないためには、石がn個以上必要。&lt;/p&gt;
+&lt;p&gt;逆にゲームが停止するなら、発火しない頂点が存在する。全ての頂点が発火して、停止するとする。最初に発火しなくなった頂点を v とすると、ｖの隣接頂点がその後に全て発火するため。&lt;a href="https://www.sciencedirect.com/science/article/pii/S0195669813801114"&gt;Björner&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;石がn個のとき無限回発火する石の配置が存在する。グラフをAcyclicに向き付けて、各頂点に出次数個だけ石を置く。最小の頂点を発火する。最小の頂点に接続する辺の向きを反転する。このときAcyclicな向き付けで各頂点に出次数個の石があるので無限に続く。&lt;/p&gt;
+&lt;div class="statement"&gt;\\(5 \\times 9\\) のマスの上にコインが置いてある。各ターンでは、各コインは隣接するマスに移動する。ただし、直前の移動方向と直交する向きに移動しなければならない。また、コインが重なってはいけない。コインが33枚のときは、ゲームは有限回で終了することを示せ。また、32枚のとき、永遠に続くことがあることを示せ。(1996 Irish Math Olympiad)&lt;/div&gt;
+&lt;p&gt;&lt;a href="https://www.math.hkust.edu.hk/excalibur/v7_n5.pdf"&gt;解説&lt;/a&gt;&lt;/p&gt;
+&lt;div class="statement"&gt;\\(\\mathbb Z^2\\)上で正方形状に\\(n^2\\)個のコインが置かれている。\\(p=(x, y)\\) のコインは \\((x \\pm 2, y), (x, y \\pm 2)\\) に移動できる。ただし、移動するマスを \\(q\\) とすると \\((p+q)/2\\) にはもともとコインがあって、移動後にそのコインを取り除かなければならない。操作を繰り返すことで、コインが一枚だけの状態にできることを示せ。（1993 IMO）&lt;/div&gt;
+&lt;div class="statement"&gt;A はそれぞれ 1, 2, ..,. n 個からなる石の山を好きな順序で並べる。その後、Bから始めて、交互に石を一つずつ取り去る。相手が直前に操作した山の隣の山にしか操作できない。ただし、Bの初手は好きな山を選べる。それ以上操作できなくなったほうが負け。どちらが勝つか。（XIX Olimpíada Matemática Rioplatense (2010)）&lt;/div&gt;
+&lt;p&gt;隣接する石で完全マッチングを作れるとAの勝ち。完全マッチングが作れるには和が偶数である必要があるので、n=0,3 mod 4 が必要。まず 1 3 4 2 で作れることが簡単に示せる。1, 2, .., 4k で作れるなら 5, 6, .., 4k+4 でも作れる。よって 1, 2, .., 4k+4 でも作れる。1, 3, 2 で作れるので、1, 2, .., 4k+3 で作れる。よって\\(n = 0, 3 \\pmod 4\\) のとき A の勝ち。\\(n = 1, 2 \\pmod 4\\) のとき任意の山の並びに対して、マッチングに選ばれなかった山の位置の偶奇が等しいものが存在するので B の勝ち。&lt;/p&gt;
+&lt;div class="statement"&gt;Z^2上で、\\(y \\leq 0\\) となる全ての座標 \\((x, y)\\) 上にコインが置かれている。各コインは隣接するコイン x の隣の空きマスに移動して、x を取り除く操作ができる。\\(y \\geq 4\\) となるマス \\((x, y)\\) に有限回の操作でコインを移動できないことを示せ。（Conway's Soldiers）&lt;/div&gt;
+&lt;div class="statement"&gt;最後の石を取った方が負けというNIMの勝敗を求めよ。（Misere Nim）&lt;/div&gt;
+&lt;div class="statement"&gt;N個のマスが一列に並んでいて、A, B は交互にそれぞれo, xを書き込む。ただし、同じ文字が隣接してはいけない。すべてのマスに文字が書き込まれたら、引き分け。さもなくば、それより前に操作できなくなったら負け。帰結類を求めよ。（IMO 2015 Shortlist, C4）&lt;/div&gt;
+&lt;p&gt;Bは初手で端を取る。端を除いてAの両隣には常にBが配置できるので、Bは引き分け以上にできる。Nが奇数で引き分けならABAB..BAだが、一方の端はBなので起きない。よってB勝ち。Nが偶数で引き分けならABAB..ABとなる。Bが一つでも奇数番目を取れればBの勝ち。N≥8ならば可能。N=2,4,6は引き分け&lt;/p&gt;
+&lt;div class="statement"&gt;A, Bは交互に[n]の元を取っていく。全て取り終わったあと、Aの取った元の和が3の倍数だとAの勝ち、さもなくばAの負けである。Aの勝ち負けを求めよ（JMO 2007）&lt;/div&gt;
+&lt;p&gt;\\(1,2,\\ldots,6k\\) は mod 3 で 0,1,2 がそれぞれ偶数個ずつあるので完全マッチングを作れて勝敗に影響しない。従って、\\(n \\leftarrow n \\mod 6\\) としてよい。n mod 6 = 1,2,3 のとき負け。 4, 5, 0 のとき勝ち&lt;/p&gt;
+&lt;div class="statement"&gt;正の整数nが与えられる。A, B は交互にnのある真の約数dを選んでnをn-dで置き換える。それ以上操作できなくなったほうが負け。勝敗を求めよ。（Baltic Way 2013）&lt;/div&gt;
+&lt;div class="statement"&gt;\\(m \\times (m+1)\\) のグリッドグラフがある。はじめ、駒は一番下の横棒の頂点のどこかにある。A, Bは交互に駒を動かす。ただし同じ辺を二度通ることはできない。それ以上動かせなくなったほうが負け。どちらが勝つか。（Korea Final Round 2009）&lt;/div&gt;
+&lt;div class="statement"&gt;二次元平面の(0,0)に天使がいる。天使と悪魔は交互に次の操作をする。天使は(x, y)から(x+1, y)か(x, y+1)に移動することを1回以上k回以下繰り返す。悪魔は天使が移動できないを座標を一つ追加する。天使がそれ以上移動できなくなるように悪魔はできるか。（JMO 2013）&lt;/div&gt;
+&lt;p&gt;できる。天使がx+y=D/2に到達するまでに x+y=D(0≤x≤D) の点を D/(2k) 個ブロックできる。つまり、D/&#123;2k(D+1)&#125; &gt; 1/(4k) ‰ブロックできる。x+y=D/2からx+y=D/4に到達するまでにさらに到達できる位置のうち 1/(4k) ‰ブロックできる。Dを十分大きく取り、繰り返すと全てブロックできる。&lt;/p&gt;
+&lt;div class="statement"&gt;Aは[N]から整数xを一つ選ぶ。Bは[N]の部分集合Sを選び、\\(x \\in S\\)であるかどうか何回でも尋ねることができる。AはBの質問に答える際に嘘をついても良いが、k+1回連続で嘘をついてはいけない。Bは好きなだけ質問をしたあとに[N]のn元集合Xを答える。\\(x \\in X\\) ならばBの勝ち、さもなくば負け
+&lt;ol&gt;
+&lt;li&gt;\\(n \\geq 2^k\\)ならばBが勝つことを示せ&lt;/li&gt;
+&lt;li&gt;任意の十分大きいkに対して、\\(n \\geq 1.99^k\\) であって、Bが勝てるnが存在することを示せ。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;（IMO2012）&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="statement"&gt;\\(K^&#123;2000&#125;\\)がある。Aは辺を一個削除する。Bは2個か3個削除する。これをA, Bは交互に繰り返す。孤立点を作ったほうが負け。どちらが勝つか。(All-Russian MO 1999)&lt;/div&gt;
+&lt;div class="statement"&gt;半分以下の石を取り除くときのニム数は？&lt;/div&gt;
+&lt;p&gt;\\(\\mathcal&#123;G&#125;(n) = \\begin&#123;eqnarray&#125;&lt;br /&gt;\\begin&#123;cases&#125;&lt;br /&gt;0 &amp;(n = 0) \\\\&lt;br /&gt;1 + \\lfloor \\log_2(n) \\rfloor &amp;(\\text&#123;otherwise&#125;)\\\\&lt;br /&gt;\\end&#123;cases&#125;&lt;br /&gt;\\end&#123;eqnarray&#125;\\)&lt;/p&gt;
+&lt;p&gt;\\(\\mathcal G(n) = \\mathrm&#123;mex&#125;_&#123;i + j &lt; n&#125;\\ (\\mathcal G(i) \\oplus \\mathcal G(j))\\) のとき、\\(\\mathcal G(i) \\oplus \\mathcal G(j) \\leq \\mathcal G(i) + \\mathcal G(j)\\) なので帰納法より \\(\\mathcal G(n) \\leq n \\) が成り立つ(ABC278G)。&lt;/p&gt;
+&lt;div class="statement"&gt;山を空でない二つの山に分割するゲーム&lt;/div&gt;
+&lt;p&gt;\\(\\mathcal G(n)=\\begin&#123;cases&#125;&lt;br /&gt;0 &amp; (n = 0) \\\\&lt;br /&gt;0 &amp; (n\\text&#123; が偶数&#125;) \\\\&lt;br /&gt;1 &amp; (n\\text&#123; が奇数&#125;)&lt;br /&gt;\\end&#123;cases&#125;\\)&lt;/p&gt;
+&lt;div class="statement"&gt;\\(1 \\leq k &lt; n / 2\\) 個の石を取り除くときのニム値は？&lt;/div&gt;
+&lt;p&gt;\\(\\mathcal G(2^&#123;k+1&#125;x + 2^k) = x\\)。\\(x / 2 &lt; y &lt; x\\) には \\(\\mathcal G(2^&#123;k+1&#125;y + 2^k) = y\\) で遷移可能。\\(0 \\leq y \\leq x / 2\\) への遷移は、\\(x, y\\) の辞書順比較で場合分けをすると、存在が分かる。\\(n=2^k\\) のとき \\(\\mathcal&#123;P&#125;\\) である。&lt;/p&gt;
+&lt;div class="statement"&gt;半直線状に並んだマス目上に石が置いてある。石は各マスに高々一つしかない。交互に石を左側に移動させる。ただし、すでにある石を飛び越えるような石の移動は禁止されている。ニム数を求めよ。左端に石を捨てるような操作ができるときはどうなるか。&lt;/div&gt;
+&lt;p&gt;石を右側から二つずつペアにし、ペアにした石の座標の差を石の個数にするようなニムになる。&lt;/p&gt;
+&lt;div class="statement"&gt;各ターンで一つ以上k個以下の山から好きな個数の石を&lt;br /&gt;取り除けるときの勝敗（Moore's nim）&lt;/div&gt;
+&lt;p&gt;各山の個数を2進展開して、各桁について和を取ったとき、すべての和がkの倍数か否か。&lt;/p&gt;
+&lt;div class="statement"&gt;二つの山がある。どちらか一方の山を取り去り、もう一方の山から石を一個消去した後に二つの山（0個の石の山ができてよい）に分けることを先手と後手は交互に繰り返す。ニム数を求めよ。(&lt;a href="https://arxiv.org/abs/1908.07763"&gt;delete nim&lt;/a&gt;)&lt;/div&gt;
+&lt;p&gt;\\(\\mathcal G(a, b)=\
+u_2( (a \\lor b) + 1)\\)&lt;/p&gt;
+&lt;div class="statement"&gt;いくつかの石の山が３つある。各山の石の個数は相異なる。山を選び正整数個の石を取りさることを交互に繰り返す。ただし、同じ数の石の山ができてはならない。石の数が0個の山にこのルールは適用しない。勝敗を求めよ（Antonim）&lt;/div&gt;
+&lt;p&gt;\\((a+1)\\oplus(b+1)\\oplus(c+1)\\)がP局面&lt;/p&gt;
+&lt;div class="statement"&gt;同じ個数の山から同時に同じ数の石を取り除かなければならないニムがAntonimと等価であることを示せ。&lt;/div&gt;
+&lt;div class="statement"&gt;いくつかの石の山がある。各山の石の個数は相異なる。山を選び正整数個の石をりさることを交互に繰り返す。ただし、同じ数の石の山ができてはならない。石の数が0個の山にもこのルールを適用する。ニム数を求めよ（Welter=佐藤のゲーム）&lt;/div&gt;
+&lt;p&gt;a, bが最初に相異なる桁e(1-indexed)を用いて \\(g(a,b)=|a-b|\\oplus|a-b+1|=2^e-1\\) と定義する。ただし、\\(a=b\\) のときは-1とする（補数表現）。山が \\(n_1, n_2, \\ldots, n_k\\) のニム数は \\([n_1,n_2,\\ldots,n_k]:=\\bigoplus n_i \\bigoplus_&#123;i &lt; j&#125; g(n_i,n_j)\\) になる。&lt;/p&gt;
+&lt;p&gt;証明（Conway）：&lt;br /&gt;\\(g(x,y)=g(x\\oplus a,y \\oplus a)=g(x+ a,y + a)\\)が成り立つ。\\([n_1\\oplus a,n_2\\oplus a,\\ldots,n_k\\oplus a]=[n_1,n_2,\\ldots,n_k]\\oplus (a\\delta_&#123;1,k\\bmod 2&#125;)\\)&lt;/p&gt;
+&lt;p&gt;\\begin&#123;align*&#125;&lt;br /&gt;[0,n_1,n_2,\\ldots,n_k]&amp;=\\bigoplus n_i \\bigoplus g(0,n_i) \\bigoplus_&#123;i &lt; j&#125; g(n_i,n_j)\\\\&lt;br /&gt;&amp;=\\bigoplus n_i \\bigoplus (n_i \\oplus (n_i-1)) \\bigoplus_&#123;i &lt; j&#125; g(n_i-1,n_j-1)\\\\&lt;br /&gt;&amp;=\\bigoplus (n_i-1) \\bigoplus_&#123;i &lt; j&#125; g(n_i-1,n_j-1)\\\\&lt;br /&gt;&amp;=[n_1-1,n_2-1,\\ldots,n_k-1]&lt;br /&gt;\\end&#123;align*&#125;&lt;/p&gt;
+&lt;p&gt;\\(+,\\oplus\\) でできた式を animating function と呼ぶ。\\([x,a_1,\\ldots,a_n]\\) は animating function で \\(\\mathbb&#123;N&#125; \\setminus \\&#123;a_1,a_2,\\ldots,a_n\\&#125;\\) から \\(\\mathbb&#123;N&#125;\\) への全単射であることを示す。\\(n=0\\) のときは明らか。\\(n=1\\) のときは \\(x \\oplus g(x,a_1) = x \\oplus g(x\\oplus a_1,0) = x \\oplus ((x\\oplus a_1)-1)\\oplus (x \\oplus a_1) = a_1 \\oplus (x \\oplus a_1 - 1)\\) より良い。\\(n=k-1\\) で成立を仮定。\\(f_n(x) = x \\oplus g(x,a_1)\\oplus \\cdots \\oplus g(x,a_n)\\) と置く。\\(f_n(x) = f_&#123;n-1&#125;(x) \\oplus g(f_&#123;n-1&#125;(x), f_&#123;n-1&#125;(a_n))\\) なので \\(f_n\\) は \\(\\mathbb&#123;N&#125;\\setminus\\&#123;a_1,\\ldots,a_&#123;n-1&#125;,a_n\\&#125;\\) から \\(\\mathbb&#123;N&#125;\\) への全単射。&lt;/p&gt;
+&lt;p&gt;\\([a_1,\\ldots,a_k]=n\\) と \\(n' &lt; n\\) について、\\([a_1,\\ldots,a_&#123;i-1&#125;,b_i,a_&#123;i+1&#125;,\\ldots,a_k]=n'\\) となる \\(b_1,\\ldots,b_k\\) を取る。\\(b_i &lt; a_i\\) を満たす \\(i\\) が奇数個あることを示せば十分。\\([0,a_1,\\ldots,a_k]=[a_1-1,\\ldots,a_k-1]\\) なので \\(\\min a_i \
+eq 0\\) としてよい。任意の \\(x\\) について \\(a_i \\oplus x &lt; a_i\\) (\\(1 \\leq i \\leq k\\)) または \\(n \\oplus y &lt; n\\) のうち成り立つ不等式が偶数個あれば、\\(a_1 = 0\\) に持ち込めるので、十分。ただし、\\(k\\) が偶数ならば \\(y=0\\) 奇数ならば \\(y = x\\) とする。\\begin&#123;eqnarray&#125;&lt;br /&gt;\\left\\&#123;&lt;br /&gt;\\begin&#123;array&#125;&#123;l&#125;&lt;br /&gt;a_i \\oplus x &lt; a_i \\\\&lt;br /&gt;b_i \\oplus x &lt; b_i \\\\&lt;br /&gt;a_i \\oplus b_i \\oplus x &lt; x&lt;br /&gt;\\end&#123;array&#125;&lt;br /&gt;\\right.&lt;br /&gt;\\end&#123;eqnarray&#125;&lt;br /&gt;のうち成り立つのは偶数個である。例えば、\\(a_i\\oplus x &lt; a_i\\) ならば \\(a_i,x\\) で相異なる最上位ビットに着目すると、そのビットは \\(a_i\\oplus b_i, b_i\\) の片方でしか立っていないので、\\(b_i \\oplus x &lt; b_i, a_i \\oplus b_i \\oplus x &lt; a_i\\oplus b_i\\) の片方しか成り立たない。以上より、\\(a_i \\oplus b_i \\oplus x &lt; x \\) \\((1 \\leq i \\leq k)\\) および \\(n \\oplus n' \\oplus y &lt; x\\) のうち成り立つのは偶数個であることを示せばよい。\\(a_1, a_2\\) が \\(g(a_1,a_2)\\) が最大となるペアとしても一般性を失わない。このとき、\\([a_1,b_2,a_3,\\ldots,a_k] = [b_1,a_2,a_3,\\ldots,a_k] \\iff a_1 \\oplus b_2 = b_1 \\oplus a_2 \\land g(a_1,b_2) = g(b_1,a_2)\\) である。よって \\(a_1 \\oplus b_1 \\oplus x &lt; x \\iff a_2 \\oplus b_2 \\oplus x &lt; x\\). \\([a_3,a_4,\\ldots,a_k]=n-[a_1,a_2]\\) に対して帰納法の仮定を使えばよい。&lt;/p&gt;
+&lt;h2&gt;ニムの代数構造&lt;/h2&gt;
+&lt;p&gt;足し算は\\(a + b = \\mathrm&#123;mex&#125;_&#123;a' &lt; a\\\\ b' &lt; b&#125; (a' + b, a + b') = a\\ \\oplus b\\) により定義する。&lt;br /&gt;これは、\\(a \
+eq a'\\ \\Rightarrow a + b \
+eq a' + b\\) を満たす最も簡単な数を再帰的に定義している。同様に、\\(a \
+eq a'\\land b \
+eq b' \\Rightarrow (a + a')(b + b') \
+eq 0\\) となってほしい。分配法則で \\(ab = ab'+a'b+a'b'\\) とすると、$$ab = \\mathrm&#123;mex&#125;_&#123;a &lt; a'\\\\ b &lt; b'&#125;(ab'+a'b+a'b')$$ が定義になりそうである。実際、このように定めると、体になる。&lt;br /&gt;次の計算により、$0, 1$ が零元と単位元になっている。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;a0 &amp;= \\mathrm&#123;mex&#125;(\\emptyset) = 0 \\\\&lt;br /&gt;a1 &amp;= \\mathrm&#123;mex&#125;_&#123;a' &lt; a&#125;(a0+a'1+a'0)\\\\&lt;br /&gt;&amp;=\\mathrm&#123;mex&#125;_&#123;a' &lt; a&#125;(a')\\\\&lt;br /&gt;&amp;=a\\\\&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;交換法則 \\(ab = ba\\) は定義から明らか。&lt;/p&gt;
+&lt;p&gt;\\(a \
+eq 0\\) かつ \\(b \
+eq 0\\) のとき \\(a'=b'=0\\) とすると \\(a'b+b'a+a'b'=0\\) なので \\(ab \
+eq 0\\) である。言い換えると、\\(ab = 0 \\Leftrightarrow a = 0 \\lor b = 0\\) である。\\(a'b+ab'+a'b'=ab \\Leftrightarrow (a-a')(b-b')=0\\) だから&lt;br /&gt;\\(\\mathrm&#123;mex&#125;_&#123;a' &lt; a \\\\ b' &lt; b&#125;(a'b+b'a+a'b')=\\mathrm&#123;mex&#125;_&#123;a' \
+eq a \\\\ b' \
+eq b&#125;(a'b+b'a+a'b')\\) である。この事実を交換法則と分配法則の証明に使う。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;a(bc) &amp;&lt;br /&gt;= \\mathrm&#123;mex&#125;_&#123;a' \
+eq a \\\\ b' \
+eq b \\\\c' \
+eq c&#125; (a'bc+a(b'c+bc')+a'(b'c+bc')) \\\\&lt;br /&gt;&amp;=\\mathrm&#123;mex&#125;_&#123;a \
+eq a \\\\ b' \
+eq b \\\\c' \
+eq c&#125; ((a'b+ab')c+abc'+(a'b+ab')c') \\\\\\\\&lt;br /&gt;&amp;= a(bc)&lt;br /&gt;\\end&#123;align&#125;が得られる。&lt;br /&gt;足し算は\\(a + b = \\mathrm&#123;mex&#125;_&#123;a' &lt; a\\\\ b' &lt; b&#125; (a' + b, a + b') = a\\ \\mathrm&#123;xor&#125;\\ b\\) により定義する。&lt;br /&gt;これは、\\(a \
+eq a'\\ \\Rightarrow a + b \
+eq a' + b\\) を満たす最も簡単な数を再帰的に定義している。同様に、\\(a \
+eq a'\\land b \
+eq b' \\Rightarrow (a - a')(b - b') \
+eq 0\\) となってほしい。分配法則で \\(ab \
+eq ab'+a'b+a'b'\\) とすると、$$ab = \\mathrm&#123;mex&#125;_&#123;a' &lt; a\\\\ b' &lt; b&#125;(ab'+a'b+a'b')$$ が定義になりそうである。実際、このように定めると、体になる。&lt;br /&gt;次の計算により、\\(0, 1\\) が零元と単位元になっている。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;a0 &amp;= \\mathrm&#123;mex&#125;(\\emptyset) = 0 \\\\&lt;br /&gt;a1 &amp;= \\mathrm&#123;mex&#125;_&#123;a' &lt; a&#125;(a0+a'1+a'0)\\\\&lt;br /&gt;&amp;=\\mathrm&#123;mex&#125;_&#123;a' &lt; a&#125;(a')\\\\&lt;br /&gt;&amp;=a\\\\&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;交換法則 \\(ab = ba\\) は定義から明らか。&lt;/p&gt;
+&lt;p&gt;\\(a \
+eq 0\\) かつ \\(b \
+eq 0\\) のとき \\(a'=b'=0\\) とすると \\(a'b+b'a+a'b'=0\\) なので \\(ab \
+eq 0\\) である。言い換えると、\\(ab = 0 \\Leftrightarrow a = 0 \\lor b = 0\\) である。分配法則は \\(0\\) が含まれるときは明らか。それ以外の場合は、帰納法により、&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;(a+b)c &amp;= \\mathrm&#123;mex&#125;_&#123;a \
+eq a'\\\\ b \
+eq b' \\\\ c \
+eq c'&#125;((a'+b)c+(a+b)c'+(a'+b)c', (a+b')c+(a+b')c'+(a+b')c')\\\\&lt;br /&gt;&amp;= \\mathrm&#123;mex&#125;_&#123;a \
+eq a'\\\\ b \
+eq b' \\\\ c \
+eq c'&#125;((a'c+ac'+a'c')+bc, ac+(b'c+bc'+b'c')) \\\\&lt;br /&gt;&amp;= ac+bc&lt;br /&gt;\\end&#123;align&#125;となる。\\(a'b+ab'+a'b'=ab \\Leftrightarrow (a-a')(b-b')=0\\) だから&lt;br /&gt;\\(\\mathrm&#123;mex&#125;_&#123;a' &lt; a \\\\ b' &lt; b&#125;(a'b+b'a+a'b')=\\mathrm&#123;mex&#125;_&#123;a' \
+eq a \\\\ b' \
+eq b&#125;(a'b+b'a+a'b')\\) である。\\(1\\) が含まれるときは交換法則は明らか。それ以外の場合は、帰納法により次の様に示す。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;a(bc) &amp;&lt;br /&gt;= \\mathrm&#123;mex&#125;_&#123;a' \
+eq a \\\\ b' \
+eq b \\\\c' \
+eq c&#125; (a'bc+a(b'c+bc')+a'(b'c+bc')) \\\\&lt;br /&gt;&amp;=\\mathrm&#123;mex&#125;_&#123;a \
+eq a \\\\ b' \
+eq b \\\\c' \
+eq c&#125; ((a'b+ab')c+abc'+(a'b+ab')c') \\\\\\\\&lt;br /&gt;&amp;= a(bc)&lt;br /&gt;\\end&#123;align&#125;が得られる。&lt;/p&gt;
+&lt;p&gt;通常の足し算・掛け算は（齟齬がありそうな場所だけ）\\(\\oplus, \\otimes\\) で表す。&lt;br /&gt;\\(n = 2^&#123;2^k&#125;, \\mathcal&#123;P&#125;_n = \\&#123;0, 1, \\ldots, n - 1\\&#125;\\) と置く。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\\(\\mathcal&#123;P&#125;_n\\) は掛け算について閉じている。&lt;/li&gt;
+&lt;li&gt;\\(\\mathcal&#123;P&#125;_n\\) は体をなす。&lt;/li&gt;
+&lt;li&gt;\\(n^2 = n+n/2 = 2^&#123;2^k&#125;+2^&#123;2^&#123;k-1&#125;&#125;\\)&lt;/li&gt;
+&lt;li&gt;\\(\\mathrm&#123;msb&#125;(a) = \\mathrm&#123;msb&#125;(a^2)\\)&lt;/li&gt;
+&lt;li&gt;\\(\\&#123;a^2 : a \\in \\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_n\\)&lt;/li&gt;
+&lt;li&gt;\\(\\&#123;a^2 + a: a \\in \\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_&#123;n/2&#125;\\)&lt;/li&gt;
+&lt;li&gt;\\(a &lt; n\\) ならば \\(an = a \\otimes n\\)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;\\(\\mathcal&#123;P&#125;_1 = \\&#123;0\\&#125;\\) が掛け算について閉じているのは明らか。\\(r = 2^&#123;2^&#123;k-1&#125;&#125; = \\sqrt&#123;n&#125;\\) とする。\\(\\mathcal&#123;P&#125;_r\\) が掛け算について閉じていると仮定する。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;(a \\otimes r \\oplus b)(c \\otimes r \\oplus d) &amp;= (ar + b)( cn+d ) \\\\&lt;br /&gt;&amp;= acr^2+(ad+bc)r+bd \\\\&lt;br /&gt;&amp;= acr^2+(ad+bc)r+bd \\\\&lt;br /&gt;&amp;=ac(r+r/2)+(ad+bc)r+bd \\\\&lt;br /&gt;&amp;=acr+ac(r/2)+adr+bcr+bd \\\\&lt;br /&gt;&amp;=(ac) \\otimes r + ac(r/2) + (ad) \\otimes r + (bc) \\otimes r +bd \\\\&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;\\(5\\) つの項全てが \\(r^2 = n\\) 未満なので、\\(\\mathcal&#123;P&#125;_n\\) は掛け算について閉じている。掛け算と足し算に閉じているので有限な環をなす。また、零因子が存在しないので逆元が存在して、体になる。&lt;br /&gt;\\(\\mathrm&#123;msb&#125;(a^2) = \\mathrm&#123;msb&#125;(a)\\) は&lt;/p&gt;
+&lt;p&gt;$$ (a \\otimes r \\oplus b)^2 = a^2 \\otimes r + a^2(r/2)+b^2 $$&lt;/p&gt;
+&lt;p&gt;より帰納法から従う。&lt;/p&gt;
+&lt;p&gt;\\(a^2 = b^2 \\Leftrightarrow (a - b)(a + b) = 0 \\Leftrightarrow a = b\\) なので、\\(\\&#123;a^2 : a \\in \\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_n\\) である。\\(\\mathrm&#123;msb&#125;(a^2) = \\mathrm&#123;msb&#125;(a)\\) より \\(a^2+a \\in \\mathcal&#123;P&#125;_&#123;n/2&#125;\\) である。 \\(a^2 + a = b^2 + b \\Leftrightarrow (a+b+1)(a-b)=0 \\Leftrightarrow a = b, b+1\\) であるから、\\(\\&#123;a+a^2:a\\in\\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_&#123;n/2&#125;\\) である。&lt;/p&gt;
+&lt;p&gt;$$an = \\mathrm&#123;mex&#125;(a'n+an'+a'n')=\\mathrm&#123;mex&#125;(a'n+(a+a')n')$$&lt;br /&gt;\\(a'\\) を固定して、\\(n'\\) を動かす。&lt;br /&gt;\\(\\mathcal&#123;P&#125;_n\\) が体であったから、\\(\\&#123;(a+a')n' : n' \\in \\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_n\\) である。従って、mex の中身は \\(a' \\otimes n \\leq i &lt; (a'\\oplus 1) \\otimes n\\) の任意の数を取れる。\\(a \\otimes n\\) は取れないので、\\(an = a \\otimes n\\)。&lt;br /&gt;$$n^2 = \\mathrm&#123;mex&#125;_&#123;a &lt; n \\\\ b &lt; n&#125;(an+nb+ab)$$&lt;br /&gt;\\(a=b\\) のとき、除かれる数は \\(a^2\\) となる。\\(\\&#123;a^2 : a \\in \\mathcal&#123;P&#125;_n\\&#125;=\\mathcal&#123;P&#125;_n\\) であった。\\(b=a + 1\\) とすると、除かれる数は \\(an+(a+1)n+a(a+1)=n+a(a+1)\\) である。\\(\\&#123;a^2+a : a \\in \\mathcal&#123;P&#125;_n\\&#125; = \\mathcal&#123;P&#125;_&#123;n/2&#125;\\) であったから、\\(n+\\mathcal&#123;P&#125;_&#123;n/2&#125;\\) が除かれる。以上より、\\(\\mathcal&#123;P&#125;_n \\cup \\&#123;n + \\mathcal&#123;P&#125;_&#123;n/2&#125;\\&#125; = \\mathcal&#123;P&#125;_&#123;n+n/2&#125;\\) が除かれる。\\(n^2+n/2\\) が除かれることはないので、\\(n^2 = n^2 + n / 2\\) である。&lt;br /&gt;\\(a \
+eq b\\) かつ \\(b \
+eq a + 1\\) のとき、\\(a+b &gt; 1\\) である。このとき、&lt;br /&gt;$$n(a+b) = n \\otimes (a + b) \\geq 2n$$&lt;br /&gt;だから \\(n + n/2\\) が除かれることはない。&lt;/p&gt;
+&lt;div class="statement"&gt;根付き木の順序を、子を根とする部分木の順序の辞書順で定義する（子の順序は区別しない）。いくつかの根付き木が与えられる。木を一つ選び、それより順序の小さい木に置き換えることを交互に繰り返した時の勝敗を求めよ。（&lt;a href="https://atcoder.jp/contests/xmascon19/tasks/xmascon19_k"&gt;Xmas Contest 2019 K: Set of Trees&lt;/a&gt;）&lt;/div&gt;
+&lt;div class="statement"&gt;整数列 \\(a \\in [m]^n\\) が与えられる。各クエリでは \\(l, u\\) が与えられるので、\\(n\\) 個の山の石の個数がそれぞれ \\(\\max(0, \\min(u, a_i) - l)\\) で与えられる nim のニム数を \\(O(n\\sqrt&#123;m&#125; \\log(n))\\) で求めよ。（ECR107G）&lt;/div&gt;
+&lt;div class="statement"&gt;整数列 \\(A\\) が与えられる。数列の要素を選んで、より小さい非負整数で置き換える操作を行う。ただし、&lt;br /&gt;排他的論理和が 0 になってはいけない。逆形のときの勝敗を求めよ。（ARC131C）&lt;/div&gt;
+&lt;div class="statement"&gt;先手は \\([2n]\\) の要素を \\(n\\) 個のペアに分ける。後手は各ペアから一つずつ要素を選ぶ。後手は選んだ要素の和を \\(2n\\) の倍数にできるか（CFdiv1D）&lt;/div&gt;
+&lt;div class="statement"&gt;長さ \\(n\\) の正整数列 \\(a\\) が与えられる。また、長さ無限の 0 からなる列 \\(b\\) が与えられる。先手と後手は交互に \\(a\\) の要素を一つ選ぶ。先手が \\(a_i\\) を選ぶと \\(b\\) の先頭から \\(a_i\\) 個が 1 になり、後手が選ぶと \\(b\\) の先頭から \\(a_i\\) 個が 0 になる。すでに選ばれた要素は選べない。先手は 1 の個数を最大化、後手は最小化したい。最終的な 1 の個数を求めよ。(yukicoder1906)&lt;/div&gt;
+&lt;div class="statement"&gt;正整数列 a が与えられる。交互に全ての要素をある正整数で割った余りで置き換える。ただし、これによって、数列が変化しないような操作は禁止されている。\\(\\max(a) \\leq 200\\) の下、逆形のときの勝敗を求めよ。（ARC134E）&lt;/div&gt;
+&lt;div class="statement"&gt;n 個のマスが一列に並んでいて、そのいくつかに駒がおいてある。2つの位置 i, j であって i 番目のマスには駒があり、区間 [j, i) のマスには駒がないようなものを選び、区間 [j, i] の各マスの駒の有無を反転させる操作ができる。ニム数を求めよ。（&lt;br /&gt;yuki1613）&lt;/div&gt;
+&lt;p&gt;駒の有無を2進数の0/1に対応付けると、$$\\mathcal&#123;G&#125;(n)=\\mathrm&#123;mex&#125;\\mathcal&#123;G&#125;(n-2^i)$$ である。3の倍数のペアが作れるので、周期3になる。&lt;/p&gt;
+&lt;div class="statement"&gt;n 個の石の山が一列に並んでいる。ある山から石をいくつか選んで左隣の山に移動できる。ニム数を求めよ。（stair nim）&lt;/div&gt;
+&lt;p&gt;奇数番目の山の石の移動は打ち消し可能なので、偶数番目の山の個数の総和がニム数になる。&lt;/p&gt;
+&lt;div class="statement"&gt;正整数 k が与えられる。石の個数が n のとき、高々 \\(\\lfloor n / k \\rfloor\\) 個の石を取れる。 ニム数を求めよ。（ARC191F）&lt;/div&gt;
+&lt;p&gt;n が k の倍数のとき \\(\\mathcal&#123;G&#125;(n) = n / k\\) さもなくば \\(\\mathcal&#123;G&#125;(n) = \\mathcal&#123;G&#125;(n - \\lfloor n / k \\rfloor - 1)\\) である。n - n / k = (1-1/k)n なので、O(klog(n)) . \\(\\lfloor n / k\\) が同じ部分をまとめて処理すると O(n / k). よって\\(O(\\sqrt&#123;n \\log(n)&#125;)\\)&lt;/p&gt;
+&lt;div class="statement"&gt;根付き木が与えられる。辺を削除して、根が含まれない連結成分を削除する操作ができる。ニム数を求めよ。&lt;/div&gt;
+&lt;p&gt;根に複数の子が接続している場合は、各辺ごとに新たに根を作って、それらのニム数のXORを取ればよい。子が一つだけの場合は、その子を根とする部分木のニム数に1足した値が元の木のニム数になる。&lt;/p&gt;
+&lt;div class="statement"&gt;赤と青の辺からなる根付きパスが与えられる。Aさんは赤い辺を、Bさんは青い辺を削除して、根が含まれない連結成分を削除する操作ができる。ニム数を求めよ。（ハッケンブッシュ）&lt;/div&gt;
+&lt;p&gt;赤の辺を1, 青の辺を1とする。例えば、根の辺から順に左から右に書くと&lt;br /&gt;$$111001110$$&lt;br /&gt;のようになったとする。すると、ゲームの値は&lt;br /&gt;$$2+.0011101$$&lt;br /&gt;となる（小数部分は2進表記）。先頭の (1 の個数) - 1 が整数部分、小数部分はそれより後ろの部分の最後に 1 を付け足した値になる。同じ値だが、&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;1+1+1-\\frac&#123;1&#125;&#123;2&#125;-\\frac&#123;1&#125;&#123;4&#125;+\\frac&#123;1&#125;&#123;8&#125;+\\frac&#123;1&#125;&#123;16&#125;+\\frac&#123;1&#125;&#123;32&#125;-\\frac&#123;1&#125;&#123;64&#125;&lt;br /&gt;\\end&#123;align&#125;という表示もある。帰納法より、一番後ろの辺を削除するのが最善手で、&lt;br /&gt;$$\\&#123;2+.00111\\ |\\ 2+.001111\\&#125; = 2+.0011101$$&lt;br /&gt;から従う。&lt;/p&gt;
+&lt;div class="statement"&gt;赤と青の辺からなる根付き木が与えられる。Aさんは赤い辺を、Bさんは青い辺を削除して、根が含まれない連結成分を削除する操作ができる。ニム数を求めよ。（ハッケンブッシュ）&lt;/div&gt;
+&lt;p&gt;根の子の数が2個以上ある場合はそれぞれに対して新たに根を作った場合の数の和を取ればよい。従って根の子が一つだけの場合のみ考えればよい。根と子を繋ぐ辺が青で、子の部分木のゲームが根付きパスの&lt;br /&gt;$$111001110$$&lt;br /&gt;と同一視できるとする（この値を \\(x\\) と置く）。すると先頭に 0 を付け足すと&lt;br /&gt;$$0111001110$$となる（この値を \\(x'\\) と置く）。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;x' &amp;= -1 + (x - k) / 2^k + (1 / 2 + 1 / 4 + \\cdots + 1 / 2^k) \\\\&lt;br /&gt;&amp;= (x - k - 1) / 2^k&lt;br /&gt;\\end&#123;align&#125;である。\\(x' &lt; 0\\) となる最小の \\(k\\) を選べばよい。&lt;/p&gt;
+&lt;div class="statement"&gt;マスが一列に並んでいて、そのいくつかのマスに赤と青の駒が置いてある。ただし、駒は一つのマスに高々一つしかない。Aさんは青い駒、Bさん赤い駒を左のマスに移動できる。その際、それより左側にある駒も一緒に移動する。ゲームの値を求めよ。（shove）&lt;/div&gt;
+&lt;p&gt;左から \\(i\\) 番目の駒の位置を \\(p_i\\)、その駒の色を \\(c_i\\) (青なら 1 赤なら -1)、その駒より右側にある駒（右端2個が同色なら削除を可能回数繰り返した後）の数を \\(r_i\\) と置く。\\(\\sum c_i \\frac&#123;p_i&#125;&#123;2^&#123;r_i&#125;&#125;\\) がゲームの値になる。例えば、一番左側の青駒（ i 番目の駒）を左に一つ移動した場合、ゲームの値が $$\\frac&#123;1&#125;&#123;2^&#123;r_1&#125;&#125;+\\frac&#123;1&#125;&#123;2^&#123;r_2&#125;&#125;+\\cdots+\\frac&#123;1&#125;&#123;2^&#123;r_&#123;i-1&#125;&#125;&#125;-\\frac&#123;1&#125;&#123;2^&#123;r_i&#125;&#125; = -\\frac&#123;1&#125;&#123;2^&#123;r_i&#125;&#125;$$だけ変化する。Aさんはこの手が最適である。Bさんも同様に一番左の赤駒を一つ左に移動するのが最適で \\(\\frac&#123;1&#125;&#123;2^&#123;r_1&#125;&#125;\\) だけ変化する。従って、\\(x = \\&#123;x + \\frac&#123;1&#125;&#123;2^&#123;r_1&#125;&#125;| x - \\frac&#123;1&#125;&#123;2^&#123;r_1&#125;&#125;\\&#125;\\) であることを示せばよい。\\(x\\) の分母が高々 \\(2^&#123;r_1&#125;\\) なのでよい。&lt;/p&gt;
+&lt;p&gt;正整数列Aが与えられる。交互にAの要素から1減らす。全ての要素が１回以上減らされたとき、次のプレイヤーの負け。（ARC192B)&lt;/p&gt;
+&lt;p&gt;Aの要素は偶奇しか関係ない。まねっこ戦略。&lt;/p&gt;
+&lt;h2&gt;Nimの演算&lt;/h2&gt;
+&lt;p&gt;任意の非負整数 \\(a, b\\) に対して、二ム和 \\(a \\oplus b\\) と二ム積 \\(a \\otimes b\\) を \\begin&#123;align&#125; &amp;a\\oplus b = \\mathrm&#123;mex&#125;&lt;br /&gt;\\ \\&#123;a'\\oplus b: 0 \\leq a' &lt; a\\&#125; \\cup \\&#123;a\\oplus b': 0 \\leq b' &lt; b\\&#125; \\\\&lt;br /&gt;&amp; a \\otimes b = \\mathrm&#123;mex&#125;\\ \\&#123; a' \\otimes b \\oplus a \\otimes b' \\oplus a' \\otimes b' : 0 \\leq a' &lt; a, 0 \\leq b' &lt; b\\&#125;&lt;br /&gt;\\end&#123;align&#125;で定義する。\\(a \\oplus b = a \\ \\mathrm&#123;XOR&#125;\\ b\\).&lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt; &lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;48&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;64&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;80&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;96&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;112&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;128&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;144&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;160&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;176&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;192&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;208&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;224&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;240&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;16&lt;/td&gt;
+&lt;td&gt;32&lt;/td&gt;
+&lt;td&gt;48&lt;/td&gt;
+&lt;td&gt;64&lt;/td&gt;
+&lt;td&gt;80&lt;/td&gt;
+&lt;td&gt;96&lt;/td&gt;
+&lt;td&gt;112&lt;/td&gt;
+&lt;td&gt;128&lt;/td&gt;
+&lt;td&gt;144&lt;/td&gt;
+&lt;td&gt;160&lt;/td&gt;
+&lt;td&gt;176&lt;/td&gt;
+&lt;td&gt;192&lt;/td&gt;
+&lt;td&gt;208&lt;/td&gt;
+&lt;td&gt;224&lt;/td&gt;
+&lt;td&gt;240&lt;/td&gt;
+&lt;td&gt;24&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;\\(n=2^&#123;2^k&#125;\\) \\((k \\geq 0\\)) と置く。このように表せる正整数をフェルマーの２冪と呼ぶ。&lt;/p&gt;
+&lt;ol type="i"&gt;
+&lt;li&gt;\\(0 \\otimes a = 0\\)&lt;/li&gt;
+&lt;li&gt;\\(1 \\otimes a = a\\)&lt;/li&gt;
+&lt;li&gt;\\(a &lt; n\\) ならば \\(a \\otimes n = an\\)&lt;/li&gt;
+&lt;li&gt;\\((\\mathbb&#123;N&#125;, \\oplus, \\otimes)\\) は体&lt;/li&gt;
+&lt;li&gt;\\(a, b &lt; n\\) ならば \\(a \\otimes b &lt; n\\)&lt;/li&gt;
+&lt;li&gt;\\(a &lt; n\\) ならば \\(\\mathrm&#123;lb&#125;(a \\otimes a) = \\mathrm&#123;lb&#125;(a)\\)&lt;/li&gt;
+&lt;li&gt;\\(\\&#123;0,1,2,\\ldots,n-1\\&#125; = \\&#123;a \\otimes a : a &lt; n\\&#125;\\)&lt;/li&gt;
+&lt;li&gt;\\(\\&#123;0,1,2,\\ldots,n/2-1\\&#125; = \\&#123;a \\otimes a \\oplus a: a &lt; n\\&#125;\\)&lt;/li&gt;
+&lt;li&gt;\\(n \\otimes n = \\frac&#123;3&#125;&#123;2&#125;n\\)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\\(a \\otimes b = 0 \\iff a = 0 \\lor b = 0\\) を示す。\\(a \
+eq 0 \\land b \
+eq 0\\) ならば \\(a'=0, b'=0\\) とすると、\\(a' \\otimes b \\oplus a \\otimes b' \\oplus a' \\otimes b' = 0\\) なので mex を取ると 0 超になる。\\(0 \\otimes a=0, 1 \\otimes a=a\\) は帰納法で容易。iiiを示す。a, b が２冪の場合のみ示せばよい。極大なフェルマーの２冪 \\(A,B\\) を用いて \\(a=cA, b=dB\\) と置く。\\(a\\otimes b =c \\otimes d \\otimes A \\otimes B\\). \\(A &lt; B\\) ならば \\(c \\otimes d \\otimes A &lt; B\\) なので \\(c \\otimes d \\otimes A \\otimes B =(c \\otimes d \\otimes A)B &lt; B^2 \\leq n\\). \\(A = B\\) ならば \\(c \\otimes d \\otimes A \\otimes B = c \\otimes d \\otimes A \\oplus c \\otimes d \\otimes A / 2 = (c \\otimes d) A \\oplus ((c \\otimes d )\\otimes A / 2) \\leq A^2 \\leq n\\) でよい。viを示す。極大なフェルマーの２冪 \\(A\\) を用いて \\(a = cA\\) と置く。\\(a \\otimes a = c \\otimes c \\otimes A \\otimes A = (c \\otimes c)A \\oplus (c \\otimes c \\otimes A/2)\\). \\(\\mathrm&#123;lb&#125;(c) = \\mathrm&#123;lb&#125;(c \\otimes c), (c \\otimes c \\otimes A/2) &lt; A\\) から従う。viiを示す。\\(a \\otimes a = b \\otimes b \\iff (a \\oplus b) \\otimes (a \\oplus b)=0 \\iff a=b\\). \\(a \\otimes a &lt; n\\) と合わせると示せた。viiiを示す。\\(a \\otimes a \\oplus a = b \\otimes b \\oplus b \\iff (a \\oplus b)\\otimes(a \\oplus b\\oplus 1) = 0 \\iff a = b \\lor a = b \\oplus 1\\). \\(\\mathrm&#123;lb&#125;(a) = \\mathrm&#123;lb&#125;(a \\otimes a)\\) より \\(\\mathrm&#123;lb&#125;(a \\oplus a \\otimes a) = \\mathrm&#123;lb&#125;(a)-1\\). 以上で示せた。ixを示す。\\(n \\otimes n = \\mathrm&#123;mex&#125;_&#123;a,b &lt; n&#125;\\&#123;n \\otimes (a \\oplus b)= a\\otimes= b\\&#125;\\)= について、viiより \\(a=b\\) とすると \\(0,1,\\ldots, n-1\\) を取り、viiiより \\(n,n+1,\\ldots,3n / 2-1\\) を取る。\\(n= a \\oplus b)\\) は \\(a \\oplus b \\geq 2\\) のとき \\(2n\\) 以上なので \\(3n/2\\) は除外数。&lt;/p&gt;
+&lt;p&gt;\\((\\mathbb&#123;N&#125;, \\oplus, \\otimes)\\) は体なので、\\((a\\oplus a')\\otimes(b\\oplus b') \
+eq 0 \\iff a \
+eq a' \\land b \
+eq b'\\) である。従って、ニム積の定義の \\(a',b'\\) の範囲を \\(a\
+eq a', b\
+eq b'\\) としてもよい。ゲーム \\(G, H\\) の Conway積は \\(G\\times H:=\\&#123;G'\\times H + G\\times H' + G' \\times H' : G' \\in G, H' \\in H\\&#125;\\) で定義されて、\\(\\mathscr&#123;G&#125;(G \\times H) = \\mathscr&#123;G&#125;(G) \\otimes \\mathscr&#123;G&#125; (H)\\) が得られる。&lt;/p&gt;
+&lt;p&gt;Nim積の高速な計算&lt;/p&gt;
+&lt;p&gt;\\(A\\)をフェルマーの２冪として \\(a,b,c,d &lt; A\\) とする。&lt;br /&gt;\\begin&#123;align&#125;&lt;br /&gt;&amp;(aA + b) \\otimes (cA+d) \\\\&lt;br /&gt;=&amp; (a \\otimes c) \\otimes (A\\otimes A) \\oplus (a \\otimes d \\oplus b \\otimes c) \\otimes A \\oplus (b \\otimes d) \\\\&lt;br /&gt;=&amp; (a \\otimes c) \\otimes (A/2) \\oplus (a \\otimes d \\oplus b \\otimes c \\oplus a \\otimes c)A \\oplus (b \\otimes d) \\\\&lt;br /&gt;=&amp; (a \\otimes c) \\otimes (A/2) \\oplus ((a \\oplus b) \\otimes (c \\oplus d) \\oplus b \\otimes d)A \\oplus (b \\otimes d)&lt;br /&gt;\\end&#123;align&#125;&lt;br /&gt;により桁数が半分のニム積４つに帰着できるので、桁数の２乗でニム積が計算できる（&lt;a href="https://maspypy.com/library-checker-nim-product"&gt;maspyさん&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;Graph Theory (Diestel) の演習問題4 (Chapter2) が面白いと思ったので取り上げてみます。&lt;/p&gt;
+&lt;div class="statement"&gt;問題：無向グラフ \\(G\\) 上で二人の男女がひとつの駒を使った陣取りゲームをしている。男が先手、女が後手。それぞれのターンでは、駒を未訪問の隣接頂点に動かさなければならない。動かせなくなった方が負け。まだ駒がどの頂点にも置かれていないときは、好きな頂点に駒を置ける。男女は最適に行動するとき、どちらが勝つか。&lt;/div&gt;
+&lt;p&gt;勝利条件は次の通り。&lt;/p&gt;
+&lt;div class="statement"&gt;完全マッチング \\(M\\) が存在 \\(\\Leftrightarrow\\) 後手の勝ち。&lt;/div&gt;
+&lt;p&gt;証明：&lt;/p&gt;
+&lt;p&gt;\\(\\Rightarrow\\) : 後手は完全マッチングの辺に沿って動かすと必勝。&lt;/p&gt;
+&lt;p&gt;\\(\\Leftarrow\\) : 対偶を示します。最大マッチング \\(M'\\) を一つ固定し、\\(M'\\) に含まれない頂点 \\(v\\) から先手が始めます。先手は \\(M'\\) の辺に沿って動かすと必勝です。\\(M'\\) の辺に沿って動かせないと先手の負けですが、そのとき交互増加道が存在するので、最大マッチングに矛盾。&lt;img class="aligncenter size-medium wp-image-10397" src="https://37zigen.com/wp-content/uploads/2021/09/game-on-graph-3-300x153.png" alt="" width="300" height="153" /&gt;&lt;/p&gt;
+&lt;h2&gt;始点が固定されている場合&lt;/h2&gt;
+&lt;p&gt;こんなツイートが届きました。&lt;/p&gt;
+&lt;blockquote class="twitter-tweet" data-conversation="none" data-theme="dark"&gt;
+&lt;p dir="ltr" lang="ja"&gt;始点が固定されている場合もオススメです&lt;/p&gt;
+&lt;p&gt;— 熨斗袋 (@noshi91) &lt;a href="https://twitter.com/noshi91/status/1437774282646425600?ref_src=twsrc%5Etfw"&gt;September 14, 2021&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p&gt;考えてみましょう……。&lt;/p&gt;
+&lt;div class="statement"&gt;問題：無向グラフ \\(G\\) 上で二人の男女がひとつの駒を使った陣取りゲームをしている。男が先手、女が後手。それぞれのターンでは、駒を未訪問の隣接頂点に動かさなければならない。動かせなくなった方が負け。&lt;strong&gt;最初、駒は頂点 \\(v\\) に置かれている（頂点 \\(v\\) は訪問済みとする）。&lt;/strong&gt;男女は最適に行動するとき、どちらが勝つか。&lt;/div&gt;
+&lt;p&gt;勝利条件は次の通り。&lt;/p&gt;
+&lt;div class="statement"&gt;始点 \\(v\\) を含まない最大マッチング \\(M\\) が存在 \\(\\Leftrightarrow\\) 後手の勝ち&lt;/div&gt;
+&lt;p&gt;証明&lt;/p&gt;
+&lt;p&gt;\\(\\Rightarrow\\) : 後手は \\(M\\) の辺に沿って動かすと必勝。動かせなければ、交互増加道が存在して、最大性に矛盾。&lt;img class="aligncenter size-medium wp-image-10397" src="https://37zigen.com/wp-content/uploads/2021/09/game-on-graph-3-300x153.png" alt="" width="300" height="153" /&gt;&lt;/p&gt;
+&lt;p&gt;\\(\\Leftarrow\\) : 対偶を示します。最大マッチング \\(M'\\) に沿って先手は動かすと必勝。動かせなければ、交互道が存在して、\\(v\\) を含まないマッチングが存在しないことに矛盾。&lt;img class="aligncenter size-medium wp-image-10400" src="https://37zigen.com/wp-content/uploads/2021/09/game-on-graph2-300x145.png" alt="" width="300" height="145" /&gt;&lt;/p&gt;
+&lt;div class="hitokoto"&gt;綺麗に解決しましたね。一問目の必勝法は去年の輪読で maspy さんに教えてもらいました。&lt;/div&gt;
+&lt;p&gt;相手が直前に取った石の個数と等しい石の個数を取れないとしたときのNIM（&lt;a href="https://yukicoder.me/problems/no/3120"&gt;yuki3120&lt;/a&gt;）&lt;/p&gt;
+&lt;p&gt;二部グラフを保ったまま辺を追加するゲーム（&lt;a href="https://atcoder.jp/contests/abc398/tasks/abc398_g"&gt;ABC398G&lt;/a&gt;）&lt;/p&gt;
+&lt;div class="statement"&gt;問題：\\(n\\) 個の山があり、各山の石の個数は \\(a_1, \\ldots, a_n\\)。\\(1\\) 個以上 \\(n-1\\) 個以下の山を選んでそれぞれから一個以上の石を取る。(&lt;a href="https://link.springer.com/article/10.1007/BF01784796"&gt;T. A. Jenkyns&lt;/a&gt;)&lt;/div&gt;
+&lt;p&gt;\\(x=\\min_i a_i, y=\\sum_i (a_i-a)\\) とする。以下のようなゲームで置き換えられる。\\((x,y)\\) から \\((x,y')\\) (\\(0 \\leq y' &lt; y\\)) に遷移。または、\\((x',y')\\) s.t. \\(x' &lt; x\\) かつ \\(x-x'\\leq y' \\leq (n-1)(x-x')+y\\) に遷移。&lt;/p&gt;
+
+
+相手が取った石の個数より多く取れないニム（&lt;a href="https://yukicoder.me/problems/no/3120"&gt;yuki&lt;/a&gt;）

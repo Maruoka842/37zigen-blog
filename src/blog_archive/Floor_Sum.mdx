@@ -1,0 +1,38 @@
+---
+title: "Floor Sum"
+description: "Floor Sum の過去ブログ記事"
+---
+
+# Floor Sum
+
+> 📅 **投稿日**: 2022-02-02 22:21:33
+
+$$\\sum_&#123;x=0&#125;^&#123;n-1&#125; \\left\\lfloor \\frac&#123;ax+b&#125;&#123;m&#125; \\right\\rfloor $$ を高速に求める。
+\\(a=q_1m+a', b=q_2m+b', 0 \\leq a',b' &lt; m\\) とすると、
+\\begin&#123;align&#125;
+\\sum_&#123;x=0&#125;^&#123;n-1&#125; \\left \\lfloor \\frac&#123;ax+b&#125;&#123;m&#125; \\right\\rfloor &amp;= \\sum_&#123;x=0&#125;^&#123;n-1&#125; \\left(q_1x +q_2 +  \\left \\lfloor \\frac&#123;a'x+b'&#125;&#123;m&#125;\\right\\rfloor \\right) \\\\
+&amp;=\\frac&#123;q_1&#125;&#123;2&#125;n(n-1)+q_2n+\\sum_&#123;x=0&#125;^&#123;n-1&#125; \\left\\lfloor \\frac&#123;a'x+b'&#125;&#123;m&#125; \\right\\rfloor
+\\end&#123;align&#125;
+となり、\\(0 \\leq a, b &lt; m\\) の場合に帰着できる。\\(\\sum_&#123;x=0&#125;^&#123;n-1&#125; \\left\\lfloor \\frac&#123;ax+b&#125;&#123;m&#125; \\right\\rfloor \\) は次の領域の格子点の数に等しい。
+$$\\begin&#123;eqnarray&#125;
+\\left\\&#123;
+\\begin&#123;array&#125;&#123;l&#125;
+0 \\leq x \\leq n-1 \\\\
+0 &lt; y \\leq \\frac&#123;a&#125;&#123;m&#125;x+\\frac&#123;b&#125;&#123;m&#125; \\\\
+\\end&#123;array&#125;
+\\right.
+\\end&#123;eqnarray&#125;
+$$
+\\(x\\) を \\(y\\) の一次関数で抑えるように式変形すると、
+\\begin&#123;eqnarray&#125;
+\\left\\&#123;
+\\begin&#123;array&#125;&#123;l&#125;
+\\frac&#123;my-b&#125;&#123;a&#125; \\leq x \\leq n-1 \\\\
+0 &lt; y \\leq \\frac&#123;a(n-1)+b&#125;&#123;m&#125; \\\\
+\\end&#123;array&#125;
+\\right.
+\\end&#123;eqnarray&#125;
+となる。\\(A = \\left\\lfloor \\frac&#123;a(n-1)+b&#125;&#123;m&#125; \\right\\rfloor \\) と置くと、この領域の格子点の数は \\begin&#123;align&#125;
+\\sum_&#123;y=1&#125;^A \\left(n - \\left\\lceil \\frac&#123;my-b&#125;&#123;a&#125; \\right\\rceil  \\right)
+=nA-\\sum_&#123;y=0&#125;^&#123;A-1&#125; \\left\\lfloor \\frac&#123;my+mA-b+a-1&#125;&#123;a&#125; \\right\\rfloor
+\\end&#123;align&#125; となります。最初の形に比べると \\((m, a) \\rightarrow (a \\bmod m, a)\\) と変化しています。分母が \\(1\\) になるまで繰り返せばよいので、計算量は \\(O(\\log(a)+\\log(b))\\) です。

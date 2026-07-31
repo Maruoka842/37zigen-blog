@@ -1,0 +1,71 @@
+---
+title: "多変数畳み込み（切り捨て）のアルゴリズム"
+description: "多変数畳み込み（切り捨て）のアルゴリズム の過去ブログ記事"
+---
+
+# 多変数畳み込み（切り捨て）のアルゴリズム
+
+> 📅 **投稿日**: 2021-03-04 23:37:05
+
+[mathjax]中国のブログ[1]に面白いアルゴリズムがあったので、紹介します。
+[toc]
+&lt;h2&gt;問題&lt;/h2&gt;
+次のような多変数畳み込み（切り捨て）を計算するアルゴリズムを構築します：
+&lt;div class="statement"&gt;\\(K\\) 変数の多項式
+$$f(x_1,x_2,\\ldots,x_K)=\\sum a_&#123;i_1,i_2,\\ldots,i_K&#125;x_1^&#123;i_1&#125;x_2^&#123;i_2&#125;\\cdots x_K^&#123;i_K&#125;,$$$$g(x_1,x_2,\\ldots,x_K)=\\sum b_&#123;i_1,i_2,\\ldots,i_K&#125;x_1^&#123;i_1&#125;x_2^&#123;i_2&#125;\\cdots x_K^&#123;i_K&#125;$$ が与えられます。\\(f,g\\) の積を途中で切り捨てた$$f(x_1,x_2,\\ldots,x_K)g(x_1,x_2,\\ldots,x_K) \\bmod (x_1^&#123;n_1&#125;,x_2^&#123;n_2&#125;,\\ldots,x_K^&#123;n_K&#125;)$$を求めてください。&lt;/div&gt;
+多変数多項式の畳み込みは、１変数ずつ順に FFT する方法と、１変数多項式の畳み込み1回に帰着する方法の2つがあります。この記事では後者を使います。どの変数で切り捨てたか忘れることで計算量改善するので、前者では難しいと思います。前者は、多変数巡回畳み込み \\(fg \\bmod (x_1^&#123;n_1&#125;-1,\\ldots,x_K^&#123;n_K&#125;-1)\\) を本記事と同様の計算量で求める際に活躍します（&lt;a href="https://37zigen.com/multipoint-evaluation/#i-2"&gt;演習問題２&lt;/a&gt;）。
+
+\\(fg\\) は \\(x_i\\) について高々 \\(2n_i\\) 次式になりますから、\\(fg\\) を FFT で計算するには
+$$\\sum a_&#123;i_1,i_2,\\ldots,i_K&#125;x^&#123;i_1+2n_1i_2+(2n_1)(2n_2)i_3+\\cdots +(2n_1)\\cdots(2n_&#123;K-1&#125;)i_K&#125;,$$
+$$\\sum b_&#123;i_1,i_2,\\ldots,i_K&#125;x^&#123;i_1+2n_1i_2+(2n_1)(2n_2)i_3+\\cdots +(2n_1)\\cdots(2n_&#123;K-1&#125;)i_K&#125;$$
+を畳み込めばよいです。それぞれ、\\(x\\) の 高々\\(2^&#123;K-1&#125;N\\)次式（ただし\\(N:=\\prod n_i\\)）ですから、計算量は
+$$O( &#123;\\color&#123;red&#125; &#123;2^K&#125;&#125; N \\log (2^KN))$$ です。指数部分 \\(O(2^K)\\) を多項式に改善するのが目標です。
+&lt;h2&gt;繰り上がりの回数を求める&lt;/h2&gt;
+\\(O(2^K)\\) を落とすために \\(\\sum a_&#123;i_1,i_2,\\ldots,i_K&#125;x^&#123;i_1+n_1i_2+\\cdots +n_1 \\cdots n_&#123;K-1&#125;i_K&#125;, \\sum b_&#123;j_1,j_2,\\ldots,j_K&#125;x^&#123;j_1+n_1j_2+\\cdots +n_1 \\cdots n_&#123;K-1&#125;j_K&#125;\\) として畳み込みたいのですが、繰り上がりが起きてしまいます。つまり、\\(n_k \\leq i_k+j_k &lt; 2n_k\\) のとき本来 \\(x_k^&#123;i_k+j_k&#125;\\) である項が \\(x_&#123;k+1&#125;^&#123;(i_k+j_k)/n_k&#125;\\) と区別できません。
+
+そこで \\(\\chi(i+j)-\\chi(i)-\\chi(j)\\) が繰り上がりの回数と等しくなるような関数 \\(\\chi\\) を考えます。ただし、$$i = \\sum_k i_k \\prod_&#123;l &lt; k&#125; n_&#123;l&#125; \\quad (0 \\leq i_k &lt; n_k)$$
+$$j = \\sum_k j_k \\prod_&#123;l &lt; k&#125; n_&#123;l&#125; \\quad (0 \\leq j_k &lt; n_k)$$
+と置きました。
+
+\\begin&#123;eqnarray&#125;
+\\left\\lfloor \\frac&#123;i_k + j_k&#125;&#123;n_k&#125; \\right\\rfloor
+=
+\\begin&#123;cases&#125;
+1 &amp; ( 繰り上がり発生 ) \\\\
+0 &amp; ( 繰り上がりしない)
+\\end&#123;cases&#125;
+\\end&#123;eqnarray&#125;
+
+であることに着目します。\\(\\sum_&#123;k &lt; M&#125;i_k \\prod_&#123;l &lt; k&#125; n_&#123;l&#125;  &lt; \\prod_&#123;1 \\leq i \\leq M&#125; n_i\\) なので、
+\\begin&#123;eqnarray&#125;
+\\left\\lfloor \\frac&#123;i + j&#125;&#123;n_1n_2 \\cdots n_k&#125; \\right\\rfloor
+-\\left\\lfloor \\frac&#123;i&#125;&#123;n_1n_2 \\cdots n_k&#125; \\right\\rfloor
+-\\left\\lfloor \\frac&#123;j&#125;&#123;n_1n_2 \\cdots n_k&#125; \\right\\rfloor =
+\\begin&#123;cases&#125;
+1 &amp; ( i_k+j_k で繰り上がり発生 ) \\\\
+0 &amp; ( i_k+j_k で繰り上がりしない)
+\\end&#123;cases&#125;
+\\end&#123;eqnarray&#125;
+となります。
+
+つまり、
+$$\\chi(x)=\\left\\lfloor \\frac&#123;x&#125;&#123;n_1&#125; \\right\\rfloor + \\left\\lfloor \\frac&#123;x&#125;&#123;n_1n_2&#125; \\right\\rfloor + \\cdots+ \\left\\lfloor \\frac&#123;x&#125;&#123;n_1n_2\\cdots n_&#123;K-1&#125;&#125; \\right\\rfloor $$が求めたい関数になっています。
+$$F:=\\sum a_&#123;i_1,\\ldots,i_K&#125; t^&#123;\\chi(i_1+n_1i_2+\\cdots+n_1\\cdots n_&#123;K-1&#125; i_K)&#125; x^&#123;i_1+n_1i_2+\\cdots+n_1\\cdots n_&#123;K-1&#125; i_K&#125;,$$$$G:=\\sum b_&#123;j_1,\\ldots,j_K&#125; t^&#123;\\chi(i_1+n_1i_2+\\cdots+n_1\\cdots n_&#123;K-1&#125; i_K)&#125; x^&#123;i_1+n_1i_2+\\cdots+n_1\\cdots n_&#123;K-1&#125; i_K&#125;$$とした 2 式を畳み込みます。高々 \\(K\\) 個の変数でしか繰り上がりが起きないので、\\(\\chi\\) の畳み込み後の期待される値からの減少値は高々 \\(K\\) です。つまり、\\(t^&#123;K+1&#125; = 1\\) としても、繰り上がりを発見できます。どの変数で繰り上がりが起きたかは分からなくなってしまいましたが、その情報は不要です。
+
+以上の計算は \\(t, x\\) を 1 変数に埋め込んで FFT することで \\(O(K N\\log(KN)) = O(KN \\log(N))\\) でできます。計算量の等号には \\(N = N_1N_2\\cdots N_K\\) より、\\(K = O(\\log N)\\) であることを使いました。
+&lt;h2&gt;実装&lt;/h2&gt;
+\\(t\\) の冪指数ごとに分けて FFT することで求めることもできます。NTT のように DFT の長さに制約がある場合、こちらの方が長さを節約できて良いかもしれません。よすぽジャッジ[2]はギリギリこちらでしか通りません。\\(F,G\\) について、\\(t\\) の冪指数が \\(0,1,\\ldots,K\\) の項を集めた多項式を \\(t^0F_0,t^1F_1,\\ldots,t^KF_K\\), \\(t^0G_0,t^1G_1,\\ldots,t^KG_K\\) とします。 \\(F_0,\\ldots,F_K,G_0,\\ldots,F_K\\) の FFT は \\(O(KN\\log(N))\\) でできます。各 \\(k\\) の \\(t^k\\sum F_iG_&#123;k-i&#125;\\) の FFT は畳み込み定理より合計 \\(O(K^2N)\\) 、IFFT は \\(O(KN \\log(N))\\) です。すべて合計して \\(O(KN\\log(N)+K^2N) = O(KN \\log(N))\\) になりました。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://rushcheyo.blog.uoj.ac/blog/6547"&gt;rushcheyo的博客:集训队互测 2021 Round #1 题解&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;大変参考にしました。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://judge.yosupo.jp/problem/multivariate_convolution"&gt;よすぽジャッジ：multivariate convolution&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;コードを verify できます。&lt;a href="https://judge.yosupo.jp/submission/41127"&gt;私のコード&lt;/a&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="hitokoto"&gt;多変数の畳み込みを１変数の畳み込みに直すのは、単なる実装の工夫だと思っていました。計算量改善に役立つとは！&lt;/div&gt;

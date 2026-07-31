@@ -1,0 +1,37 @@
+---
+title: 37zigen Algorithm & Library
+description: 競技プログラミングのためのアルゴリズム・数学解説ドキュメント
+template: splash
+hero:
+  tagline: 競技プログラミングにおけるアルゴリズム・数学的背景・応用考察ノート
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: ドキュメントを読む
+      link: /37zigen-blog/overview/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub Repository
+      link: https://github.com/Maruoka842/37zigen-blog
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## 主なカテゴリ
+
+<CardGrid stagger>
+	<Card title="データ構造" icon="document">
+		Segment Tree, Lazy Segment Tree, UnionFind, Persistent Data Structures
+	</Card>
+	<Card title="グラフ・木" icon="setting">
+		Max Flow, Min Cost Flow, Tree Decomposition, Heavy-Light Decomposition
+	</Card>
+	<Card title="多項式・数学" icon="open-book">
+		Formal Power Series (FPS), NTT, Matrix Exponentiation, Linear Algebra
+	</Card>
+	<Card title="DP & アルゴリズム" icon="star">
+		Slope Trick, Insertion DP, Digit DP, Mo's Algorithm, String Algorithms
+	</Card>
+</CardGrid>

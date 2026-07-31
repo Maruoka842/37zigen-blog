@@ -1,0 +1,91 @@
+---
+title: "Level Ancestor Problem"
+description: "Level Ancestor Problem の過去ブログ記事"
+---
+
+# Level Ancestor Problem
+
+> 📅 **投稿日**: 2020-08-23 23:49:15
+
+&lt;p&gt;[mathjax]&lt;/p&gt;
+&lt;p&gt;level ancestor problem のアルゴリズムを解説します。&lt;/p&gt;
+&lt;p&gt;[toc]&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;h2 id="heading1"&gt;level ancestor problem とは？&lt;/h2&gt;
+&lt;div class="statement"&gt;&lt;strong&gt;level ancestor problem：&lt;/strong&gt;&lt;br&gt;根付き木 \\(T\\) が与えられる。各クエリ LA(v,d) では木 \\(T\\) の頂点 \\(v\\) の祖先（\\(v\\) 自身を含む）であって、深さ \\(d\\) の頂点を求めよ。&lt;/div&gt;
+&lt;p&gt;&lt;img class=" wp-image-52 alignright" src="https://37zigen.com/wp-content/uploads/2020/08/long-path-decomposition-300x212.png" alt="level ancestor の例示" width="282" height="199"&gt;例として右のような木を考えよう。頂点 7 の先祖は深さ 0 から順番に 1, 5, 6, 7 である。LA(7,2) は頂点 7 の先祖であって深さ 2 の頂点であるから LA(7,2)=6 である。同様に定義に従って計算すれば、LA(2,0)=1, LA(2,1)=2 となる。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/p&gt;
+
+
+&lt;p&gt;level ancestor problem は木 \\(T\\) の頂点数を \\(N\\) として前計算 \\(O(N)\\)、クエリ \\(O(1)\\) で処理することができることが知られている。この記事では Michael A. Bender と Martin Farach Colton の &lt;a rel="noreferrer noopener" href="https://www.sciencedirect.com/science/article/pii/S0304397504001173" target="_blank"&gt;The Level Ancestor Problem simplified&lt;/a&gt; に基づく手法をお伝えする。この手法では2つの一見、補完関係にないアルゴリズムを組み合わせることで計算量が落とされる。面白いと思う。&lt;/p&gt;
+
+
+
+&lt;p&gt;&lt;h2 id="heading2"&gt;ダブリングによる解法&lt;/h2&gt;
+&lt;p&gt;level ancestor problem はダブリングにより前計算 \\(O(N\\log N)\\)、クエリ当たり \\(O(\\log N)\\) で処理することができる。&lt;/p&gt;&lt;/p&gt;
+
+
+
+&lt;div class="wp-block-image"&gt;&lt;figure class="alignright size-large is-resized"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2020/08/795316b92fc766b0181f6fef074f03fa-839x1024.png" alt="ジャンプ頂点とジャンプポインタ" class="wp-image-33" width="197" height="240"/&gt;&lt;/figure&gt;&lt;/div&gt;
+
+
+&lt;div class="proof"&gt;頂点 \\(v\\) の深さを \\(\\mathrm&#123;dep&#125;(v)\\) とする。各頂点 \\(v\\) から \\(2^i (0 \\leq i \\leq \\lceil \\log_2 N \\rceil )\\) 頂点だけ親方向に移動したときの頂点 \\(f(v,i)\\) を前計算しておく（ただし根に到達したらそれ以上移動しない）。\\(\\mathrm&#123;dep&#125;(f(v,i))\\leq d\\) ならば \\(\\mathrm&#123;LA&#125;(v,d)=\\mathrm&#123;LA&#125;(f(v,i),d)\\) である。\\(f(v,i)\\) は2冪について列挙していたから、このような \\(i\\) のうち最大のものを取ると、\\((\\mathrm&#123;dep&#125;(f(v,i))-d)/2 \\leq \\mathrm&#123;dep&#125;(v)-d\\) となる。よってクエリ当たり \\(O(\\log N)\\) で処理できる。前計算は \\(f(f(v,i),i)=f(v,i+1)\\) を用いると \\(O(\\log N)\\) で処理できる。□&lt;/div&gt;
+&lt;p&gt;ダブリングでは前計算 \\(O(N \\log N)\\)、クエリ当たり \\(O(\\log N)\\) であった。次に前計算 \\(O(N)\\)、クエリ当たり \\(O(\\sqrt&#123;N&#125;)\\) であるlong-path分解を用いた方法を見よう。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;strong&gt;long-path分解：&lt;/strong&gt;&lt;br&gt;空グラフになるまで森から、根と葉を端点とする最長道を取り去り続ける（最長道を取り去った後の新しい根は最長道に接続していた頂点とする）。このような道への分解をlong-path分解という。&lt;/div&gt;
+&lt;h2 id="heading3"&gt;long-path分解による解法&lt;/h2&gt;
+
+
+&lt;div class="wp-block-image"&gt;&lt;figure class="alignright size-large is-resized"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2020/08/long-path-decomposition2-1024x868.png" alt="long-path 分解の例" class="wp-image-55" width="273" height="231"/&gt;&lt;/figure&gt;&lt;/div&gt;
+
+
+
+右図はlong-path分解の一例である。まず根 1 を端点とする最長道 1-5-6-7 を取り去る。すると、頂点 2, 3, 4 からなり、根が 2 である木が残る。根 2 からの最長道は 2-3 と 2-4 の2つある。どちらを取り去っても構わないが、ここでは 2-3 を取り去ったとする。すると頂点 4 のみからなる木が残る。根 4 を端点とする最長道 4 を取り去る。空グラフになったから、long-path分解は完了した。&lt;/p&gt;
+
+
+
+&lt;p&gt;頂点 \\(v\\) から葉までの最長路の長さを \\(v\\) の高さという。各long-pathの長さはlong-pathの葉でない端点 \\(u\\) から葉までの最長路の長さに等しいが、これは \\(T\\) における \\(u\\) の高さの定義そのものである。各頂点の高さは \\(O(N)\\) で列挙できるから、long-path分解は時間計算量 \\(O(N)\\) で求めることができる。&lt;/p&gt;
+
+
+&lt;div class="statement"&gt;&lt;strong&gt;long-path分解の最悪計算量：&lt;/strong&gt;&lt;br&gt;葉から根までに経由するlong-pathは最大 \\(\\Theta(\\sqrt&#123;N&#125;)\\) 個である。&lt;/div&gt;
+&lt;div class="proof"&gt;&lt;img class=" wp-image-69 alignright" src="https://37zigen.com/wp-content/uploads/2020/08/worst_long_path_decompostition2-2-300x207.png" alt="long-path 分解の worst case" width="217" height="149"&gt;右図のようにlong-pathの長さがそれぞれ \\(1, 3, 5, 7, \\ldots\\) という場合を構成できる。long-pathの個数を \\(m\\) 個とすると、頂点は \\(\\sum_&#123;i=1&#125;^&#123;m&#125; (2i-1)=m^2\\) 個ある。緑の頂点から根に向かえばすべてのlong-pathを経由し、そのlong-pathの個数は \\(\\Theta(\\sqrt&#123;N&#125;)\\) 個である。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img class="size-medium wp-image-72 alignright" src="https://37zigen.com/wp-content/uploads/2020/08/c8856789ec11ab8b1013037cef6929f9-300x121.png" alt="long path の取り方に矛盾" width="300" height="121"&gt;あとは経由するlong-pathの個数が \\(\\Theta(\\sqrt&#123;N&#125;)\\) より大きくならないことを示せばよい。\\(i\\) 番目 (\\(i \\leq k\\)) に経由するlong-pathを \\(P_i\\) とする。\\(P_j\\) は \\(P_i\\ (j \\geq i)\\) より先に取り除かれているので \\(|P_j |≥|P_i |\\) 。\\(|P_j |=|P_i |\\) ならばより長い道が取れるので矛盾。よって \\(|P_j | \\geq |P_i |\\) である。\\(1+2+\\ldots+k\\leq |P_1 |+\\ldots+|P_k | \\leq N\\) だから \\(k=O(\\sqrt&#123;N&#125;)\\)。□&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2 id="heading4"&gt;long-pathのはしごへの拡張&lt;/h2&gt;
+&lt;figure class="alignright size-large is-resized"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2020/09/b-3-1024x794.png" alt="long-path をはしごに拡張" class="wp-image-105" width="329" height="254"&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;葉から根まで移動するとき long-path を経由する回数は \\(O(\\sqrt&#123;N&#125;)\\) であった。前計算 \\(O(N)\\) を保ったまま path の本数を \\(O(\\log N)\\) に落とす、はしごアルゴリズムを次にお伝えする。&lt;/p&gt;
+
+
+
+&lt;p&gt;はしごとは long-path を根の方向へ頂点2倍に伸ばした path である。ただし、はしごが根に到達したら、はしごはそれ以上伸ばさない。任意の頂点 \\(v\\) について、属するはしごの根に最も近い頂点 \\(u\\) は根であるか、またはその高さ \\(h\\) について \\(h(v) \\leq h(u)/2\\) が成り立つ。はしごの頂上に移動するたびに高さが2倍になるから、葉から根まで移動するために経由するはしごは \\(O(\\log N)\\) である！ 更にはしごに含まれる頂点数は高々 \\(2N\\) であるから前計算は long-path 分解と変わらず \\(O(N)\\) である。&lt;/p&gt;
+
+
+&lt;h2 id="heading5"&gt;ダブリングとはしごを組み合わせる&lt;/h2&gt;
+
+
+&lt;p&gt;以上、ダブリングとはしごアルゴリズムを見た。この2つのアルゴリズムを組み合わせることで前計算 \\(O(N)\\) 、クエリ当たり \\(O(1)\\) で計算できることを次に示す。ダブリングは2冪頂点だけ根方向に移動したときの頂点を列挙するから、level ancestor までの経路のうち半分以上を \\(O(1)\\) で移動できる。移動後の頂点 \\(v\\) と level ancestor \\(u\\) の高さ h は \\(h(v)\\leq 2h(u)\\) の関係にあるから、\\(u\\) から \\(v\\) ははしごにより \\(O(1)\\) で移動できる。 ダブリングとはしご法を組み合わせることでクエリ当たり \\(O(1)\\) で level ancestor が求まった！　しかし、前計算が \\(O(N \\log N)\\) になってしまった。&lt;/p&gt;
+
+
+
+&lt;p&gt;そこで、次に前計算を \\(O(N)\\) に改善する。はしごは前計算 \\(O(N)\\) であったから全頂点について計算してもよい。「2冪頂点だけ根方向に移動したときの頂点」を列挙する始点の頂点をジャンプ頂点と呼ぶことにする。&lt;img width="231" height="215" src="https://37zigen.com/wp-content/uploads/2020/09/micro_macro_tree-3-1024x955.png" alt="macro木とmicro木" class="wp-image-139 alignright"&gt;ジャンプ頂点一つ当たり \\(O(\\log N)\\) だけ前計算が必要だから、ジャンプ頂点の個数を \\(O(N/\\log N)\\) にしたい。そこで子孫が \\(\\frac&#123;1&#125;&#123;4&#125;\\log_2 N\\) 個以上持つ深さ極小の頂点についてのみジャンプ頂点を計算することにする。はしごは高さ2倍の頂点を必ず含むからジャンプ頂点ははしごを利用すれば求まる。木 T をジャンプ頂点を先祖に持つ頂点（ジャンプ頂点自身は含まない）からなるmicro木とそれ以外の頂点からなるmacro木に分解して議論しよう。&lt;/p&gt;
+
+
+
+&lt;p&gt;&lt;img width="247" height="175" src="https://37zigen.com/wp-content/uploads/2020/08/long-path-decomposition-300x212.png" alt="level ancestorの例示" class="alignright"&gt;\\(u\\) が \\(v\\) の先祖かつ \\(\\mathrm&#123;depth&#125;(u) \\geq d\\) ならば LA(v, d) = LA(u, d) が成り立つ。例えば、右図では LA(5, 1) = LA(6, 1) = LA(7, 1) = 5 が成り立つ。したがって、macro木の頂点は子孫のジャンプ頂点に移動してから level ancestor を求めれば良い。&lt;/p&gt;
+
+
+
+&lt;p&gt;micro木の level ancestor は力技で全て求めておく。木を DFS したとき、その上り/下りは０/１に対応付く。例えば右図のDFSは 1101010011011000 にエンコードされる。従って \\(n\\) 頂点の木の種類数は \\(2^&#123;2(n-1)&#125;\\) 個以下。&lt;img src="https://37zigen.com/wp-content/uploads/2020/09/bit_tree-9-1024x644.png" alt="DFSを01にエンコード" class="wp-image-169 alignright" width="270" height="170"&gt;micro木のサイズは \\(\\frac&#123;1&#125;&#123;4&#125; \\log_2⁡N\\) 以下だからその種類数は \\(2^&#123;2(\\frac&#123;1&#125;&#123;4&#125;&nbsp; \\log_2N-1)&#125; \\leq 2^&#123;\\frac&#123;1&#125;&#123;2&#125;&nbsp; \\log_2⁡N &#125;=\\sqrt&#123;N&#125;\\) で抑えられる。よって各木の形状について全ての level ancestor を愚直に列挙しても 時間 \\(O(\\sqrt&#123;N&#125;\\log^2N)\\)で求まる。
+&lt;/p&gt;
+
+
+
+&lt;p&gt;以上から micro木とmacro木のいずれでも前計算 \\(O(N)\\) 、クエリ当たり \\(O(1)\\) で level ancestor を計算することできた。
+&lt;/p&gt;
+
+
+&lt;div class="hitokoto"&gt;
+はしごアルゴリズムとダブリングの組み合わせが美しいと思いました。lowest common ancestor と問題設定が似ていると思った人がいるかもしれません。実は、lowest common ancestor を ±1RMQ に帰着して前計算 \\(O(N)\\)、クエリ当たり \\(O(1)\\) で求めるアルゴリズムと似た手法でも本記事と同じ計算量が達成できます。そちらもいつか書くかもしれません。
+&lt;/div&gt;

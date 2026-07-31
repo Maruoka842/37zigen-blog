@@ -1,0 +1,55 @@
+---
+title: "素数が関する計算量解析"
+description: "素数が関する計算量解析 の過去ブログ記事"
+---
+
+# 素数が関する計算量解析
+
+> 📅 **投稿日**: 2020-10-08 06:10:25
+
+素数が絡む計算量解析を紹介する。証明はせず、大雑把な評価を推定できるようになるのが目標。
+[toc]
+素数を小さい方から順に \\(p_1,p_2,\\ldots\\)と置く。
+&lt;h2&gt;素数定理&lt;/h2&gt;
+&lt;div class="statement"&gt;素数定理：
+\\(n\\) 以下の素数の個数 \\(\\pi(n)\\) について、$$\\begin&#123;align&#125;\\pi(n)=&amp;\\Theta \\left( \\int_&#123;x=2&#125;^n \\frac&#123;1&#125;&#123;\\log&#123;x&#125;&#125; dx \\right) \\end&#123;align&#125;$$が成り立つ。&lt;/div&gt;
+右辺を \\(\\Theta(n/\\log(n))\\) とした形が計算量解析ではよく登場する（上から抑えるには、\\(x=\\sqrt&#123;n&#125;\\) で分けて台形近似する）。この定理は&lt;a href="https://37zigen.com/%e7%b7%9a%e5%bd%a2%e7%af%a9/"&gt;線形篩を用いた逆元の列挙&lt;/a&gt;など様々なアルゴリズムの計算量解析に出現する。
+ここでは証明はせず、ざっくり漸近挙動を推定してみる。
+\\(n\\) が素数である確率は \\(n\\) 以下の素数 \\(p_1,p_2,\\ldots,p_k\\) を用いて大体$$\\left(1-\\frac&#123;1&#125;&#123;p_1&#125;\\right)\\left(1-\\frac&#123;1&#125;&#123;p_2&#125;\\right)\\ldots\\left(1-\\frac&#123;1&#125;&#123;p_k&#125;\\right)$$と書ける。これは \\(p_i\\) の倍数でない確率が \\((1-1/p_i)\\) であって、しかもその確率が独立であろうという推測に基づいている。等比級数の和の公式 \\(\\frac&#123;1&#125;&#123;1-x&#125;=1 + x + x^2+\\dots\\) により
+$$\\left(\\left(1-\\frac&#123;1&#125;&#123;p_1&#125;\\right)\\left(1-\\frac&#123;1&#125;&#123;p_2&#125;\\right)\\ldots\\left(1-\\frac&#123;1&#125;&#123;p_k&#125;\\right)\\right)^&#123;-1&#125;=\\prod_&#123;i=1&#125;^k \\left(1 + \\frac&#123;1&#125;&#123;p_i&#125;+\\frac&#123;1&#125;&#123;p_i^2&#125; + \\dots\\right)$$
+である。右辺は総積を取ると \\(p_1,\\ldots,p_k\\) のみを素因数に持つ数の逆数和になっているから、少なくとも \\(n\\) までの逆数和は全て登場する。\\(n\\) までの逆数和で打ち切れば、 \\(\\sum_&#123;i=1&#125;^n \\frac&#123;1&#125;&#123;n&#125; = \\Theta(\\log n)\\) より \\(n\\) が素数となる確率はおよそ \\(O\\left(\\frac&#123;1&#125;&#123;\\log n&#125;\\right)\\) 。\\(n\\) 以下の素数の個数はこの確率を \\(2\\) から \\(n\\) まで積分すれば求まり、素数定理の式の上からの評価が得られた。総積の部分はメルテンスの第 3 定理 \\(\\lim_&#123;n\\to\\infty&#125;\\log n\\prod_&#123;p\\le n&#125;\\left(1-\\frac1p\\right)=e^&#123;-\\gamma&#125;\\) として知られている。
+&lt;h2&gt;素数の逆数和&lt;/h2&gt;
+素数の逆数和 \\(\\sum_&#123;p\\leq n&#125; 1/p\\) はエラトステネスの篩（ふるい）の計算量解析に登場する。素数定理より \\(x\\) が素数である確率がおよそ \\(1/\\log(x)\\) であったから、次のように推定できる（実際に正しい）：
+$$
+\\begin&#123;align&#125;
+\\sum_&#123;p\\leq n&#125; 1/p =&amp; O\\left(\\int_&#123;x=2&#125;^n \\frac&#123;1&#125;&#123;x&#125; \\cdot \\frac&#123;1&#125;&#123;\\log&#123;x&#125;&#125; dx\\right) \\\\
+=&amp; O(\\log \\log x)
+\\end&#123;align&#125;
+$$必ずしも正しいとは限らないが、一般に \\(\\sum_&#123;p\\leq n&#125; f(p)=O\\left(\\int_&#123;x=2&#125;^n f(x) \\cdot \\frac&#123;1&#125;&#123;\\log&#123;x&#125;&#125; dx \\right)\\) が成り立つだろうと期待できる。
+&lt;h2&gt;素因数の個数&lt;/h2&gt;
+&lt;div class="statement"&gt;\\(n\\) の素因数の個数 \\(\\omega(n)\\) は
+$$\\omega(n) = O\\left(\\frac&#123; \\log n&#125;&#123;\\log \\log n&#125;\\right)$$
+を満たす。&lt;/div&gt;
+この評価は例えば Garner のアルゴリズムの計算量解析において現れる。推定も交えた計算でこの評価を捻り出してみる。
+上から抑えたいので、\\(n=p_1p_2 \\cdots p_&#123;\\omega(n)&#125;\\) と仮定してもよい。
+素数定理により \\(\\log(n)=\\sum_&#123;i=1&#125;^&#123;\\omega(n)&#125; \\log(p_i) = \\Theta(p_&#123;\\omega(n)&#125;)\\) であろう。
+つまり、\\(p_&#123;\\omega(n)&#125;=\\Theta(\\log(n))\\) であって、素数定理 $$\\omega(n)=\\Theta\\left( \\frac&#123;p_&#123;\\omega(n)&#125;&#125;&#123;\\log(p_&#123;\\omega(n)&#125;)&#125;\\right)$$ に代入すると \\(\\omega(n)=\\Theta(\\log(n)/\\log\\log(n))\\) を得る。\\(n=p_1p_2\\cdots p_&#123;\\omega(n)&#125;\\) を忘れると上からの評価になる。
+&lt;h2&gt;原始根の探索アルゴリズム&lt;/h2&gt;
+ここまで紹介したテクニックを使って&lt;a href="https://yukicoder.me/problems/no/981/editorial"&gt;mod p における原始根の探索アルゴリズム&lt;/a&gt;の計算量を推定しよう。このアルゴリズムは試行回数の期待値 \\(O((p-1)/\\varphi(p-1))\\) である。ただし \\(\\varphi\\) はオイラーのトーティエント関数。試行回数について次が成り立つと推定したい。
+&lt;div class="statement"&gt;$$n/ \\varphi(n)=O(\\log\\log(n))$$が成り立つ。&lt;/div&gt;
+\\(n/\\varphi(n)=\\prod_&#123;p\\mid n&#125; (1-1/p)^&#123;-1&#125;\\) を上から評価したいから、\\(n=p_1p_2 \\ldots p_&#123;\\omega(n)&#125;\\) として良い。
+素数定理の項で推定したとおり、\\(\\prod_&#123;i=1&#125;^&#123;\\omega(n)&#125; (1-1/p_i)^&#123;-1&#125; = O(\\log(\\omega(n)))\\) であるから、素因数の個数の項で求めた \\(\\omega(n)\\) の式を代入して \\(n/ \\varphi(n)=O(\\log\\log(n))\\) が推定値として得られる（実際に正しい）。
+&lt;h2&gt;&lt;/h2&gt;
+\\(n\\) 以下の数のうち、\\(n^&#123;1/u&#125;\\) 以下の素数を含まない数は \\(O(n/log(n))\\) 個ある。これは、\\(n^&#123;1/u&#125;\\) 以下の素数を因数に持つ確率がおよそ \\(1/log(n^&#123;1/u&#125;)\\) だからである（&lt;a href="https://en.m.wikipedia.org/wiki/Buchstab_function"&gt;Buchstab function&lt;/a&gt;）。
+&lt;h2&gt;約数の個数（大雑把な概算が外れる場合）&lt;/h2&gt;
+\\(N\\) 以下の数についての約数の個数の和は \\( \\sum_&#123;i=1&#125;^N \\lfloor N / i \\rfloor = \\Theta(N \\log N)\\) なので、\\(N\\) の約数の個数のオーダーは \\(O(\\log N)\\) だろうという概算は正しくない（平均では正しい）。\\(O(N^&#123;\\varepsilon&#125;)\\) は言える。
+&lt;h2&gt;smooth-number&lt;/h2&gt;
+\\(x\\) が \\(n^&#123;1/u&#125;\\) 以下の素因数しか持たない確率はおおよそ \\(\\frac&#123;\\log(n^&#123;1/u&#125;)&#125;&#123;\\log(x)&#125;\\) なので、\\(n\\) 以下の数のうち、\\(n^&#123;1/u&#125;\\) 以下の素因数しか持たない数は \\(\\Theta(n)\\) 個ある（正確には、&lt;a href="https://en.wikipedia.org/wiki/Dickman_function"&gt;Dickman function&lt;/a&gt;よりおよそ \\(nu^&#123;-u&#125;\\) 個なのでどこか定数倍を間違えているが…）。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;&lt;a href="https://twitter.com/sugarknri/status/1313427980039798784"&gt;素因数の個数に関する sugarknri さんのツイート
+&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://math.stackexchange.com/questions/2144940/intuition-for-the-prime-number-theorem/2145167"&gt;intuition for the prime number theorem (math stackexchange)&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://projecteuclid.org/download/pdf_1/euclid.ijm/1255631807"&gt;Rosser, J. Barkley, and Lowell Schoenfeld. "Approximate formulas for some functions of prime numbers." Illinois Journal of Mathematics 6.1 (1962): 64-94.&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hitokoto"&gt;厳密な証明を書く実力がなくて無念。とはいえ、大雑把な推定で正しい値が得られるのは面白い。&lt;/div&gt;

@@ -1,0 +1,121 @@
+---
+title: "最小費用流で解ける問題"
+description: "最小費用流で解ける問題 の過去ブログ記事"
+---
+
+# 最小費用流で解ける問題
+
+> 📅 **投稿日**: 2022-04-10 01:12:57
+
+&lt;h2&gt;双対問題&lt;/h2&gt;
+接続行列\\(A\\in\\mathbb&#123;R&#125;^&#123;|V| \\times |E|&#125;\\)と置く。最小費用流問題は線形計画問題として定式化すると、\\begin&#123;equation*&#125;
+\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;min&#125;  &amp; cx &amp;\\\\
+\\text&#123;subject to&#125;&amp;\\overline b \\geq Ax \\geq \\underline b\\\\
+&amp; \\overline u \\geq x \\geq \\underline u
+\\end&#123;array&#125;
+\\end&#123;equation*&#125;となる。この値を下から評価してみる。
+
+卸業者 A : 辺 \\(e\\) をコスト \\(c_e\\) で通れる。各頂点の需給を満たすように輸送したい。転売屋 B : 頂点 \\(i\\) で物価（ポテンシャル、価格関数） \\(\\pi_i\\) で売買して需給を満たしたい。B は関税が掛からない。B は在庫と資金が無限にあるので買った量と売った量は一致しなくてもよい。  B は A の輸送費（主問題の答え）以下の総費用を提示したい。
+
+\\(\\partial x_v = b_v\\) のとき、頂点 \\(v\\) での売買に掛かる費用は \\(\\pi_vb_v\\) である。B は \\(\\min(\\pi_v \\overline b_v , \\pi_v \\underline b_v)\\) を費用に加える。
+
+B が頂点 \\(u\\) で買い頂点 \\(v\\) で売るための費用は \\(\\pi_u-\\pi_v\\) である。従って、A は辺 \\(e=(u, v)\\) の単位流量当たり、少なくとも \\(c_e^\\pi = c_e-(\\pi_u-\\pi_v)\\) だけ B より費用が大きい。従って、B は \\(\\min(c_e^\\pi \\overline u_e, c_e^\\pi \\underline u_e)\\) を費用に加える。\\(c_e^\\pi\\) を簡約費用と呼ぶ。
+
+B はできるだけ高い額を提示したいので、
+$$\\mathrm&#123;max&#125; \\quad \\sum_v \\min \\left(\\pi_v \\overline b_v , \\pi_v \\underline b_v\\right)+\\sum_e\\min\\left(c_e^\\pi \\overline u_e, c_e^\\pi \\underline u_e\\right)$$である。この値が主問題の下からの評価になっていること（弱双対性）は作り方から明らかである。更に、主問題と値が等しいことが強双対性定理で言える。次のような解釈もある。フローをパスとサイクルに分解する。流量１のs-tパスの簡約費用の和は (パスの費用)\\(-\\pi_s+\\pi_t\\) となる。また、流量１のサイクルの簡約費用の和は（パスの費用）となる。ここから、双対問題が主問題のlower boundであることは明らか。超頂点を追加してｂフロー（\\(\\partial x = b\\) の場合）に帰着すると、最小費用流であることと、残余ネットワークに負閉路が存在しないことが同値。負閉路が存在しないので最短距離が定義でき、最短距離から簡約費用が非負になるポテンシャルが取れる。残余ネットワーク上に簡約費用負の辺がないことから、以下が成り立つ。相補性条件を使ってもよい。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(x_e = \\underline u_e\\) ならば \\(0 \\leq c_e^\\pi\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(\\underline u_e &lt; x_e &lt; \\overline u_e\\) ならば \\(c_e^\\pi=0\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(x_e = \\overline u_e\\) ならば \\(c_e^\\pi \\leq 0\\)&lt;/li&gt;
+&lt;/ul&gt;
+が成り立つ。目的関数は$$\\mathrm&#123;max&#125; \\quad \\sum_v \\pi_v b_v +\\sum_e\\min\\left(c_e^\\pi \\overline u_e, c_e^\\pi \\underline u_e\\right)$$の形なので、（主問題の答え）＝（双対問題の答え）となる。
+先の目的関数を線形計画問題として定式化するには、min を消去する必要がある。そこで \\(\\pi = \\pi^++\\pi^-, c^\\pi=c^&#123;\\pi+&#125;+c^&#123;\\pi-&#125;\\) という変数変換をして、\\begin&#123;equation*&#125;
+\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;max&#125;  &amp; \\overline b \\pi^-+\\underline b \\pi^+ +\\overline u  c^&#123;\\pi-&#125; +\\underline uc^&#123;\\pi+&#125;   &amp;\\\\
+\\text&#123;subject to&#125;&amp; c^&#123;\\pi+&#125; + c^&#123;\\pi-&#125; = c-A^T (\\pi^-+\\pi^+)\\\\
+&amp; c^&#123;\\pi-&#125; \\leq 0 \\\\
+&amp; c^&#123;\\pi+&#125;\\geq 0 \\\\
+&amp; \\pi^- \\leq 0 \\\\
+&amp; \\pi^+ \\geq 0 \\\\
+\\end&#123;array&#125;
+\\end&#123;equation*&#125; となる。この変換で最適解は変化しない。
+&lt;h3&gt;頂点 \\(v\\) に出る辺しか存在せず \\(\\underline b_v = 0\\) である場合&lt;/h3&gt;
+\\(\\pi_v \\geq 0\\) において \\(\\min \\left(\\pi_v \\overline b_v , \\pi_v \\underline b_v\\right)=0\\), \\(v\\) から出る辺 \\(e\\) について \\(\\sum_e\\min\\left(c_e^\\pi \\overline u_e, c_e^\\pi \\underline u_e\\right)\\) は \\(\\pi_v\\) について単調減少だから、最適解では \\(\\pi_v \\leq 0\\) である。これは、\\(\\pi_v \\geq 0\\) ならば頂点 \\(v\\) で買い物をしない選択肢 \\(\\partial x_v = 0\\) を取ることができ、このとき、A との価格差が最も開くのが \\(\\pi_v = 0\\) であることからきている。
+&lt;h3&gt;頂点 \\(v\\) に入る辺しか存在せず、\\(\\overline b_v = 0\\) である場合&lt;/h3&gt;
+同様にして \\(\\pi_v \\geq 0\\) となる。
+&lt;h3&gt;\\(\\overline b_v = \\infty\\) である場合&lt;/h3&gt;
+\\(\\underline u_&#123;uv&#125; \\leq x_&#123;uv&#125; &lt; \\infty\\) とすると \\(\\min(c_&#123;ab&#125;^\\pi \\cdot \\infty, c_&#123;uv&#125;^\\pi \\underline u_&#123;uv&#125;)\\) を最大化するには \\(c_&#123;uv&#125;^\\pi \\geq 0\\) とする必要があり \\(\\pi_u \\leq \\pi_v+c_&#123;uv&#125;\\) で差分制約が作れる。\\(\\pi_v &lt; 0\\) だと B は \\(v\\) で買うことで無限にコストを下げられてしまう。\\(\\underline b_v = -\\infty, \\overline b_v = \\infty\\) とすると \\(\\pi_v = 0\\). 従って、\\(\\pi_u \\geq A\\) というような形の制約が差分形式の制約と合わせると作れる。
+&lt;h3&gt;\\(\\overline u_e = \\infty\\) である場合&lt;/h3&gt;
+\\(c_e^\\pi \\geq 0\\) である。
+&lt;h3&gt;二部グラフの重み付きマッチング&lt;/h3&gt;
+Egerváryの定理（&lt;a href="https://atcoder.jp/contests/abc224/editorial/2812"&gt;AtC&lt;/a&gt;）：
+二部グラフ\\(G=(V,E)\\)に対して \\(\\min_&#123;u:V \\to \\mathbb&#123;R&#125;_+&#125; \\sum_&#123;i\\in V&#125;u_i\\) s.t. \\(u_i+u_j \\geq c_&#123;ij&#125;\\) for all \\(ij \\in E\\) は \\(\\max_&#123;w:E\\to\\mathbb&#123;R&#125;_+&#125; \\sum_&#123;e \\in E&#125; w_ec_e\\) s.t. \\(\\sum_&#123;i \\in e&#125; w_e \\leq 1\\) for all \\(i \\in V\\) と等しい。(vertex cover) ≥ (matching) は明らか。等号 \\(u_i+u_j=c_&#123;ij&#125;\\) が成り立つ辺 \\(ij\\) の集合 \\(F\\) および \\(u_i &gt; 0\\) となる頂点 \\(i\\) の集合 \\(U\\) を取る。\\(U\\) を覆う \\(F\\) の部分集合からなるマッチングが取れる。さもなくば、結婚定理より\\(|S|&gt;|N(S)|\\) を満たす独立集合 \\(S \\subseteq U\\)  が取れて、\\(S\\) の頂点の重みを \\(\\varepsilon\\) 減少, \\(N(S)\\) の頂点の重みを \\(\\varepsilon\\) 増加させると解を改善できる□ \\(\\min_&#123;u:V \\to \\mathbb&#123;R&#125;_+&#125; \\sum_&#123;i\\in V&#125;a_iu_i\\) の場合は、頂点 \\(i\\) を \\(a_i\\) 個に複製すると同様に処理できる。
+最小費用流問題の主問題・双対問題として理解することもできる。
+二部グラフの重み付きマッチングの符号を反転した問題の双対が、
+\\begin&#123;equation*&#125;
+\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;max&#125;  &amp; \\sum_&#123;v \\in S&#125;  \\pi_v^- -\\sum_&#123;v \\in T&#125; \\pi_v^+   &amp;\\\\
+\\text&#123;subject to&#125;&amp; c^&#123;\\pi+&#125; = c-A^T (\\pi^-,\\pi^+)^T\\\\
+&amp; \\pi^- \\leq 0 \\\\
+&amp; \\pi^+ \\geq 0 \\\\
+&amp; c^&#123;\\pi+&#125; \\geq 0 \\\\
+\\end&#123;array&#125;
+\\end&#123;equation*&#125;のように書ける。二部グラフの最小頂点被覆と捉えられる。ただし、部集合 \\((S, T)\\) 、辺 \\(e\\) の重み \\(-c_e\\) としている。逆全域木問題やABC224Hがこれに帰着される。
+&lt;h3&gt;例題&lt;/h3&gt;
+&lt;div class="statement"&gt;
+\\begin&#123;equation*&#125;
+\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;max&#125;  &amp; \\sum_&#123;i=1&#125;^N \\min(y_i-x_i, p_i)a_i + \\max(0, y_i-x_i-p_i)b_i &amp;\\\\
+\\text&#123;subject to&#125;&amp;x_i \\leq x_&#123;i+1&#125;\\\\
+&amp; 0 \\leq x_i + 1 \\leq y_i  \\leq Y \\\\
+&amp; x_i + 1 \\leq y_j &amp; \\text&#123;for $(i,j) \\in S$&#125;\\\\
+&amp; y_i + 1 \\leq x_j &amp; \\text&#123;for $(i,j) \\in T$&#125;\\\\
+\\end&#123;array&#125;
+\\end&#123;equation*&#125;（HUPC2020H）&lt;/div&gt;
+行列 \\(a\\) と数列 \\(b, c\\) が与えられる。
+\\begin&#123;align&#125;
+&amp;\\max_x\\left(\\sum_&#123;i,j&#125;a_&#123;i,j&#125;|x_i-x_j| +\\sum_i c_i|x_i-c_i| \\right)\\\\
+=&amp;\\max_y\\left(\\sum_&#123;i,j&#125;a_&#123;i,j&#125;|c_i-c_j+y_i-y_j| +\\sum_i c_i|y_i|\\right)\\\\
+=&amp;\\max_y\\left(\\sum_&#123;i,j&#125;\\min(a_&#123;i,j&#125;\\left(c_i-c_j+y_i-y_j\\right),-a_&#123;i,j&#125;(c_i-c_j+y_i-y_j)) +\\sum_i \\min(c_iy_i,-c_iy_i)\\right)\\\\
+\\end&#123;align&#125;（ICPC2020NERC O）
+&lt;div class="statement"&gt;頂点１から任意の頂点に到達可能なDAGが与えられる。重み \\(c : E \\to \\mathbb&#123;R&#125;_&#123;+&#125;\\) の下で、最長1-Nパスの長さ\\(D\\)を保ったまま、\\(c\\) をどれだけ増やせるか求めよ(&lt;a href="https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=2230"&gt;AOJ&lt;/a&gt;)。&lt;/div&gt;
+\\begin&#123;align&#125;
+&amp;\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;max&#125;  &amp; \\sum_&#123;e \\in E&#125; y_e &amp;\\\\
+\\text&#123;subject to&#125;
+&amp; x_n-x_1 \\leq D \\\\
+&amp; x_b \\geq x_a + c_&#123;ab&#125; + y_&#123;ab&#125; &amp; \\text&#123;for $ab \\in E$&#125;\\\\
+\\end&#123;array&#125;\\\\
+=&amp;\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;max&#125;  &amp; \\sum_&#123;ab \\in E&#125;  \\min(\\infty(-c_&#123;ab&#125;-x_a+x_b), 1(-c_&#123;ab&#125;-x_a+x_b)) + \\min(\\infty(D+x_1-x_n), 0)&amp;\\\\
+\\end&#123;array&#125;
+\\end&#123;align&#125;つまり、いくつかの1-Nパス \\(P_1, P_2, \\ldots, P_k\\) で辺を全て覆ったときの \\(\\sum_i (D-c(P_i))\\) の最小値が答え。
+
+\\begin&#123;align&#125;
+&amp;\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;min&#125;  &amp; \\sum_&#123;uv \\in E&#125; |x_v-x_u| &amp;\\\\
+\\text&#123;s.t.&#125;
+&amp; \\sum_&#123;v\\in V&#125; |x_v-A-v| \\leq K \\\\
+\\end&#123;array&#125;\\\\
+=&amp; \\text&#123;max&#125;_&#123;\\lambda\\geq0&#125;  \\min  \\sum_&#123;uv \\in E&#125; |x_v-x_u|-\\lambda(K-\\sum_&#123;v\\in V&#125; |x_v-A-v|)\\\\
+=&amp; \\text&#123;max&#125;_&#123;\\lambda\\geq0&#125;-\\lambda K -   \\max \\left( \\sum_&#123;uv \\in E&#125; \\min(x_v-x_u,-(x_v-x_u))+\\lambda \\sum_&#123;v\\in V&#125; \\min(A_v-x_v, -(A_v-x_v)) \\right)\\\\
+\\end&#123;align&#125;
+
+ラグランジュ緩和を使用。隣接する頂点 \\(u, v\\) 間に容量1の辺を双方向に, 頂点vから超頂点sに容量\\(\\lambda\\), コスト\\(A_v\\)の辺, 超頂点sから超頂点vに容量\\(\\lambda\\), コスト\\(-A_v\\)の辺(&lt;a href="https://atcoder.jp/contests/abc393/tasks/abc393_g"&gt;AtC&lt;/a&gt;)。
+
+\\begin&#123;align&#125;
+&amp;\\begin&#123;array&#125;&#123;ll@&#123;&#125;ll&#125;
+\\text&#123;min&#125;  &amp; \\sum_&#123;i,j&#125; c_&#123;ij&#125;|x_i-x_j|+\\sum_id_ix_i &amp;\\\\
+\\text&#123;s.t.&#125;
+&amp; \\sum x_i \\geq H \\\\
+&amp; x_i \\geq 0
+\\end&#123;array&#125;\\\\
+=&amp; \\text&#123;max&#125;_&#123;\\lambda\\geq0&#125;  \\min  \\sum_&#123;i,j&#125; c_&#123;ij&#125;|x_i-x_j|+\\sum_i d_ix_i-\\lambda(-H+\\sum_&#123;i&#125; x_i)\\\\
+&amp;\\text&#123;s.t.&#125; \\ \\ x_i \\geq 0\\\\
+=&amp; \\text&#123;max&#125;_&#123;\\lambda\\geq0&#125; \\lambda H- \\max  \\left(\\sum_&#123;i,j&#125; c_&#123;ij&#125;\\min(x_i-x_j,-(x_i-x_j))+\\sum_&#123;i&#125; (\\lambda-d_i)x_i + \\sum_i  \\min(0, \\infty x_i)\\right)\\\\
+\\end&#123;align&#125;
+辺のコストが0なので需給を満たす循環流の存在を最大流で判定。
+残余ネットワーク上で非自明な有向カット\\(E(V \\setminus A, A)\\)を取り\\(A\\)の頂点に定数倍足すことで\\(\\sum x_i \\geq H\\)を満たすようにする&lt;a href="https://www.slideshare.net/wata_orz/ss-91375739"&gt;JAG&lt;/a&gt;
+
+https://www.slideshare.net/wata_orz/ss-91375739

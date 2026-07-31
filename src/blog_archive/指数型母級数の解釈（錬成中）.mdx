@@ -1,0 +1,78 @@
+---
+title: "指数型母級数の解釈（錬成中）"
+description: "指数型母級数の解釈（錬成中） の過去ブログ記事"
+---
+
+# 指数型母級数の解釈（錬成中）
+
+> 📅 **投稿日**: 2020-10-16 11:20:33
+
+
+&lt;p&gt;形式的冪級数を \\(\\sum a_nx^n\\) ではなく、 \\(\\sum a_n\\frac&#123;x^n&#125;&#123;n!&#125;\\) の形で取ると意味のある畳込みが計算できて何故か上手くいくことがある。僕は何度も経験があり不思議に思っていた。後者の形（指数型母級数）で上手くいくのはどんな場合か、またその性質を積極的に利用して考察に生かせないのか。この疑問について答えよう。&lt;/p&gt;
+&lt;h2&gt;種と指数型母級数の定義&lt;/h2&gt;
+種  \\(\\mathcal&#123;A&#125;\\) を次に従う規則とする。
+&lt;ol type="i"&gt;
+&lt;li&gt; 有限集合 \\(X\\) に対して別の有限集合 \\(\\mathcal&#123;A&#125;(X)\\) を定める。&lt;/li&gt;
+&lt;li&gt; 有限集合 \\(X, Y\\) について \\(|X|=|Y|\\) ならば \\(|\\mathcal&#123;A&#125;(X)|=|\\mathcal&#123;A&#125;(Y)|\\) 。&lt;/li&gt;
+&lt;li&gt; 有限集合 \\(X, Y\\) について \\(X \
+eq Y\\) ならば \\(\\mathcal&#123;A&#125;(X) \\cap \\mathcal&#123;A&#125;(Y) = \\emptyset \\) 。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; この規則のうち、(ii), (iii) は意味のある畳み込みが計算できるための条件である（ので畳み込みの章まで考える必要はない）。 &lt;/p&gt;
+
+\\(\\mathcal&#123;A&#125;_n:=\\mathcal&#123;A&#125;( \\&#123;1,2,\\ldots ,n \\&#125;)\\) と置く。種 \\(\\mathcal&#123;A&#125;\\) を用いて指数型母級数を$$A(x) := \\sum_&#123;n=0&#125;^\\infty \\left|\\mathcal&#123;A&#125;_n\\right| \\frac&#123;x^n&#125;&#123;n!&#125;$$で定義する。引数の要素 \\(1,2,\\ldots,n\\) の型は (ii) より何でも良く、その都度「ボール」「n元集合」「根付き木」「森」「サイクル」などになる。
+
+&lt;p&gt;置換の種 \\(\\mathcal&#123;S&#125;\\) を考えよう。\\(\\mathcal&#123;S&#125;(I)\\) が集合 \\(I\\) の全ての置換の集合族であると定める。n 元集合の置換は n! 個あるので次を得る：&lt;br&gt;
+$$S(x) = \\sum_&#123;n=0&#125;^\\infty n! \\frac&#123;x^n&#125;&#123;n!&#125; = \\frac&#123;1&#125;&#123;1-x&#125;$$&lt;/p&gt;
+&lt;p&gt;また有限集合の種 \\(\\mathcal&#123;E&#125;\\) を考えてみよう。各集合 \\(X\\) に対して像は自分自身のみ \\(\\mathcal&#123;E&#125;(I) = \\&#123; I \\&#125; \\) で定める。指数型母関数は \\( E(x) = \\sum_&#123;n=0&#125;^\\infty  \\frac&#123;x^n&#125;&#123;n!&#125; = e^x \\) となる。自明な例だが、後々非常に役立つ。&lt;/p&gt;
+&lt;p&gt;他にも幾つか簡単な種の例をいくつか列挙しておく。&lt;br&gt;
+\\(n\\) 元集合の種 \\(\\mathcal&#123;E_&#123;n&#125;&#125;\\)：\\(E_n(x) = \\frac&#123;1&#125;&#123;n!&#125;x^n\\)&lt;br&gt;
+奇サイズの集合の種 \\(\\mathcal&#123;E_&#123;odd&#125;&#125;\\)：\\(E_&#123;odd&#125;(x) = (e^x-e^&#123;-x&#125;)/2=\\sinh(x)\\)&lt;br&gt;
+空でない集合の種 \\(\\mathcal&#123;E_&#123;nonempty&#125;&#125;\\)：\\(A(x) = E(x)-E_0(x)=e^x-1\\)&lt;br&gt;
+巡回置換の種 \\(\\mathcal&#123;C&#125;\\)： \\(C(x) =\\sum_&#123;n=0&#125;^\\infty (n-1)!\\frac&#123;x^n&#125;&#123;n!&#125;=\\log\\left(\\frac&#123;1&#125;&#123;1-x&#125;\\right) \\)
+&lt;/p&gt;
+&lt;h2&gt;畳み込み&lt;/h2&gt;
+種 \\(\\mathcal&#123;A&#125;, \\mathcal&#123;B&#125;\\) の積を
+&lt;p&gt;$$A(x) B(x) = \\sum_&#123;n=0&#125;^\\infty \\sum_&#123;k=0&#125;^n \\frac&#123;A_&#123;n-k&#125;&#125;&#123;(n-k)!&#125; \\frac&#123;B_&#123;k&#125;&#125;&#123;k!&#125; x^n =  \\sum_&#123;n=0&#125;^\\infty \\frac&#123;x^n&#125;&#123;n!&#125; \\sum_&#123;k=0&#125;^n &#123;n \\choose k&#125;A_&#123;n-k&#125; B_&#123;k&#125;$$&lt;/p&gt;&lt;/p&gt;
+
+
+&lt;h3 style="text-align: center;"&gt;例題&lt;/h3&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題1】&lt;/b&gt;\\(N\\) 個のラベル付きボールを \\(a\\) の倍数サイズの集合、\\(b\\) の倍数サイズの集合、\\(c\\) の倍数サイズの集合の \\(3\\) つに分ける。ただし \\(a,b,c\\) は互いに異なる。そのような方法は何通りあるか。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(f_a=∑_&#123;m=1&#125;^\\infty E_&#123;ma&#125;, f_b=∑_&#123;m=1&#125;^\\infty E_&#123;mb&#125;, f_c=∑_&#123;m=1&#125;^\\infty E_&#123;mc&#125;\\) とすると \\([x^N]f_af_bf_c\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題4】&lt;/b&gt;\\(N\\) 個のラベル付きボールを K 個の非空なラベルなしグループに分け、そのグループをリストに並べる方法は何通りか。例えば \\((\\&#123;a,b\\&#125;,\\&#123;c\\&#125;)\\) と \\((\\&#123;c\\&#125;, \\&#123;a,b\\&#125;)\\) を区別する数え方である。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f(x)=E_&#123;nonempty&#125;(x)\\) とするとき、 \\(N![x^N]f^K\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題4】&lt;/b&gt;\\(N\\) 個のラベル付きボールを非空なラベルなしグループに分け、そのグループをリストに並べる方法は何通りか。例えば \\((\\&#123;a,b\\&#125;,\\&#123;c\\&#125;)\\) と \\((\\&#123;c\\&#125;, \\&#123;a,b\\&#125;)\\) を区別する数え方である。（出典：ordered Bell number）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f(x)=E_&#123;nonempty&#125;(x)\\) とするとき、 \\(N![x^N]\\sum_&#123;i=0&#125;^\\infty f^i = N![x^N] \\frac&#123;1&#125;&#123;1-f&#125;\\) が答え。&lt;/p&gt;
+&lt;h3 style="text-align: center;"&gt;演習&lt;/h3&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題1】&lt;/b&gt;\\(\\&#123;1,2,\\ldots,N\\&#125;\\) の順列 \\(\\&#123;p_1,\\ldots,p_N\\&#125;\\) のうち任意の \\(i\\) について \\(i \
+eq p_i\\) が成り立つ場合の数を求めよ。（出典：撹拌順列）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;求める値を \\(N![x^N]f(x), g=\\) &lt;span style="background-color: black; color: #000000;"&gt;\\(E(x)\\)&lt;/span&gt; とすると \\(fg=S\\) だから \\(N![x^N]Sg^&#123;-1&#125;\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題2】&lt;/b&gt;\\(\\&#123;1,2,\\ldots,N\\&#125;\\) の順列 \\(\\&#123;p_1,\\ldots,p_N\\&#125;\\) のうちちょうど \\(N-K\\) 個の \\(i\\) について \\(i \
+eq p_i\\) が成り立つ場合の数を求めよ。（出典：&lt;span style="background-color: black; color: #000000;"&gt;ARC009 問題C&lt;/span&gt;）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(f\\) を前問で求めた母級数, \\(h(x)=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(E_K(x)\\)&lt;/span&gt; とすると \\(N![x^N]fh\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題2】&lt;/b&gt;\\(N\\) 個のラベル付きボールを \\(K\\) 個のラベル付き箱に入れる。全ての箱にボールが入っている入れ方は何通りあるか。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;求める値を \\(N![x^N]f(x), g(x)=\\) &lt;span style="background-color: black; color: #000000;"&gt;\\(E(x)\\)&lt;/span&gt; \\(,h(x)=\\) &lt;span style="background-color: black; color: #000000;"&gt;\\(\\sum_&#123;i=0&#125;^\\infty (i^K/i!) x^i\\)&lt;/span&gt; とする。\\(fg=h\\) だから \\(N![x^N]g^&#123;-1&#125;h\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題3】&lt;/b&gt;\\(N\\) 個のラベル付きボールを \\(K\\) 個のラベル付き箱に入れる。ボールの入っていない箱を奇数個にする入れ方は何通りあるか。（出典：&lt;span style="background-color: black; color: #000000;"&gt;yukicoder No.1100&lt;/span&gt;）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(f\\) を問題1で求めた級数、\\(g=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(E_&#123;odd&#125;(x)\\)&lt;/span&gt; とすると \\(N![x^N] fg\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題1】&lt;/b&gt;\\(N\\) 個のラベル付きボールを幾つかの \\(a,b,c\\) 元集合に分ける方法は何通りか（\\(a,b,c\\) は互いに異なる）。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(N![x^N]E(E_a)E(E_b)E(E_c)\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題4】&lt;/b&gt;\\(N\\) 個のラベル付きボールを非空なラベルなしグループに分ける方法は何通りか。（出典：Bell number）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f(x)=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(E(x)\\)&lt;/span&gt;, \\(g(x)=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(E_&#123;nonempty&#125;(x)\\)&lt;/span&gt; とするとき、 \\(N![x^N]f(g(x))\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題4】&lt;/b&gt;自己辺・多重辺を許し、ラベル付き \\(N\\) 頂点全てを使ってサイクルを複数作る。各サイクルの長さの \\(M\\) 乗 について積を取った値を全ての場合について和を取るといくつになるか。（出典：&lt;span style="background-color: black; color: #000000;"&gt;夏合宿2019 問題H&lt;/span&gt;）&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f(x)=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(E(x)\\)&lt;/span&gt;, \\(g(x)=\\)&lt;span style="background-color: black; color: #000000;"&gt;\\(C(x)\\)&lt;/span&gt; とするとき、 \\(N![x^N]f(\\)&lt;span style="background-color: black; color: #000000;"&gt;\\((x d/dx)^M\\)&lt;/span&gt; \\(g(x))\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;多重グラフにおけるラベル付き \\(N\\) 頂点サイクルの個数を求めよ&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;反転を同一視するから &lt;span style="background-color: black; color: #000000;"&gt;\\(N![x^N]C(x)/2\\)&lt;/span&gt; が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;単純グラフにおけるラベル付き \\(N\\) 頂点サイクルの個数を求めよ。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(N=1, 2\\) のときサイクルが存在しないから &lt;span style="background-color: black; color: #000000;"&gt;\\(N![x^N](1/2)(C(x)-x-x^2/2)\\)&lt;/span&gt; が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;ラベル付き \\(N\\) 頂点をすべて使って複数のサイクル（単純グラフ）を生成する個数を求めよ。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f\\) を前問題で求めた級数とする。&lt;span style="background-color: black; color: #000000;"&gt;\\(N![x^N]\\exp(f(x))\\)&lt;/span&gt; が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;\\(N\\) 頂点ラベル付き木の個数を求めよ&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;\\(N\\) 頂点ラベル付き森の個数を求めよ&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(f\\) を前問で求めた母級数とすると &lt;span style="background-color: black; color: #000000;"&gt;\\(N![x^N] E_&#123;nonempty&#125;(f(x))\\)&lt;/span&gt; が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題5】&lt;/b&gt;\\(N\\) 頂点ラベル付き連結ファンクショナルグラフの個数を求めよ。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt; \\(f\\) を前問で求めた母級数、\\(g\\) を前問で求めた母級数とする。\\(N![x^N]f(g(x))\\) が答え。&lt;/p&gt;
+&lt;div class="statement"&gt;&lt;b&gt;【問題6】&lt;/b&gt;\\(N\\) 頂点ラベル付き二部グラフの個数を求めよ。&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;【解答】&lt;/b&gt;\\(f(x)=\\sum_&#123;i=0&#125;^\\infty \\frac&#123;x^i&#125;&#123;i!&#125;\\sum_&#123;k=0&#125;^N &#123;n \\choose k&#125;2^&#123;k(n-k)&#125;\\), \\(\\exp(2g(x))=f(x)\\) より \\(N![x^N] g(x) = N![x^N]\\log(f(x))\\) が答え。&lt;/p&gt;
+&lt;p&gt;http://www.math.uwaterloo.ca/~dgwagner/co430II.pdf&lt;/p&gt;
+&lt;p&gt;https://www.math.upenn.edu/~wilf/gfologyLinked2.pdf&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;

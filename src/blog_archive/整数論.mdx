@@ -1,0 +1,23 @@
+---
+title: "整数論"
+description: "整数論 の過去ブログ記事"
+---
+
+# 整数論
+
+> 📅 **投稿日**: 2025-09-19 04:43:03
+
+\\(\\min\\&#123;(ax + b) \\bmod m : 0 \\leq x \\leq n\\&#125;\\) を求めよ。(&lt;a href="https://judge.yosupo.jp/problem/min_of_mod_of_linear"&gt;library checker&lt;/a&gt;)
+\\(a\\cdot0+b\\)、または\\(ax+b=mq+r\\)と表したときに\\(0 \\leq r &lt; a\\)となるものがminの候補。商qは\\(1 \\leq q \\leq \\lfloor \\frac&#123;an+b&#125;&#123;m&#125; \\rfloor\\)の範囲を取るので、
+\\begin&#123;align&#125;
+&\\min\\&#123;(ax + b) \\bmod m : 0 \\leq x \\leq n\\&#125;\\\\
+=&\\min(\\&#123;(b - mq) \\bmod a : 1\\leq q \\leq \\lfloor \\frac&#123;an+b&#125;&#123;m&#125; \\rfloor\\&#125;\\cup \\&#123;b\\&#125;)
+\\end&#123;align&#125;
+
+\\(q\\)を\\(q_0-q\\)に変数変換することで\\(-m \\bmod a\\)を\\(m \\bmod a\\)にできるので、O(log m)。
+
+\\(a,m\\)が与えられるので、\\(a^x=x \\bmod m\\)を満たすxを求めよ。
+&lt;a href="https://atcoder.jp/contests/tenka1-2017/tasks/tenka1_2017_f"&gt;degwer&lt;/a&gt;
+原始根
+
+&lt;a href="https://atcoder.jp/contests/arc148/tasks/arc148_f"&gt;nyaan&lt;/a&gt;

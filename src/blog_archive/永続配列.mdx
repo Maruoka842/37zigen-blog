@@ -1,0 +1,148 @@
+---
+title: "永続配列"
+description: "永続配列 の過去ブログ記事"
+---
+
+# 永続配列
+
+> 📅 **投稿日**: 2020-12-03 22:13:12
+
+[mathjax]  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+
+この記事では部分永続配列（fat nodes）と全永続配列（永続 m 分木を流用）を解説する。永続配列が使えるようになると、配列を用いて実装されるデータ構造（Union Find、セグメント木など）は、その配列を永続配列に置き換えるだけで機械的に永続化できるようになる。多くのデータ構造が、最適な計算量ではないにしても、永続化できるようになるだろう。
+[toc]
+&lt;h2&gt;部分永続配列&lt;/h2&gt;
+部分永続配列とは、次のような問題を処理するデータ構造である：
+&lt;div class="statement"&gt;問題（部分永続配列）：\\(a_0\\) を初期状態の配列とする。以下の \\(T\\) 個のクエリを処理するデータ構造を構築せよ。\\(i\\) 個目のクエリでは次のいずれかを処理する。
+&lt;ol&gt;
+ 	&lt;li&gt;\\(a_&#123;i-1&#125;[p_i]\\) を \\(v_i\\) で更新した配列を \\(a_i\\) とする。&lt;/li&gt;
+ 	&lt;li&gt;\\(a_&#123;t_i&#125;[p_i]\\) を出力せよ。ただし \\(0 \\leq t_i &lt; i\\) とする。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+ここでは fat nodes と呼ばれる、更新履歴を配列 a の各インデックスに積む方法を紹介する。配列 a の各インデックス i について、a[i] の (更新時刻, 更新後の値) のペアを、時系列順に並べて配列 \\(b_i\\) として管理する。すると、\\(a_t[i]\\) は、\\(b_i\\) のペアのうち、更新時刻が t 以下最大のものの更新後の値に等しい（Predecessor Problem）。二分探索すると、Q を更新回数として \\(O(\\log Q)\\) でペアが得られる。
+
+部分永続配列はクエリ当りならし \\(O(\\log Q)\\) で実現できることが分かった。ならしは配列 \\(b_i\\) を動的にする部分で生じている。コード（C++）は次のようになる：
+&lt;pre&gt;&lt;code class="c++"&gt;#include "vector"
+using namespace std;
+
+struct PartialPersistentArray &#123;
+    vector&lt;vector&lt;pair&lt;int, int&gt;&gt;&gt; b;
+    int last_time = 0;
+
+    // 時刻 -1 における a を設定する。
+    PartialPersistentArray(vector a) &#123;
+        b.resize(a.size());
+        for (int i=0; i &lt; a.size(); ++i) &#123;
+            b[i].push_back(make_pair(-1, a[i]));
+        &#125;
+    &#125;
+
+    // 時刻 last_time において、a[i] &lt;- val と更新する。
+    void set(int i, int val) &#123;
+        b[i].push_back(make_pair(last_time++, val));
+    &#125;
+
+    // 時刻 time における a[i] の値を返す。
+    int get(int i, int time) &#123;
+        int ok = 0, ng = b[i].size();
+        while (ng - ok &gt; 1) &#123;
+            int middle = (ok + ng) / 2;
+            if (b[i][middle].first &lt;= time) &#123;
+                ok = middle;
+            &#125; else &#123;
+                ng = middle;
+            &#125;
+        &#125;
+        return b[i][ok].second;
+    &#125;
+
+&#125;;&lt;/code&gt;&lt;/pre&gt;
+この fat node のアイディアは素朴ではあるが、クエリ当り \\(O(\\log(n)/\\log(\\log(n)))\\) の全永続配列[2]や、クエリ当り \\(O(\\log(\\log(n)))\\) の部分永続 Union Find （解説：&lt;a href="https://kopricky.github.io/code/DataStructure_OnGraph/partial_persistent_union_find.html"&gt;koprickyさん&lt;/a&gt;、&lt;a href="https://noshi91.hatenablog.com/entry/2020/09/25/015106"&gt;熨斗袋さん&lt;/a&gt;）に応用できる。
+&lt;h2&gt;全永続配列&lt;/h2&gt;
+全永続配列とは、次のような問題を処理するデータ構造である：
+&lt;div class="statement"&gt;問題（全永続配列）：\\(a_0\\) を初期状態の配列とする。以下の \\(T\\) 個のクエリを処理するデータ構造を構築せよ。\\(i\\) 個目のクエリでは次のいずれかを処理する。
+&lt;ol&gt;
+ 	&lt;li&gt;配列 \\(a_&#123;t_i&#125;[p_i]\\) を \\(v_i\\) で更新した配列を \\(a_i\\) とする。&lt;/li&gt;
+ 	&lt;li&gt;\\(a_&#123;t_i&#125;[p_i]\\) を出力せよ。&lt;/li&gt;
+&lt;/ol&gt;
+ただし \\(0 \\leq t_i &lt; i\\) とする。
+
+&lt;/div&gt;
+次に、全永続完全 m 分木を流用して、全永続配列を実現する方法を解説する。
+&lt;h3&gt;全永続完全 m 分木による全永続配列&lt;/h3&gt;
+path copying と呼ばれる方法で、有向完全 m 分木を全永続化する（子へのポインタを持つ）。全永続化に当たって、元々ある頂点・辺を破壊してはいけない。そこで、まず更新したい頂点（赤色）と根を結ぶパスを複製する。そして、その複製したパス（青）に接続する部分木を、元々のパスと共有するように有向辺を張ればよい（下図）。各更新時刻に対して、更新後の木の根 r を持つ。すると、特定の時刻の頂点へのアクセスは根 r からの探索によって実現できる。
+
+&lt;img class="aligncenter size-full wp-image-4199" src="https://37zigen.com/wp-content/uploads/2020/12/persistent_binary_tree3.png" alt="" width="602" height="562"&gt;
+
+頂点数 n の m 分木の高さが \\(O(\\log_m n)\\) であるから、更新 \\(O(m \\log_m n)\\) 、読み取り \\(O(\\log_m n)\\) である。
+&lt;h3&gt;部分永続 Union Find&lt;/h3&gt;
+子の数 m は更新と読み取りの比率に応じて最適値にするとよい。例えば、link by size（経路圧縮なし）の Union Find を永続配列を用いて永続化したいとする。このとき、書き込み 1 回当り \\(O(\\log n)\\) 回読み取りが生じうる。\\(O(1 \\times m \\log_m n + \\log n \\times \\log_m n)\\) を最小化したい。\\(m=\\log n\\) のとき最小になり、1クエリ当り \\(O(\\log(n)^2 / \\log \\log n)\\) となる。
+
+同じアイディアの適用例：&lt;a href="https://37zigen.com/minimum-spanning-tree-prim/#mnm_lognlogmn"&gt;多分ヒープによるプリム法&lt;/a&gt;、&lt;a href="https://37zigen.com/k-uf-tree/"&gt;最悪計算量最小化 Union Find&lt;/a&gt;
+
+アドホックに設計すると、実時間 \\(O(\\log(n))\\) にできる（&lt;a href="https://noshi91.hatenablog.com/entry/2018/02/18/161529"&gt;熨斗袋さんの解説&lt;/a&gt;）。同じことをk-ufですると最悪計算量はそのまま、ならし \\(O(\\log(n)/\\log\\log(n))\\) にできる。
+&lt;h2&gt;データの持ち方&lt;/h2&gt;
+永続化する配列 a の木への載せ方は色々な流儀がある。下の画像の、１つ目は最上位の桁から順に場合分けする方法、２つ目は最下位の桁から順に場合分けする方法、３つ目は２つ目の方法を発展させた内部ノードを無駄にしない方法である。２つ目、３つ目は１つ目に比べて実装が少し軽くなる。ただし、区間クエリを扱いたい場合は１つ目を使うのがよい（永続セグメント木に拡張する場合）。
+
+&lt;img class="aligncenter size-full wp-image-4204" src="https://37zigen.com/wp-content/uploads/2020/12/persistent_binary_tree4.png" alt="" width="601" height="801"&gt;
+
+２つ目の方法で a[id] に access するコード（Java）は次のようになる（m 分木）：
+&lt;pre&gt;&lt;code&gt;
+int access(int id) &#123;
+    return id == 0 ? val : child[id % m].access(id / m);
+&#125;&lt;/code&gt;&lt;/pre&gt;
+３つ目の方法にするには id / m を (id - 1) / m とすればよい。永続 m 分木を流用した永続配列のコード（Java）は次のようになる。２つめの流儀で実装した：
+&lt;pre&gt;&lt;code class="java"&gt;class PersistentArray &#123;
+	final int m = 32;
+	PersistentArray[] ch = new PersistentArray[m];
+	int val;
+
+	public PersistentArray() &#123;
+	&#125;
+
+	PersistentArray build(int[] a) &#123;
+		PersistentArray root = new PersistentArray();
+		for (int i = 0; i &lt; a.length; ++i)
+			root = dfs(root, i, a[i]);
+		return root;
+	&#125;
+
+	PersistentArray dfs(PersistentArray cur, int i, int val) &#123;
+		if (cur == null)
+			cur = new PersistentArray();
+		if (i == 0) &#123;
+			cur.val = val;
+		&#125; else &#123;
+			cur.ch[i % m] = dfs(cur.ch[i % m], i / m, val);
+		&#125;
+		return cur;
+	&#125;
+
+	PersistentArray set(int i, int new_val) &#123;
+		PersistentArray ret = new PersistentArray();
+		ret.val = val;
+		for (int j = 0; j &lt; m; ++j)
+			ret.ch[j] = ch[j];
+		if (i == 0) &#123;
+			ret.val = new_val;
+			return ret;
+		&#125;
+		ret.ch[i % m] = ch[i % m].set(i / m, new_val);
+		return ret;
+	&#125;
+
+	PersistentArray add(int i, int add) &#123;
+		return set(i, get(i) + add);
+	&#125;
+
+	int get(int i) &#123;
+		return i == 0 ? val : ch[i % m].get(i / m);
+	&#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://youtu.be/iNmsxEraOKY?t=7429"&gt;CombNaf3 -Final- : 木構造の永続化（熨斗袋さん）&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://link.springer.com/chapter/10.1007/3-540-51542-9_8"&gt;Dietz, Paul F. "Fully persistent arrays." Workshop on Algorithms and Data Structures. Springer, Berlin, Heidelberg, 1989.&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://twitter.com/noshi91/status/1334461861127839746"&gt;熨斗袋さんのTweet&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="hitokoto"&gt;永続配列という名前の厳つさに反して、原理は単純でした。クエリ当り O(log(log(n))) の永続配列の記事も書くかもしれません。&lt;/div&gt;

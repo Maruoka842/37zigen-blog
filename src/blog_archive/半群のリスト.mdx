@@ -1,0 +1,75 @@
+---
+title: "半群のリスト"
+description: "半群のリスト の過去ブログ記事"
+---
+
+# 半群のリスト
+
+> 📅 **投稿日**: 2022-06-24 09:36:21
+
+[toc]
+&lt;h2&gt;関数の合成&lt;/h2&gt;
+分配法則が成り立つならば、一次関数 \\(x \\mapsto ax+b\\) は合成について閉じている。従って、結合法則が成り立つならば、半群になる。
+&lt;ul&gt;
+ 	&lt;li&gt;分配束：min/max, gcd/lcm, bitwise-and/bitwise-or は分配則・結合則を満たすから、そのアフィン変換の合成は半群になる。どちらを +, × にしてもよい。&lt;/li&gt;
+ 	&lt;li&gt;max/plus を　+ / × に対応させると（熱帯）半環になる。&lt;/li&gt;
+ 	&lt;li&gt;bitwise-xor/bitwise-and を + / × に対応させると半環になる。&lt;/li&gt;
+&lt;/ul&gt;
+\\(x\\mapsto \\left\\lfloor \\frac&#123;ax+b&#125;&#123;c&#125; \\right\\rfloor\\) は合成について閉じており、半群になる。
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+積が最大となる部分区間（CF1692H）
+&lt;pre&gt;&lt;code class="java"&gt;
+// 区間 [L, R) の非空な部分区間の最大値を求める。
+static class Interval &#123;
+    Interval leftMax;
+    Interval rightMax;
+    Interval max;
+    int L;
+    int R;
+    long sum;
+    
+    public Interval(long sum, int L, int R) &#123;
+        this.L=L;
+        this.R=R;
+        this.sum=sum;
+        leftMax=this;
+        rightMax=this;
+        max=this;
+    &#125;
+    
+    static Interval max(Interval a, Interval b) &#123;
+        if (a.sum &gt; b.sum) return a;
+        else return b;
+    &#125;
+    
+    static Interval merge(Interval a, Interval b) &#123;
+        if (a.R != b.L) throw new AssertionError();
+        return new Interval(a.sum+b.sum, a.L, b.R);
+    &#125;
+    
+    static Interval op(Interval a, Interval b) &#123;
+        Interval ret=merge(a, b);
+        ret.leftMax=Interval.max(a.leftMax, merge(a, b.leftMax));
+        ret.rightMax=Interval.max(b.rightMax, merge(a.rightMax, b));
+        Interval middleMax=merge(a.rightMax, b.leftMax);
+        ret.max=Interval.max(Interval.max(a.max, b.max), middleMax);
+        return ret;
+    &#125;
+&#125;
+&lt;/code&gt;&lt;/pre&gt;
+\\(n\\) 項間漸化式に従う数列 \\(a\\) が与えられる。
+更新：\\(L \\leq i\\leq R\\) について、\\(v_i \\leftarrow v_i + Ca_&#123;i-L&#125;\\)
+出力：\\(v_i\\)
+&lt;ul&gt;
+ 	&lt;li&gt;一般項が求まる場合：\\(a_i\\) の一般項は \\(n\\) 個の \\(i^k\\lambda^i\\) の形の項の線形結合で表される。更新クエリは \\(L \\leq i \\leq R\\) について \\((i-L)^k\\lambda^&#123;(i-L)&#125;\\) の形の項を足すと言い換えられて、変形するとやはり \\(i^k\\lambda^i\\) の形の項の足し算になる。&lt;/li&gt;
+ 	&lt;li&gt;一般項が求まらない場合：高速きたまさ法や行列累乗。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;区間add, 区間和&lt;/h2&gt;
+長さ \\(N\\) の2つの数列 \\(a, b\\) が与えられる。
+更新：\\(a_L, a_&#123;i+1&#125;, \\ldots, a_R\\) に \\(C\\) を足す。
+出力：\\(\\sum_&#123;i=L&#125;^R a_ib_i\\)
+
+と置く。\\((p,q,r)=(a_R-a_&#123;L-1&#125;, \\sum_&#123;i=L&#125;^&#123;R&#125; b_i, \\sum_&#123;i=L&#125;^R a_i b_i)\\)とすると\\((p_1, q_1, r_1)*(p_2, q_2, r_2) = (p_1+p_2, q_1+q_2, r_1+r_2+p_1q_2)\\)
+&lt;h2&gt;Rolling Hash&lt;/h2&gt;
+ローリングハッシュは長さを持たせることで、モノイドになる。基底を \\(b\\) とする文字列 \\(s\\) のローリングハッシュを \\(\\beta(s)\\) と置くと、\\(s_1s_2\\) のローリングハッシュは$$\\beta(s_1)+\\beta(s_2)b^&#123;|s_1|+|s_2|&#125;$$となる。従って、\\((\\beta(s), b^&#123;|s|&#125;)\\) がモノイドになる。文字列の更新などができる。

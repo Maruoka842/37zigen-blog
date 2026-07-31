@@ -1,0 +1,37 @@
+---
+title: "（執筆中）Union Find の計算量 (1)"
+description: "（執筆中）Union Find の計算量 (1) の過去ブログ記事"
+---
+
+# （執筆中）Union Find の計算量 (1)
+
+> 📅 **投稿日**: 2020-09-18 01:28:31
+
+Union Find の計算量を解説します。
+&lt;h2&gt;二項木とは&lt;/h2&gt;
+いくつかの種類の Union Find において最悪ケースを与える二項木を最初に定義しておく。
+二項木を
+&lt;ul&gt;
+ 	&lt;li&gt;次数 \\(0\\) のとき \\(1\\) 頂点からなる木&lt;/li&gt;
+ 	&lt;li&gt;次数 \\(k\\) のとき根の子が次数 \\(0,1,\\ldots,k-1\\) の二項木の根である木&lt;/li&gt;
+&lt;/ul&gt;
+と定義する。
+&lt;h2&gt;Union by Size&lt;/h2&gt;
+&lt;h2&gt;Union by Rankの挙動&lt;/h2&gt;
+各頂点に対してランクを割り当てる。path compression, halving, splitting をしない限り、ランクは高さ（葉までの最長距離）と同じ値である。根と根を繋ぐときランクの高い根を新たな根とし、ランクの低い根は新たな根の子とする。
+&lt;h2&gt;Union by Rankの計算量&lt;/h2&gt;
+まず、ランク \\(m\\) 以上の頂点を根とする部分木のサイズは \\(2^m\\) 以上であることを示す。
+\\(m=0\\) のときサイズ \\(1\\) であるから成立。
+\\(m=k\\) のとき成立を仮定する。
+根 \\(u, v\\ (\\mathrm&#123;rank&#125;(u) \\geq \\mathrm&#123;rank&#125;(v))\\) を繋げて \\(\\mathrm&#123;rank&#125;(u)\\) が増加するのは \\(\\mathrm&#123;rank&#125;(u)=\\mathrm&#123;rank&#125;(v)\\) のときのみ。
+帰納法の仮定から \\(\\mathrm&#123;size&#125;(u)=\\mathrm&#123;size&#125;(v) \\geq 2^&#123;\\mathrm&#123;rank&#125;(u)&#125;\\) だから合併後のサイズは \\(2^&#123;\\mathrm&#123;rank&#125;(u)+1&#125;\\) 以上となる。
+よって示された。ランク \\(m\\) の頂点を根とする部分旗のサイズについて \\(2^m \\geq n\\) だから \\(m = O(\\log n)\\)。従って find クエリと unite クエリは共に \\(O(\\log n)\\) となる。
+&lt;h2&gt;Union by Rankの最悪ケース&lt;/h2&gt;
+クエリ数の方が頂点数より小さい場合のみ考える。二項木が最悪ケースである。
+&lt;h2&gt;Path Compression, Splitting, Halving&lt;/h2&gt;
+&lt;a href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/UnionFind.pdf"&gt;Kevin Wayne の授業スライド&lt;/a&gt;
+&lt;a href="https://www.ccs.neu.edu/home/lieber/courses/algorithms/cs4800/f10/lectures/union-find.pdf"&gt;union by size + path compression で iterated logarithm の証明&lt;/a&gt;
+&lt;a href="https://www.cs.upc.edu/~mjserna/docencia/grauA/T19/Union-Find.pdf"&gt;union by rank + path compression で iterated logarithm の証明&lt;/a&gt;
+
+https://core.ac.uk/download/pdf/161439519.pdf survy?
+https://www.cs.cmu.edu/~avrim/451f11/lectures/lect1020.pdf 真面目なiterated logarithm の証明

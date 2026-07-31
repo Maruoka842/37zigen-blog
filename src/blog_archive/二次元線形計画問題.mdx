@@ -1,0 +1,38 @@
+---
+title: "二次元線形計画問題"
+description: "二次元線形計画問題 の過去ブログ記事"
+---
+
+# 二次元線形計画問題
+
+> 📅 **投稿日**: 2021-03-29 09:30:46
+
+&lt;p&gt;２変数の線形計画問題を \\(O(n)\\) (\\(n\\) : 条件の個数) で解くMegiddoのアルゴリズムを紹介します。&lt;/p&gt;
+&lt;p&gt;一般の線形計画問題は次の形で表されます：&lt;/p&gt;
+&lt;div class="statement"&gt;線形計画問題：&lt;br&gt;
+行列 \\(A \\in \\mathbb&#123;R&#125;^&#123;n \\times m&#125;\\) とベクトル \\(\\boldsymbol&#123;b&#125; \\in \\mathbb&#123;R&#125;^n, \\boldsymbol&#123;c&#125; \\in \\mathbb&#123;R&#125;^&#123;m&#125;\\) が与えられます。 \\(A\\boldsymbol&#123;x&#125; \\geq \\boldsymbol&#123;b&#125;\\) の下、\\(\\min \\boldsymbol&#123;c&#125;^T \\boldsymbol&#123;x&#125;\\) を与えるベクトル \\(\\boldsymbol&#123;x&#125; \\in \\mathbb&#123;R&#125;^m\\) を求めてください。&lt;/div&gt;
+&lt;p&gt;2変数 \\(m = 2\\) がこの記事の問題です。特に、次の特殊な場合を考えます。この条件に \\(l \\leq x \\leq r\\) と \\(\\boldsymbol&#123;c&#125; \
+eq \\boldsymbol&#123;0&#125;\\) いう条件を加えると、一般の形になります。&lt;/p&gt;
+&lt;div class="statement"&gt;二次元線形計画問題：&lt;br&gt;
+\\(y \\geq a_ix + b_i\\) \\((i=1, \\ldots, m_1)\\),&lt;br&gt;
+\\(y \\leq c_ix + d_i\\) \\((i=1, \\ldots, m_2)\\),&lt;br&gt;
+の下で、\\(y\\) の最小値を求めて下さい。&lt;/div&gt;
+&lt;p&gt;下図の通り、\\(y \\leq c_ix+d_i\\) は上に凸な領域をなし、\\(y \\leq a_ix+b_i\\) は下に凸な領域をなします。\\(a_i, c_i\\) でソートすると、各領域の包絡線が求まります。従って、\\(O(n\\log(n))\\) で \\(y\\) の最小値が求まります。ここからは、\\(O(n)\\) で求めるアルゴリズムを紹介します。&lt;img class="aligncenter size-large wp-image-7997" src="https://37zigen.com/wp-content/uploads/2021/03/2d-lp-region-1-1024x679.png" alt="" width="400"&gt;&lt;/p&gt;
+&lt;h2&gt;Megiddoのアルゴリズム&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;直線 \\(y = a_ix+b_i\\) を２つずつペアにし、直線 \\(y=c_ix+d_i\\) も２つずつペアにします。余りの直線は保留にしておきます。&lt;/li&gt;
+&lt;li&gt;各ペアの交点を列挙します。&lt;/li&gt;
+&lt;li&gt;交点の中央値 \\(x^*\\) を求めます。&lt;/li&gt;
+&lt;li&gt;\\(y\\) の最小値を与える \\(x\\) 座標 \\(x_m\\) が、 \\(x^*\\) の左右どちらにあるか判定します。\\(x_m\\) が \\(x^*\\) のどちらにあるかは、２つの包絡線の \\(y\\) 座標の位置関係と傾きから分かります。&lt;/li&gt;
+&lt;li&gt;4. より軸 \\(x=x^*\\) に対して、左右どちらにあるか確定するペアがおよそ \\(n/2\\) 個あります（\\(x^*\\) が中央値より）。そのようなペアは直線の片方を捨てることができます。&lt;/li&gt;
+&lt;li&gt;残った直線について、再帰的に処理します。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href="https://37zigen.com/selection-algorithm/"&gt;選択アルゴリズム&lt;/a&gt;を用いると、3. の中央値が \\(O(n/2)\\) で求まります。&lt;/p&gt;
+&lt;p&gt;5. を説明します。交点が \\(x_m\\) の右側にある場合を考えます（下図）。\\(y \\leq a_ix+b_i\\) の形のペアの場合、\\(a_i\\) の大きい方をすれてばよいです。\\( y \\geq c_ix+d_i\\) の形のペアの場合、\\(c_i\\) の小さい方を捨てればよいです。&lt;/p&gt;
+
+
+&lt;figure class="wp-block-image size-large"&gt;&lt;img src="https://37zigen.com/wp-content/uploads/2021/03/2d-lp-discard-1-1024x944.png" alt="" class="wp-image-8029" width=300/&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;\\(n\\) 個の制約があるときに必要な計算量を \\(T(n)\\) とすると、\\(T(n) = T(3n/4)+O(n/2)\\) です。\\(T(3n/4)\\) がペアの一方を削除した部分問題の計算量、\\(O(n/2)\\) が中央値 \\(x^*\\) を見つけるのに必要な計算量です。解くと、\\(T(n)=O(n)\\) を得ます。&lt;/p&gt;
+&lt;div class="hitokoto"&gt;直線をペアにして考察するというのは初めて見ました。&lt;/div&gt;

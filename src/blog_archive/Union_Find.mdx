@@ -1,0 +1,160 @@
+---
+title: "Union Find"
+description: "Union Find の過去ブログ記事"
+---
+
+# Union Find
+
+> 📅 **投稿日**: 2021-04-08 18:52:52
+
+「集合の合体（union）」と「要素の属す集合の発見（find）」を効率的に行うデータ構造 Union Find の解説をします。Union Find では次のクエリが高速に処理できます。
+&lt;div class="statement"&gt;要素が相異なる一元集合が \\(n\\) 個あります。次の２種類のクエリが何度も与えられるので、処理してください。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(\\mathrm&#123;find&#125;(a)\\) : 要素 \\(a\\) の属す集合（の代表元）を見つけてください。&lt;/li&gt;
+ 	&lt;li&gt;\\(\\mathrm&#123;union&#125;(a, b)\\) : 要素 \\(a, b\\) の属す集合を合体して、一つの集合にしてください。&lt;/li&gt;
+ 	&lt;li&gt;\\(\\mathrm&#123;equiv&#125;(a, b)\\) : 要素 \\(a, b\\) が同じ集合に属すか判定してください。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+\\(\\mathrm&#123;equiv&#125;(a, b)\\) は \\(\\mathrm&#123;find&#125;(a), \\mathrm&#123;find&#125;(b)\\) が等しいかどうかによって判定できます。
+
+計算量はアッカーマンの逆関数 \\(\\alpha\\) を用いてならし \\(O(\\alpha(n))\\) 、最悪 \\(O(\\log(n))\\) となります。
+[toc]
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+集合を根付き木で表します。&lt;b&gt;同じ集合の元は同じ木の頂点です。&lt;/b&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;集合 ↔ 木&lt;/li&gt;
+ 	&lt;li&gt;集合の要素 ↔ 木の頂点&lt;/li&gt;
+ 	&lt;li&gt;集合の代表元 ↔ 木の根&lt;/li&gt;
+&lt;/ul&gt;
+例えば、\\(\\&#123;1,4\\&#125;,\\&#123;5,6,8\\&#125;,\\&#123;2\\&#125;,\\&#123;1,3,9\\&#125;\\) に対応する Union Find の木の一つに次のようなものがあります。代表元はそれぞれ \\(4, 6, 2, 3\\) です。
+
+&lt;img class="aligncenter size-large wp-image-9209" src="https://37zigen.com/wp-content/uploads/2021/04/union-find-1024x511.png" alt="" width="1024" height="511"&gt;
+&lt;h3&gt;union&lt;/h3&gt;
+union(a, b) は a, b の属す二つの木を一つの木に合体させればよいです。一方の木の根を、もう一方の木の根の子とします。
+&lt;h3&gt;find&lt;/h3&gt;
+find(a) は a の属す木の根（集合の代表元）を見つければよいです。a から親を辿れば height(a) ステップで根が見つかります。
+
+union(a, b) は二つの木の根を繋ぐので、find(a) と find(b) を内包しています。根が見つかれば、繋ぐこと自体は \\(O(1)\\) です。従って find の計算量は union に完全に依存します。find は木の高さだけ計算量が必要でした。そこで、木の高さをできるだけ小さくすると find, union の計算量が小さくなります。木の高さを小さくするための工夫として、次に述べる Union by Size/Rank と Path Compression/Halving/Splitting があります。
+
+ちなみに、ここでは紹介しませんが、根同士のリンクと find の計算量を平衡させて最悪計算量を最小化する &lt;a href="37zigen.com/k-uf-tree"&gt;k-uf&lt;/a&gt; という変種もあります。
+&lt;h2&gt;Union By Size/Rank&lt;/h2&gt;
+木の頂点数が小さい方を子として、もう一方の木の根につなぐのが Union by Size です。また、木の高さが低い方を子として、もう一方の木の根につなぐのが Union by Rank です。
+
+両方とも、単体では実時間 \\(O(\\log(n))\\) / クエリ になります。これは、Union by Size/Rank では、親を辿るたびに部分木の大きさが二倍以上になり、木の高さが \\(\\log_2(n)\\) で抑えられるからです。Union by Rank の場合、高さ \\(k\\) の木は高さ \\(k-1\\) の２つの木を Union したときにできます。従って帰納法により、親を辿るたびに部分木のサイズが二倍になることが言えます。Union by Size は構成法から明らかです。詳しい証明は&lt;a href="https://37zigen.com/union-find-complexity-1/#Union_by_Size"&gt;Union Find の計算量&lt;/a&gt;をご参照ください。
+&lt;h2&gt;Find における高速化&lt;/h2&gt;
+find における高速化として、path compression, path halving, path splitting が知られています。いずれを使った場合も結果的な計算量は同じになるので、どれを使うかは好みだと思います。それぞれ単体ではならし \\(O(\\log(n))\\) になり、union by size/rank と組み合わせるとアッカーマンの逆関数 \\(O(\\alpha(n))\\) になります。詳しくは &lt;a href="https://37zigen.com/union-find-complexity-1/"&gt;Union Find の計算量&lt;/a&gt; をご覧ください。
+&lt;h3&gt;Path Compression&lt;/h3&gt;
+&lt;img class="aligncenter size-large wp-image-8761" src="https://37zigen.com/wp-content/uploads/2021/04/path_compression-1024x1024.png" alt="" width="150"&gt;find(x) としたとき、x から根までのパス上の頂点全てを、根に直接つなぐのが path compression です。C++のコードは次の通り。
+&lt;pre&gt;&lt;code class="c++"&gt;int find(int x) &#123;
+    if (parent[x] == x) return x;
+    else &#123;
+        parent[x] = find(parent[x]);
+        return parent[x];
+    &#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Path Halving&lt;/h3&gt;
+&lt;img class="aligncenter size-large wp-image-8768" src="https://37zigen.com/wp-content/uploads/2021/04/path_halving-483x1024.png" alt="" width="100"&gt;find(x) としたとき、x と根を繋ぐパス上の頂点のうち高さ偶数のものを、祖父（親の親）につなぐのが path halving です。根の親は自分自身であるとすると実装が簡素になります。非再帰で書きやすいという特徴があります。C++のコードは次の通り。
+&lt;pre&gt;&lt;code class="c++"&gt;int find(int x) &#123;
+    if (parent[x] == x) return x;
+    else &#123;
+        parent[x] = parent[parent[x]];
+        return find(parent[parent[x]]);
+    &#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Path Splitting&lt;/h3&gt;
+&lt;img class="aligncenter size-large wp-image-8738" src="https://37zigen.com/wp-content/uploads/2021/04/path_hoge-564x1024.png" alt="" width="100"&gt;find(x) としたとき、x と根を繋ぐパス上の頂点を祖父（親の親）につなぐのが path splitting です。根の親は自分自身であるとすると実装が簡素になります。path halving と同じく、非再帰で書きやすいという特徴があります。C++のコードは次の通り。
+&lt;pre&gt;&lt;code class="c++"&gt;int find(int x) &#123;
+    if (parent[x] == x) return x;
+    else &#123;
+        int next = parent[x];
+        parent[x] = parent[parent[x]];
+        return find(next);
+    &#125;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;C++の実装&lt;/h2&gt;
+union by size と path-splitting で実装した C++ のコードは次の通りです。union は予約語だったので merge にしています。  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+&lt;pre&gt;&lt;code class="c++"&gt;
+#include "vector"
+
+using namespace std;
+
+struct UnionFind &#123;
+  vector&lt;int&gt; parent; // parent[x]=y のとき、x の親が y
+  vector&lt;int&gt; size;
+  
+  UnionFind(int n) &#123;
+    parent.resize(n);
+    size.resize(n);
+    for (int i = 0; i &lt; n; ++i) parent[i] = i;//根は自分自身が親とする。
+  &#125;
+  // x の属す集合の代表元を返す
+  int find(int x) &#123;
+      if (parent[x] == x) return x;
+      else &#123;
+          parent[x] = parent[parent[x]];// x の親を x の祖父とする
+          return find(parent[parent[x]]);
+      &#125;
+   &#125;
+  // x, y が属す集合を合体する
+  void merge(int x, int y) &#123;
+    x = find(x);
+    y = find(y);
+    if (x == y) return;
+    // マージテク
+    if (size[x] &lt; size[y]) swap(x, y);
+    size[x] += size[y];
+    parent[y] = x;
+  &#125;
+  
+  // x, y が同じに属すならtrue, さもなくば、false
+  bool equiv(int x, int y) &#123;
+    return find(x) == find(y);
+  &#125;
+&#125;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;演習問題&lt;/h2&gt;
+&lt;div class="statement"&gt;グラフ\\(G\\)が二部グラフであるか判定せよ。&lt;/div&gt;
+解答 : 隣接する頂点が同じ色にならないような、白と黒の２色の塗り分けが存在するか判定すれば良い。つまり、任意の辺 \\((x, y)\\) について、
+&lt;ul&gt;
+ 	&lt;li&gt;\\(x\\) は白、\\(y\\) は黒&lt;/li&gt;
+ 	&lt;li&gt;\\(x\\) は黒、\\(y\\) は白&lt;/li&gt;
+&lt;/ul&gt;
+のどちらかが成り立てば二部グラフである。各頂点 \\(v\\) について、白で塗った \\(v_1\\) と黒で塗った \\(v_2\\) を用意する。各辺 \\(x, y\\) について、\\(x_1\\) と \\(y_2\\)、\\(x_2\\) と \\(y_1\\) を同じグループに合体する。\\(v_1, v_2\\) が同じグループになるような頂点 \\(v\\) が存在しなければ2部グラフである。
+&lt;div class="statement"&gt;同じ頂点集合上の２つのグラフ \\(G_1, G_2\\) が与えられる。\\(G_1, G_2\\) の両方で連結な頂点の組 \\((x, y)\\) は何個存在するか。（出典 : ABC049 D）&lt;/div&gt;
+解答 : グラフ \\(G\\) の連結成分の頂点集合を管理する Union Find の find を \\(\\mathrm&#123;find&#125;_&#123;G&#125;\\) と書くことにします。
+\\(G_1, G_2\\) の両方で \\((x, y)\\) が連結 \\(\\Leftrightarrow\\) \\((\\mathrm&#123;find&#125;_&#123;G_1&#125;(x), \\mathrm&#123;find&#125;_&#123;G_2&#125;(x))=(\\mathrm&#123;find&#125;_&#123;G_1&#125;(y), \\mathrm&#123;find&#125;_&#123;G_2&#125;(y))\\) です。従って、\\((\\mathrm&#123;find&#125;_&#123;G_1&#125;(x), \\mathrm&#123;find&#125;_&#123;G_2&#125;(x))\\) が等しいものの個数を数えればよいです。基数ソートにより、この組は \\(O()\\) でソートできるので全体の計算量は \\(O(|V|+|E|\\alpha(|V|))\\) です。
+&lt;div class="statement"&gt;\\(1, 2,\\ldots, N\\) を要素とする一元集合がある。次のクエリがまず与えられる。
+&lt;ul&gt;
+ 	&lt;li&gt;equiv(x, y, w) : \\(0 \\leq i &lt; w\\) について union(x+i, y+i)を行え。&lt;/li&gt;
+&lt;/ul&gt;
+その後、次のクエリを処理せよ。
+&lt;ul&gt;
+ 	&lt;li&gt;equiv(x, y) : x, y は同じ集合に属すか判定せよ。&lt;/li&gt;
+&lt;/ul&gt;
+（出典 : みんなのプロコン 2018決勝D）
+
+&lt;/div&gt;
+【一般論】\\(S_k\\) 上の同値関係 \\(≡_k\\) について、
+\\(a =_&#123;R_k&#125; b \\Leftrightarrow \\bigwedge_&#123;i=1&#125;^m (f_&#123;i,k&#125;(a) =_&#123;R_&#123;k-1&#125;&#125; f_&#123;i,k&#125;(b))\\) が成り立つとする。サイズ \\(n\\) の同値類について\\(x_i ≡_k x_j \\ \\ (1 \\leq i, j \\leq n) \\Leftrightarrow x_1 ≡_k x_i\\) \\((1 \\leq i \\leq n)\\) なので \\(n\\) 個の \\(≡_&#123;k&#125;\\) を \\(≡_&#123;k-1&#125;\\) に変換すればよい。従って Union Find により \\(O(m\\alpha(N)\\sum|S_k|)\\) で同値関係 \\(≡_0\\) に変換できる。また、次の条件を満たす場合を考える。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(S_k\\) が \\(k\\) に依らない。&lt;/li&gt;
+ 	&lt;li&gt;\\(a ≡_k b \\Rightarrow a ≡_&#123;k-1&#125; b \\)&lt;/li&gt;
+ 	&lt;li&gt;\\(f_&#123;i,k&#125;\\) が \\(k\\) に依らない。&lt;/li&gt;
+&lt;/ul&gt;
+このとき、\\(O(\\alpha(|S_0|)|S_0|)\\) で同値関係 \\(≡_0\\) に変換できる（&lt;a href="https://twitter.com/noshi91/status/1513931543009710084"&gt;noshi91さん&lt;/a&gt;)。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(x^&#123;(\\alpha)&#125; ≡_k y^&#123;(\\beta)&#125; \\Leftrightarrow x + \\alpha i = y + \\beta i\\) \\((1 \\leq i \\leq 2^k)\\) とすると、\\(≡_k\\) は同値関係である。このとき、\\(x^&#123;(\\alpha)&#125; ≡_k y^&#123;(\\beta)&#125; \\Leftrightarrow x^&#123;(\\alpha)&#125; ≡_&#123;k-1&#125; y^&#123;(\\beta)&#125;\\) かつ \\((x+\\alpha2^&#123;k-1&#125;)^&#123;(\\alpha)&#125; ≡_&#123;k-1&#125; (y+\\beta2^&#123;k-1&#125;)^&#123;(\\beta)&#125; \\)&lt;/li&gt;
+ 	&lt;li&gt;\\(x^&#123;(\\alpha)&#125; ≡_k y^&#123;(\\beta)&#125; \\Leftrightarrow x + \\alpha i = y + \\beta i\\) \\((1 \\leq i \\leq k)\\) とすると、\\(≡_k\\) は同値関係である。このとき、\\(x^&#123;(\\alpha)&#125; ≡_k y^&#123;(\\beta)&#125; \\Leftrightarrow x^&#123;(\\alpha)&#125; ≡_&#123;k-1&#125; y^&#123;(\\beta)&#125;\\) かつ \\((x+\\alpha)^&#123;(\\alpha)&#125; ≡_&#123;k-1&#125; (y+\\beta)^&#123;(\\beta)&#125; \\)&lt;/li&gt;
+&lt;/ul&gt;
+解答 : Union Find を \\(\\log_2(N)\\) 個用意して、i 番目の Union Find を uf(i) と置く。uf(i).equiv(\\(x, y\\)) \\(\\Leftrightarrow\\) \\(x+j, y+j\\) (\\(0 \\leq j &lt; 2^i\\)) が同じ集合とする。すると、sparse table と同様にすれば、高々２個の union でこの問題の連続する union が表せる。具体的には、\\(w \\leq 2^i\\) となる最小の \\(i\\) を用いて、
+&lt;ul&gt;
+ 	&lt;li&gt;
+uf(i).union(\\(x, y\\))&lt;/li&gt;
+ 	&lt;li&gt;uf(i).union(\\(x+w-1-2^i, y+w-1-2^i\\))&lt;/li&gt;
+&lt;/ul&gt;
+とすれば良い。union が全て済んだら、その後、\\(i=1\\) まで伝搬すれば良い。
+&lt;h2&gt;関連記事&lt;/h2&gt;
+&lt;a href="https://37zigen.com/union-find-complexity-1/"&gt;Union Find の計算量&lt;/a&gt;
+&lt;a href="https://37zigen.com/k-uf-tree/"&gt;最悪計算量を最小化した Union Find&lt;/a&gt;
+&lt;a href="https://37zigen.com/persistent-array/#_Union_Find"&gt;部分永続 Union Find&lt;/a&gt;
+&lt;div class="hitokoto"&gt;一番好きなデータ構造かも。&lt;/div&gt;

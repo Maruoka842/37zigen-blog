@@ -1,0 +1,20 @@
+# Java
+bin/
+target/
+*.class
+*.jar
+
+# Eclipse
+.metadata/
+
+# Node
+node_modules/
+
+*.txt
+
+
+template/Main.java
+
+solver/src/main/java/Main.java
+
+out/Main.java

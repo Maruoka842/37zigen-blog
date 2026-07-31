@@ -1,0 +1,172 @@
+---
+title: "Cipolla のアルゴリズム"
+description: "Cipolla のアルゴリズム の過去ブログ記事"
+---
+
+# Cipolla のアルゴリズム
+
+> 📅 **投稿日**: 2020-11-01 00:34:20
+
+[mathjax]  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;\\(p\\) を奇素数として \\(\\mathbb&#123;F&#125;_p\\) における平方根を \\(O(\\log p)\\) で求める Cipolla のアルゴリズムを解説する。フロベニウス写像との関連を説明して、平方根以外の場合についても拡張する。
+[toc]
+&lt;h2&gt;フロベニウス写像&lt;/h2&gt;
+まず Cipolla のアルゴリズムにおいて核となるアイディアであるフロベニウス写像について説明する。
+
+体 \\(k\\) に要素 \\(\\alpha\\) を追加して新たな体 \\(K\\) を作ることを添加といい、\\(K=k(\\alpha)\\) と書く。\\(k(\\alpha)\\) を \\(k\\) の拡大体と呼ぶ。
+
+2つ例を挙げる：
+&lt;ol&gt;
+ 	&lt;li&gt;複素数 \\(\\mathbb&#123;C&#125;\\) は実数 \\(\\mathbb&#123;R&#125;\\) に \\(\\sqrt&#123;-1&#125;\\) を添加してできた \\(\\mathbb&#123;R&#125;\\) の拡大体。&lt;/li&gt;
+ 	&lt;li&gt;\\((\\mathbb&#123;Z&#125;/13\\mathbb&#123;Z&#125;)(\\sqrt&#123;2&#125;) = \\&#123;a+b\\sqrt&#123;2&#125; \\mid a,b\\in \\mathbb&#123;Z&#125;/13\\mathbb&#123;Z&#125;\\&#125;\\)
+&lt;ul&gt;
+ 	&lt;li&gt;\\(\\sqrt&#123;2&#125; \
+ot\\in \\mathbb&#123;Z&#125;/13\\mathbb&#123;Z&#125;\\) であるから拡大体は元の体に比べて大きくなる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+位数（要素数）\\(q\\) の有限体は同型を除き、ただ一通りに決まることが知られており、その有限体を \\(\\mathbb&#123;F&#125;_q\\) と書く。このとき、位数 \\(q\\) は必ず素冪であり、逆に任意の素冪の有限体は必ず存在する。例えば、(2), (3) はそれぞれ \\(\\mathbb&#123;F&#125;_&#123;13^2&#125;, \\mathbb&#123;F&#125;_&#123;13^4&#125;\\) に同型である。\\(\\underbrace&#123;1+\\cdots+1&#125;_&#123;n \\text&#123; 個&#125;&#125; = 0\\) となる最小の正整数 \\(n\\) を標数という（存在しないならば 0 と定める）。有限体 \\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) の標数は \\(p\\) に等しいことが知られている。
+
+有限体 \\(\\mathbb&#123;F&#125;_&#123;p&#125;\\) の拡大体 \\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) に対して、フロベニウス写像 \\(\\phi : \\mathbb&#123;F&#125;_&#123;p^N&#125; \\to \\mathbb&#123;F&#125;_&#123;p^N&#125;\\) を \\(\\phi(r)=r^p\\) で定義する。
+&lt;div class="statement"&gt;定理１：フロベニウス写像 \\(\\phi\\) は自己同型である。すなわち、\\(\\phi\\) は全単射で
+\\(\\phi(x+y)=\\phi(x)+\\phi(y)\\)
+\\(\\phi(xy)=\\phi(x)\\phi(y)\\)
+が成り立つ。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：\\(\\phi(xy)=(xy)^p=x^py^p=\\phi(x)\\phi(y)\\) である。\\(0 &lt; i &lt; p\\) のとき \\(&#123;p \\choose i&#125; =0 \\pmod p\\) であるから標数 \\(p\\) と二項展開により \\(\\phi(x+y)=(x+y)^p=x^p+y^p\\) である。以上より \\(\\phi\\) は体の準同型である。
+
+\\(x\\) の位数は \\(p^N-1\\) の約数であるから
+\\(\\phi(x^&#123;p^&#123;N-1&#125;&#125;) = x^&#123;p^N&#125; = x\\)
+となり \\(\\phi\\) は全単射である。
+
+&lt;/div&gt;
+&lt;div class="statement"&gt;定理２：\\(a \\in \\mathbb&#123;F&#125;_p \\Leftrightarrow \\phi(a)=a\\) である。&lt;/div&gt;
+\\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) は \\(\\mathbb&#123;F&#125;_p\\) の拡大体として取っているので、この定理の \\(\\mathbb&#123;F&#125;_p\\) は \\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) の部分体である。\\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) の乗法的単位元 \\(1\\) の生成する部分体（素体）と考えてもよい。部分体は元の体と同じ乗法的単位元を持つから、逆に \\(\\mathbb&#123;F&#125;_&#123;p^N&#125;\\) が与えられたとき、それを拡大体とし得る部分体 \\(\\mathbb&#123;F&#125;_p\\) は一通りに定まる。
+&lt;div class="proof"&gt;証明：フェルマーの小定理より \\(a\\in \\mathbb&#123;F&#125;_p\\) ならば \\(a^p=a\\)。これは \\(x^p=x\\) の \\(p\\) 個の解である。\\(p\\) 次よりほかに解は存在せず、\\(\\phi\\) は全単射であったから、\\(a \\in \\mathbb&#123;F&#125;_p \\Leftrightarrow \\phi(a)=a\\) となる。&lt;/div&gt;
+&lt;div class="statement"&gt;定理３：任意の \\(r \\in \\mathbb&#123;F&#125;_&#123;p^N&#125;\\) に対して \\(r\\) を根に持つ唯一の \\(\\mathbb&#123;F&#125;_p\\) 係数のモニック最小多項式 \\(P\\) が存在する。更に、\\(\\phi^d(r)=r\\) となる最小の \\(d\\) を用いて \\(P=\\prod_&#123;i=0&#125;^&#123;d-1&#125;(x-\\phi^i(r))\\) と書ける。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：\\(Q(x):=\\sum a_i x^i\\) とする。\\(r\\) が \\(Q\\) の根ならば定理１、２から \\(\\phi(Q(r))=Q(\\phi(r))\\) である。つまり \\(r\\) が根ならば \\(\\phi(r)\\) も根である。
+
+\\(d\\) の定義から集合 \\(\\&#123;r,\\phi(r),\\ldots,\\phi^&#123;d-1&#125;(r)\\&#125;\\) は \\(\\phi\\) を作用させても変化しない。また、\\(\\phi^i(r) \
+eq \\phi^j(r)\\) \\((1\\leq i &lt; j &lt; d)\\) である。なぜなら、各 \\(v\\) から \\(\\phi(v)\\) に有向辺を張ったグラフは \\(\\phi\\) の全単射性から有向サイクルの集合であり、\\(\\phi^i(r) = \\phi^j(r)\\) ならば \\(d\\) の最小性に反するからである。従って、 \\(P:=\\prod_&#123;i=0&#125;^&#123;d-1&#125;(x-\\phi^i(r)) = \\sum c_ix^i\\) に対して \\(\\sum c_ix^i=\\sum \\phi(c_i)x^i\\) つまり全ての \\(i\\) に対して \\(c_i=\\phi(c_i)\\) が成り立つ。定理２より \\(P\\) は \\(\\mathbb&#123;F&#125;_p\\) 係数の多項式である。\\(d\\) の最小性と因数分解の一意性、\\(\\phi^i(r)\
+eq\\phi^j(r)\\) から \\(P(x)\\) は唯一のモニック最小多項式である。
+
+&lt;/div&gt;
+&lt;h2&gt;Cipolla のアルゴリズム&lt;/h2&gt;
+&lt;h3&gt;(1) 平方根の場合&lt;/h3&gt;
+\\(x^2=a \\pmod p\\) の解 \\(x\\) を求めたい。解が存在することと、\\(a\\) が平方剰余であることは同値である。これはオイラーの規準「\\(a\\) が平方剰余 \\(\\Leftrightarrow a^&#123;(p-1)/2&#125;=1 \\pmod p\\)」を使えば判定できる。以下、\\(a\\) は平方剰余であって解が存在すると仮定する。
+
+必要ならば体 \\(\\mathbb&#123;F&#125;_p\\) を拡大して \\(\\mathbb&#123;F&#125;_p\\) 係数方程式 \\(x^2-2b+a=0\\) の２解 \\(x=\\alpha,\\beta\\) を取る。解と係数の関係より \\(\\alpha\\beta=a\\) である。\\(\\alpha,\\beta \
+ot\\in \\mathbb&#123;F&#125;_p\\) とする。このとき \\(x^2-2b+a\\) は \\(\\mathbb&#123;F&#125;_p\\) において既約多項式であるから定理３より \\(\\beta=\\phi(\\alpha)\\) である。従って、\\(\\alpha^&#123;(p+1)/2&#125;\\) が \\(a\\) の平方根となり、累乗法で \\(O(\\log p)\\) で求まる。
+
+\\(x^2-2b+a=0\\Leftrightarrow x=b \\pm \\sqrt&#123;b^2-a&#125; \\) が \\(\\mathbb&#123;F&#125;_p\\) に含まれないから \\(b^2-a\\) は非平方剰余である。このような \\(b\\) はどのぐらいの確率で取れるだろうか。次の定理に示す通り、その成功率は約 \\(1/2\\) であるから、連続で失敗する確率は指数関数的に減衰する。
+&lt;div class="statement"&gt;定理４：\\(a \
+eq 0\\) が平方剰余だとする。\\(b\\in\\mathbb&#123;F&#125;_p\\) をランダムに取ったとき、\\(b^2-a\\) が非平方剰余になる確率は \\(\\frac&#123;p-1&#125;&#123;2p&#125;\\) に等しい。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：\\(\\mathbb&#123;F&#125;_p\\) における方程式 \\(f=0\\) の解の個数を\\(N(f)\\) 、ルジャンドル記号を \\(\\chi\\) と表すことにする。ランダムに \\(b \\in \\mathbb&#123;F&#125;_p\\) を取ったとき \\(b^2-a\\) が非平方剰余になる確率は \\(1-N(x^2-y^2-a)/2p\\) に等しい。
+
+\\(a \
+eq 0\\) のとき \\(N(x^2-a) = 1+\\chi(a)\\) であるから、代入して
+\\begin&#123;align&#125;
+&amp;N(x^2-y^2-a)\\\\
+=&amp;(1+\\chi(a))+(1+\\chi(-a))+\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125; N(x^2-A)N(y^2+a-A)\\\\
+=&amp;3+\\chi(-1)+\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125; (1+\\chi(A))(1+\\chi(A-a))\\\\
+=&amp;3+\\chi(-1)+\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125; (1+\\chi(A)+\\chi(A-a)+\\chi(A)\\chi(A-a))\\\\
+\\end&#123;align&#125;
+を得る。
+
+\\(\\chi(a)=-1, \\sum_&#123;A \\in \\mathbb&#123;F&#125;_p&#125; \\chi(A)=0\\) を代入して
+\\(\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125; (1+\\chi(A)+\\chi(A-a)) = p-3-\\chi(-1)\\)
+を得る。
+
+\\(\\chi(u)\\chi(v)=\\chi(uv),\\chi(u)=\\chi(u^&#123;-1&#125;)\\) が成り立つことを用いて
+\\begin&#123;align&#125;
+&amp;\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125;χ(A)χ(A-a)\\\\
+=&amp;\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,a\\&#125;&#125;χ(a^2)χ(a^&#123;-1&#125;A)χ(a^&#123;-1&#125;A-1)\\\\
+=&amp;\\sum_&#123;A' \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,1\\&#125;&#125;χ(A')χ(A'-1)\\\\
+\\end&#123;align&#125;
+を得る。この式はルジャンドル記号に関するヤコビ和の \\(\\chi(-1)\\) 倍であり、具体的に計算できる。\\(χ(A')χ(A'-1)=χ(A'(A'-1)^&#123;-1&#125;)\\) と変形しておく。\\(x/(x-1)=y,x\
+eq0,1\\) を \\(x\\) について解くと　\\(x=-y/(1-y),y\
+eq0,1\\) である。つまり \\(x\\) が \\(\\mathbb&#123;F&#125;_p\\setminus\\&#123;0,1\\&#125;\\) を動くと \\(y\\) は \\(\\mathbb&#123;F&#125;_p\\setminus\\&#123;0,1\\&#125;\\) を動く。従って
+\\begin&#123;align&#125;
+&amp;\\sum_&#123;A' \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,1\\&#125;&#125;χ(A'(1-A')^&#123;-1&#125;)\\\\
+=&amp;\\sum_&#123;A \\in \\mathbb&#123;F&#125;_p\\setminus\\&#123;0,1\\&#125;&#125;χ(A)\\\\
+=&amp;-1\\\\
+\\end&#123;align&#125;
+を得る。
+以上より \\(1-N(x^2-y^2-a)/2p=(p-1)/2p\\) である。
+
+&lt;/div&gt;
+コード（Java）は次のようになる。&lt;a href="https://judge.yosupo.jp/problem/sqrt_mod"&gt;よすぽジャッジ&lt;/a&gt;で Verify できる：
+&lt;pre&gt;&lt;code class="java"&gt;// a + b √base (MOD p) の形の数を扱うクラス
+static class P &#123;
+	static long base;
+	static long p;
+	long a, b;
+
+	public P(long a, long b) &#123;
+		this.a = a % p;
+		this.b = b % p;
+	&#125;
+
+	// 返り値 ： t との積
+	P multiply(P t) &#123;
+		return new P(a * t.a + b * t.b % p * base, a * t.b + b * t.a);
+	&#125;
+
+	// 返り値 ： n 乗
+	P pow(long n) &#123;
+		if (n == 0)
+			return new P(1, 0);
+		P ret = multiply(this).pow(n / 2);
+		if (n % 2 == 1)
+			ret = ret.multiply(this);
+		return ret;
+	&#125;
+&#125;
+
+// 返り値: a^n mod p
+long pow(long a, long n, long p) &#123;
+	return n != 0 ? pow(a * a % p, n / 2, p) * (n % 2 == 1 ? a : 1) % p : 1;
+&#125;
+
+// 返り値： x^2 = a (mod p) の解 x
+// そのような x が存在しなければ - 1 を返す。
+long cipolla(long a, long p) &#123;
+	if (p == 2) return a;
+	if (a == 0) return 0;
+	if (pow(a, (p - 1) / 2, p) != 1) return -1;
+	long b = 0;
+	while (pow((b * b + p - a) % p, (p - 1) / 2, p) == 1)
+		++b;
+	P.base = (b * b + p - a) % p;
+	P.p = p;
+	P t = new P(b, 1).pow((p + 1) / 2);
+	return t.a;
+&#125;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;(2) 平方根以外の冪根の場合&lt;/h3&gt;
+\\(x^n=a\\pmod p\\) の解 \\(x\\) を求めたい。解が存在することと、a が n 乗剰余であることは同値である。これはオイラーの規準「a が n 乗剰余 \\(\\Leftrightarrow\\) \\(a^&#123;(p−1)/\\gcd(p-1,n)&#125;=1 \\pmod p\\)」を使えば判定できる。以下、a は n 乗剰余であって解が存在すると仮定する。
+
+\\(g := \\gcd(n,p-1)\\) とする。\\(n/g\\) と \\((p-1)/g\\) は互いに素であるから、逆元 \\((n/g)^&#123;-1&#125; \\pmod &#123;(p-1)/g&#125;\\) が存在する。両辺を \\((n/g)^&#123;-1&#125;_&#123;\\pmod&#123;(p-1)/g&#125;&#125;\\) 乗することで
+\\(x^n=a \\pmod p \\Leftrightarrow x^&#123;\\gcd(n,p-1)&#125;=a^&#123;(n/g)^&#123;-1&#125;_&#123;\\pmod&#123;(p-1)/g&#125;&#125;&#125; \\pmod p\\) を得る。従って \\(n\\) は \\(p-1\\) の約数と仮定しても一般性を失わない。
+
+平方根の場合を拡張して、次のような方針を取る：
+&lt;ol&gt;
+ 	&lt;li&gt;定数項 \\((-1)^na\\) の \\(n\\) 次モニック既約多項式 \\(f\\) を見つける。&lt;/li&gt;
+ 	&lt;li&gt;\\(f\\) の根 \\(\\theta\\) を \\(1\\) つ見つける。&lt;/li&gt;
+ 	&lt;li&gt;フロベニウス写像より \\(\\theta,\\theta^p,\\ldots,\\theta^&#123;p^&#123;n-1&#125;&#125;\\) は \\(f\\) の相異なる根。&lt;/li&gt;
+ 	&lt;li&gt;解と係数の関係より \\(\\theta^&#123;(1+p+\\ldots+p^&#123;n-1&#125;)/n&#125;\\) が答え。\\(1+p+\\ldots+p^&#123;n-1&#125;=0 \\pmod &#123;(p-1)&#125;\\) であるから冪指数は整数。&lt;/li&gt;
+&lt;/ol&gt;
+５次以上の方程式には解の公式が存在しないから、解の公式を使わずとも根が求まる既約多項式を用意する必要がある。そこで、\\(f = (x+b)^n-b^n+a\\) とする。根は原始 \\(n\\) 乗根 \\(\\zeta\\) を用いて \\(x=-b+\\zeta^i(b^n-a)^&#123;1/n&#125;\\) \\((i=0,1,\\ldots,n-1)\\)となる。既約多項式になるには \\((b^n-a)^&#123;1/n&#125;\\) が \\(\\mathbb&#123;F&#125;_p\\) に含まれなければよい。つまり \\(b^n-a\\) が非 n 乗剰余になる \\(b\\) を取ってくる。
+
+\\(\\mathbb&#123;F&#125;_p((b^n-a)^&#123;1/n&#125;)\\) で \\(\\theta^&#123;(1+p+\\ldots+p^&#123;n-1&#125;)/n&#125;\\) の計算量は累乗法と FFT を使えば \\(O(n^2\\log(n)\\log(p))\\) である。工夫すればもう少しだけ速くなる。\\(\\theta^&#123;(1+p+\\ldots+p^&#123;n-1&#125;)/n&#125; = \\theta(\\prod_&#123;i=0&#125;^&#123;n-2&#125;\\theta^&#123;(1+p+\\ldots+p^i)&#125;)^&#123;(p-1)/n&#125;\\) とする。\\((b^n-a)^&#123;(p-1)/n&#125;\\) を原始 \\(n\\) 乗根 \\(\\zeta\\) とすれば \\(\\theta^&#123;p^i&#125;\\) は \\(O(1)\\) で求まる。従って \\(\\theta^&#123;1+p+\\ldots+p^i&#125;\\) を順番に掛け合わせてから \\((p-1)/n\\) 乗すれば \\(O(n^2\\log n+n\\log n\\log p)\\) になる。
+
+\\(b^n-a\\) が \\(n\\) 乗非剰余になる確率は原始根での表示を考えることでおよそ \\(1-1/n\\) になるだろうという推測される。実際、\\(a≠0\\) のとき \\(N(x^n−a)=\\sum_&#123;i=0&#125;^&#123;n-1&#125; a^&#123;(p-1)i/d&#125;\\) であることを用いて、平方非剰余の場合と同様に頑張って計算すると \\(1-1/n-O(n/\\sqrt&#123;p&#125;)\\) が成功確率として得られる（らしい。理解してない）[2]。従って、\\(n\\) が \\(\\sqrt&#123;p&#125;\\) より十分小さければよい。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://www-users.math.umn.edu/~garrett/coding/Overheads/23_proofs.pdf"&gt;Paul Garrett氏のフロベニウス写像の授業資料&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://www.ams.org/journals/mcom/1993-61-203/S0025-5718-1993-1182249-0/"&gt;Williams, Kenneth S., and Kenneth Hardy. "A refinement of HC Williams’ 𝑞th root algorithm." mathematics of computation 61.203 (1993): 475-483.&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;\\(b^n-a\\) が \\(n\\) 乗非剰余になる確率の計算が載っている……が理解できていない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://search.ieice.org/bin/summary.php?id=e96-a_6_1081"&gt;Harasawa, Ryuichi, Yutaka Sueyoshi, and Aichi Kudo. "Root computation in finite fields." IEICE Transactions on Fundamentals of Electronics, Communications and Computer Sciences 96.6 (2013): 1081-1087.&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;sugarknri さん&lt;a href="https://twitter.com/sugarknri/status/968807005065396230"&gt;1&lt;/a&gt;, &lt;a href="https://twilog.org/sugarknri/date-200118"&gt;2&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;Cipollaのアルゴリズムって他の冪根に拡張できるんかなーってTwitterで呟いていたら、教えてもらった。&lt;/li&gt;
+&lt;/ol&gt;

@@ -1,0 +1,45 @@
+---
+title: "木の直径と中心"
+description: "木の直径と中心 の過去ブログ記事"
+---
+
+# 木の直径と中心
+
+> 📅 **投稿日**: 2021-10-04 00:12:55
+
+&lt;h2&gt;直径と中心とは&lt;/h2&gt;
+最も遠い２頂点間の距離を直径 \\(\\mathrm&#123;diam&#125;(G)\\) という。また、最遠点までの距離が最小の頂点を中心と呼ぶ。
+
+木の場合、中心と直径は頂点数に対して線形で求まる。同様のアルゴリズムを一般のグラフに適用すると、直径の２近似が得られる。
+&lt;h2&gt;木の直径と中心を求めるアルゴリズム&lt;/h2&gt;
+自由な頂点 \\(x\\) の最遠点 \\(y\\) を求め、さらに \\(y\\) の最遠点 \\(z\\) を求める。最遠点は DFS により \\(O(E+V)\\) で求まる。このとき、\\(\\mathrm&#123;dist&#125;(y, z)\\) が直径となる。木の場合、中心は \\(y\\)-\\(z\\) パスの真ん中にあるので、\\(y\\) を根とする木で \\(z\\) から親を \\(\\lfloor \\mathrm&#123;dist&#125;(y,z)/2 \\rfloor\\) 回辿れば得られる。
+
+最遠点を2回求めるので、このアルゴリズムは double-sweep と呼ばれている。アルゴリズムの正当性は次の通り。
+&lt;div class="proof"&gt;証明：
+\\(x\\) の最遠点を \\(y\\), \\(y\\) の最遠点を \\(z\\) とする。\\(y\\)-\\(z\\) が直径でないと仮定して矛盾を導く。
+
+最長パス \\(P\\) を一つ固定する。
+
+\\(x\\)-\\(y\\) パス と \\(P\\) が交わらない場合、図のように \\(y\\) を取り直すことで、\\(x\\)-\\(y\\) パスが長くなって矛盾（\\(y\\)が直径の端点でも、\\(P\\) と交わらないならば矛盾となる）。
+
+&lt;img class="aligncenter" src="https://37zigen.com/wp-content/uploads/2021/10/tree-diameter-1-1024x832.png" alt="" width="300"&gt;
+
+\\(x\\)-\\(y\\) パス と \\(P\\) が交わる場合も、図のように \\(y\\) を取り直すことで、\\(x\\)-\\(y\\) パスが長くなって矛盾。
+
+&lt;img class="aligncenter" src="https://37zigen.com/wp-content/uploads/2021/10/tree-diameter-2-1024x832.png" alt="" width="300"&gt;
+
+以上より、\\(y\\)-\\(z\\) の長さが直径となる。
+
+&lt;/div&gt;
+&lt;a href="https://judge.yosupo.jp/submission/62488"&gt;37zigenの実装（Java）&lt;/a&gt;
+以上の証明より、直径の端点 \\(a, b\\) に対し、任意の頂点 \\(v\\) は \\(\\max_w \\mathrm&#123;dist&#125;(v, w) = \\max(\\mathrm&#123;dist&#125;(v, a), \\mathrm&#123;dist&#125;(v, b))\\) を満たすことが分かる。
+&lt;h2&gt;2近似&lt;/h2&gt;
+前述の double sweep では、一般のグラフでは直径は求まらない。例えば、下図（maspyさんに教えてもらった）の \\(x,y\\) は互いに最遠点だが、\\(\\mathrm&#123;dist&#125;(x,y)\\) は直径より小さい。&lt;img class="aligncenter size-medium wp-image-10687" src="https://37zigen.com/wp-content/uploads/2021/10/2sweep-counter-example-2-300x189.png" alt="" width="300" height="189"&gt;
+
+しかし、single sweep によって、直径の 2 近似を得ることは可能である（DFS は Dijskstra 法などに置き換える）。つまり、\\(\\mathrm&#123;diam&#125;(G) / 2 \\leq d \\leq \\mathrm&#123;diam&#125;(G)\\) を満たす \\(d\\) が得られる。
+
+熨斗袋さんに証明を教えてもらった。
+&lt;div class="proof"&gt;証明：sweep の始点を \\(x\\) とする。\\(x\\) から最遠点までの距離を \\(d\\) とすると、任意の 2 点 \\(u\\), \\(v\\) は \\(u\\)-\\(x\\)-\\(v\\) と通ることで \\(2d\\) で行き来できる。&lt;/div&gt;
+実際に近似率が2になるのは下図で、\\(x, y\\) の最遠点として \\(y, x\\) が見つかった場合。&lt;img class="aligncenter size-large wp-image-11108" src="https://37zigen.com/wp-content/uploads/2021/10/double-sweep-tight-1024x863.png" alt="" width="256"&gt;
+&lt;h2&gt;木の直径と中心の関係&lt;/h2&gt;
+木の中心は、直径が偶数の時一つ、奇数の時二つになり、どちらも直径の真ん中に位置する。各辺の真ん中にダミー頂点を追加すると、中心が一つの場合に帰着できる。つまり、辺 \\((u,v)\\) を \\((u, x_&#123;uv&#125;), (x_&#123;uv&#125;, v)\\) に分割すればよい。

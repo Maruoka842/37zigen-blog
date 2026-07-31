@@ -1,0 +1,33 @@
+---
+title: "カット・サイクル空間の基底（錬成中）"
+description: "カット・サイクル空間の基底（錬成中） の過去ブログ記事"
+---
+
+# カット・サイクル空間の基底（錬成中）
+
+> 📅 **投稿日**: 2020-10-22 13:55:04
+
+グラフ \\(G=(V,E)\\) の辺空間 \\(\\mathcal&#123;E&#125;(G)\\) を次のようなベクトル空間として定義する：
+&lt;ol&gt;
+ 	&lt;li&gt;ベクトル空間 \\(\\mathcal&#123;E&#125;(G)\\) の元は辺集合 \\(E(G)\\) の部分集合である。&lt;/li&gt;
+ 	&lt;li&gt;ベクトル同士の加法は対象差で定義する（辺ごとのXOR）。&lt;/li&gt;
+ 	&lt;li&gt;\\(v \\in \\mathcal&#123;E&#125;(G)\\) の定数倍は \\(1 \\cdot v := v, 0 \\cdot v := \\emptyset\\) とする。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;img class="aligncenter size-full wp-image-2266" src="https://37zigen.com/wp-content/uploads/2020/10/edgespace-1.png" alt="" width="3244" height="1084" /&gt;
+
+この記事では辺空間 \\(\\mathcal&#123;E&#125;(G)\\) の部分空間であるサイクル空間、カット空間を解説する。
+
+サイクル空間 \\(\\mathcal&#123;C&#125;(G)\\) とはサイクルの辺集合全体が生成する \\(\\mathcal&#123;E&#125;(G)\\) の部分空間、またカット空間 \\(\\mathcal&#123;B&#125;(G)\\) とはカットの辺集合全体が生成する \\(\\mathcal&#123;E&#125;(G)\\) の部分空間と定義する。ここでカットとは頂点集合の分割 \\(V=&#123;A&#125;\\coprod&#123;B&#125;\\) を用いて、$$E(A,B)=\\&#123;ab \\in E : a\\in V,b\\in V\\&#125;$$ と書ける辺集合のことである。例えば最大流に登場する最小カットはカットの一例である。以下で解説する通り、サイクル空間・カット空間の基底や次元、相互関係は綺麗な構造を持っており、問題の考察に活かすことができる。
+
+頂点 \\(v\\) に接続する辺集合 \\(E(v)=E(\\&#123;v\\&#125;,V\\setminus\\&#123;v\\&#125;)\\) はカットであるが、実はこの形のカットがカット空間全体を生成する。
+&lt;div class="statement"&gt;カット \\(E(v)\\) 全体はサイクル空間 \\(\\mathcal&#123;C&#125;(G)\\) 全体を生成する&lt;/div&gt;
+&lt;div class="proof"&gt;証明：\\(E(A,B)=\\sum_&#123;v \\in A&#125; E(v)\\) であるから成立（足し算は \\(\\mathbb&#123;Z&#125;/2\\mathbb&#123;Z&#125;\\) 係数で行っていることに注意）。&lt;/div&gt;
+&lt;div&gt;&lt;/div&gt;
+&lt;div&gt;&lt;img class="aligncenter size-full wp-image-2276" src="https://37zigen.com/wp-content/uploads/2020/10/fundamental-cut-cycl-1.png" alt="" width="2424" height="1376" /&gt;&lt;/div&gt;
+&lt;div&gt;&lt;/div&gt;
+&lt;h2&gt;演習&lt;/h2&gt;
+&lt;div class="statement"&gt;カット \\(E(v)\\) 全体の生成する部分空間の元が\\(E(G)\\) を含むのはどんな場合か。（出典：ARC105F改）&lt;/div&gt;
+\\(E(v)\\) は誘導奇サイクルを生成できないから、\\(G\\) は二部グラフである。逆に部集合 \\(A,B\\) の二部グラフは \\(E(G)=\\sum_&#123;v \\in A&#125; E(v)\\) である。よって \\(G\\) が二部グラフであればよい。
+&lt;div class="statement"&gt;\\(n\\) 頂点 \\(n+15\\) 辺以下の単純無向グラフがある。部分グラフとして含まれるサイクルの数を答えるアルゴリズムを構成せよ。（出典：ICPC2017Asia問題K）&lt;/div&gt;
+&lt;div class="statement"&gt;\\(n\\) 頂点 \\(m\\) 辺の連結グラフが与えられる。各辺に 0, 1 の重みを割り当てる。このとき、「任意の回路の重みが偶数」かつ「全ての辺の重みの和が偶数」であるような重みの割り当て方法がいくつあるか求めよ。（出典：HackerRank "Devu and Cycles of a Graph"）&lt;/div&gt;
+&lt;div class="statement"&gt;\\(n\\) 頂点 \\(m\\) 辺の連結グラフが与えられる。各辺 \\(e\\) には重み \\(w_e \\in \\mathbb&#123;N&#125;\\) が割り当てられている。\\(s=0\\) とする。全ての 2 頂点の組 \\(u, v\\) それぞれについて、\\(u, v\\) を端点とする歩道の取りうる重みの排他的論理和（XOR）を \\(s\\) に加える。s を求めるアルゴリズムを構成せよ。（出典：CodeForces724G）&lt;/div&gt;

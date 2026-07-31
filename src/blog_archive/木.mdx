@@ -1,0 +1,36 @@
+---
+title: "木"
+description: "木 の過去ブログ記事"
+---
+
+# 木
+
+> 📅 **投稿日**: 2025-07-21 17:53:20
+
+根付き木のハッシュ
+木の高さd, 子のハッシュをc_1,c_2,..c_kとすると
+元の木のハッシュは
+x_d+Πc_i
+で定義でき、x_0,x_1,..,x_dをランダムにすると、衝突確率は(d+1)/modで抑えられる。
+&lt;a href="https://x.com/noshi91/status/1207514642001485824?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1207514642001485824%7Ctwgr%5E4ab31512d94796ac01e390c30a370ce01282133e%7Ctwcon%5Es1_&amp;ref_url=https%3A%2F%2Fsnuke.hatenablog.com%2Fentry%2F2017%2F02%2F03%2F054210"&gt;noshi&lt;/a&gt;
+
+AHU algorithmを使うと、各部分木に対して、0,1,2,..を辞書順で決定的にO(N)で割り当てられる。
+1)高さiまでハッシュ列挙。
+2)高さi+1の木の子のハッシュがソートされた状態で手に入っている。
+3)高さi+1の木の子のハッシュをソートしたものを文字列と見なし、それのソート順をSA-ISで得る。
+4)高さi+1の木に対してハッシュを順に割り当てる。
+5)高さi+2の木の子であって、高さi+1であるもののハッシュを辞書順に順に割り当てる。
+
+木T上で距離K離れている頂点同士を繋いだ別のグラフGを作った。Gの頂点0から到達できる頂点をO(NK)で列挙せよ。ABC414H
+
+木A,Bが与えられる。Aは頂点ラベル付き、Bは頂点ラベルなし。Bに葉を一つ追加し、頂点ラベルを付けてAにする方法が何通りあるか。&lt;a href="https://atcoder.jp/contests/nikkei2019-2-final/tasks/nikkei2019_2_final_d"&gt;AtCoder&lt;/a&gt;
+
+online dynamic connectivityのアルゴリズムを説明せよ。
+Euler Tour Treeのアルゴリズムを説明せよ。
+
+二分木を辺素なパスに分解したときに、何本のパスが必要か期待値を求めよ（Catalan Number by Stanley）
+
+各頂点に整数の重みが定められた木がある。辺をいくつか削除して、重みの和が正の木と、任意の重みが負の木だけになるようにしたい。いくつの辺を削除する必要があるか、O(N^2)で求めよ（aising2019E）
+
+
+&lt;a href="https://atcoder.jp/contests/arc205/tasks/arc205_c"&gt;ARC205C&lt;/a&gt;

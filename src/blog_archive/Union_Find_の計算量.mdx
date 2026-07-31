@@ -1,0 +1,149 @@
+---
+title: "Union Find の計算量"
+description: "Union Find の計算量 の過去ブログ記事"
+---
+
+# Union Find の計算量
+
+> 📅 **投稿日**: 2020-09-18 00:50:22
+
+Union Find の計算量を解説する。
+
+[toc]
+&lt;h2&gt;二項木とは&lt;/h2&gt;
+いくつかの種類の Union Find において最悪ケースを与える二項木 \\(B_k\\) を最初に紹介する。
+二項木を
+&lt;ul&gt;
+ 	&lt;li&gt;\\(B_0\\) は 1 頂点からなる根付き木&lt;/li&gt;
+ 	&lt;li&gt;\\(B_&#123;k+1&#125;\\) は、根の子をそれぞれ新たな根とする部分木が \\(B_0,B_1,\\ldots,B_&#123;k&#125;\\) である根付き木&lt;/li&gt;
+&lt;/ul&gt;
+と定義する。\\(B_0,B_1,B_2,B_3,B_4\\)を図示すると下図のようになる。
+
+&lt;img class="aligncenter size-full wp-image-696" src="https://37zigen.com/wp-content/uploads/2020/09/binomial_tree-5.png" alt="二項木" width="3044" height="908"&gt;
+帰納法から二項木 \\(B_k\\) は頂点数 \\(2^k\\) 、高さ \\(k\\) である。
+&lt;img class="aligncenter  wp-image-700" src="https://37zigen.com/wp-content/uploads/2020/09/binomial_tree-6.png" alt="二項木の構成方法" width="400"&gt;
+帰納法から \\(B_&#123;k+1&#125;\\) の構成方法は図の通り 3 つある。 union by rank, union by size いずれでも \\(B_k\\) と \\(B_k\\) を Union すると \\(B_&#123;k+1&#125;\\) ができるから、Union Find の \\(2^&#123;k&#125;\\) 回の合併で \\(B_k\\) を作りだすことができる。
+&lt;h2&gt;union by size の計算量&lt;/h2&gt;
+union by size とは、根付き木 A, B を union するとき、頂点数の小さい方の木をもう一方の木の根の子とする方法である。
+
+その構成方法から \\(2\\mathrm&#123;size&#125;(u) \\leq \\mathrm&#123;size&#125;(\\mathrm&#123;parent&#125;(u))\\) が成り立つ。従って \\(O(\\log&#123;n&#125;)\\) である。二項木が最悪ケースを与える。
+&lt;h2&gt;union by rank の計算量&lt;/h2&gt;
+union by rank とは、根付き木 A, B を Union するとき、rank の小さい方の木をもう一方の木の根の子とする方法である。rank は（経路圧縮しないときの）木の高さとして定義する。
+
+まず、ランク \\(r\\) 以上の頂点を根とする部分木のサイズは \\(2^r\\) 以上であることを帰納法で示す。
+&lt;div class="statement"&gt;union by rank において、rank r の木のサイズは \\(2^r\\) 以上である。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：数学的帰納法で示す。
+(i) r = 0 のとき、木が 1 頂点からなるから成立する。
+(ii) r = k で成立を仮定する。 rank k + 1 の木は形成過程で rank k の木同士を Union する。帰納法の仮定からランク k の木は頂点数 \\(2^k\\) 以上だから、ランク k + 1 の木の頂点数は \\(2^&#123;k+1&#125;\\) 以上である。従って r = k + 1 で成立。以上 (i), (ii) から帰納法により任意の r について成立する。&lt;/div&gt;
+ランク \\(r\\) の木のサイズについて \\(2^r \\leq n\\) より \\(r \\leq \\lfloor \\log_2 n \\rfloor \\)。ランクは高さと一致していたから find クエリと union クエリは共に \\(O(\\log n)\\) となる。二項木が最悪ケースを与える。
+&lt;h2&gt;経路圧縮の計算量解析&lt;/h2&gt;
+経路圧縮(path compression) では Union が \\(O(1)\\)、find がならし \\(O(\\log n)\\) であることを示す。path halving, splitting は同じように解析できるので扱わない。
+&lt;h3&gt;分割統治による証明&lt;/h3&gt;
+経路圧縮を無視したとき、最終的にできる木を考える。上下に \\(n/2\\) 頂点ずつに分けて、それぞれ \\(A, B\\) と置く。\\(A\\) は木、\\(B\\) は森になる。n 元集合の union find に対して m 回の union / find を行った時の計算量を \\(T(n, m)\\) と置く。\\(T(n, m)\\) のうち、A の頂点同士を端点に持つ辺が find のパスに含まれるのは \\(T(n/2, n)+O(m)\\) 回。B の頂点に対しても同様。A と B の頂点を両端点に持つ辺は 各 find のパスに高々 1 回しか含まれず \\(O(m)\\) 回。\\(\\sum_i T\\left(n_i, m_i\\right) \\leq T\\left(\\sum_i n_i, \\sum_i m_i\\right)\\) より \\(B\\) の各連結成分ごとの計算量をまとめ上げると \\(T(n, n) \\leq 2T(n/2, m)+O(m)\\) より \\(T(n, m)=O(m \\log(n))\\) である。
+&lt;h3&gt;ポテンシャルを使った証明&lt;/h3&gt;
+時刻 \\(t\\) における頂点 \\(i\\) の部分木のサイズを \\(\\sigma_i(t)\\)、ポテンシャル関数を \\(\\Phi(t):=4\\sum_&#123;i=1&#125;^n \\log \\sigma_i(t)\\) と置く。\\(0 \\leq \\Phi(t) \\leq 4n\\log n\\) かつ \\(\\Phi(0)=0\\) である。
+
+union では繋ぎ合わせる根のポテンシャルの寄与しか変化せず、一回当たり \\(O(\\log n)\\) しか増加しない。union では内部で 2 回 find を行うから、union でのポテンシャルの増分は find に割り当てればよい。
+
+&lt;img class="aligncenter size-full wp-image-761" src="https://37zigen.com/wp-content/uploads/2020/09/path_compression_potential.png" alt="path_compression_potential" width="3244" height="1484"&gt;
+
+時刻 \\(t\\) の find において辿るパス上の頂点を根から遠い順に \\(\\sigma_1,\\sigma_2,\\ldots,\\sigma_k\\) と置く（上図は k=5 の場合）。find には根を見つけるのに \\(k\\) ステップ、根を繋ぎ替えるのに \\(k-1\\) ステップの合計 \\(2k-1\\) ステップかかる。ポテンシャルの変化量は
+$$
+\\begin&#123;align&#125;
+H(t)-H(t-1)
+=&amp;4\\sum_&#123;i=2&#125;^&#123;k-1&#125; \\left(\\log(\\sigma_&#123;i&#125;-\\sigma_&#123;i-1&#125;)-\\log\\sigma_&#123;i&#125;\\right)\\\\
+=&amp;4\\sum_&#123;i=2&#125;^&#123;k-1&#125; \\log\\left(1-\\frac&#123;\\sigma_&#123;i-1&#125;&#125;&#123;\\sigma_i&#125;\\right)\\\\
+\\leq &amp; - 4\\sum_&#123;i=2&#125;^&#123;k-1&#125; \\frac&#123;\\sigma_&#123;i-1&#125;&#125;&#123;\\sigma_i&#125;\\
+\\end&#123;align&#125;
+$$
+で抑えられる（最後の不等号 \\(\\log(1-x) \\leq -x\\) は原点での接線より）。\\(\\frac&#123;\\sigma_&#123;i&#125;&#125;&#123;\\sigma_&#123;i+1&#125;&#125; \\leq 1/2\\)なる \\(i\\) が \\(m\\) 個あるとする。\\(1 \\leq \\sigma_1 &lt; \\sigma_2 &lt; \\ldots &lt; \\sigma_k \\leq n\\) だから、\\(2^m \\leq \\sigma_k \\leq n\\) となり、\\(m \\leq \\log n\\)。従って
+
+\\(-4\\sum_&#123;i=2&#125;^&#123;k-1&#125; \\frac&#123;\\sigma_&#123;i-1&#125;&#125;&#123;\\sigma_i&#125; &lt; -4\\cdot\\frac&#123;1&#125;&#123;2&#125;(k-2-m) &lt; -2k+4+4\\log n\\)
+
+より \\(H(t)-H(t-1)+2k-1=O(\\log n)\\) となる。\\begin&#123;align&#125;
+&amp;\\sum_t (H(t) - H(t-1) + \\text&#123;(complexity of each find)&#125;) \\\\
+=&amp; H(t_&#123;\\text&#123;last&#125;&#125;) - H(0) + (\\text&#123;complexity of find&#125;) \\\\
+=&amp; O(n\\log n) + (\\text&#123;complexity of find&#125;)
+\\end&#123;align&#125;
+より find はならし \\(O(\\log n)\\) である。
+&lt;h2&gt;Path Compression の最悪ケース&lt;/h2&gt;
+&lt;img class="aligncenter size-full wp-image-763" src="https://37zigen.com/wp-content/uploads/2020/09/worstcase_dsu.png" alt="worstcase_dsu" width="3312" height="1184"&gt;
+
+\\(k=\\Theta(\\log(n))\\) として、画像の操作を \\(\\Theta(n)\\) 回だけ繰り返すと union と find がならし \\(\\Theta(\\log n)\\) となる。
+&lt;h2&gt;union by rank, size と経路圧縮の組み合わせ&lt;/h2&gt;
+union by rank (または by size) と経路圧縮を組み合わせたとき、クエリ当りの計算量がアッカーマンの逆関数 \\(O(\\alpha(n))\\) となることが知られている。まずは、評価を弱めて iterated logarithm \\(O(\\log^*(n))\\) で抑えられることを示そう[4, 6]。iterated logarithm は $$ \\log^* x :=
+\\begin&#123;cases&#125;
+0 &amp; \\mbox&#123;if &#125; x \\le 1; \\\\
+1 + \\log^*(\\log x) &amp; \\mbox&#123;if &#125; x &gt; 1
+\\end&#123;cases&#125;$$ で定義される。\\(x \\in [\\underbrace&#123;b^&#123;b^&#123;\\cdot^&#123;\\cdot^&#123;b&#125;&#125;&#125;&#125;&#125;_&#123;y-1個&#125;, \\underbrace&#123;b^&#123;b^&#123;\\cdot^&#123;\\cdot^&#123;b&#125;&#125;&#125;&#125;&#125;_&#123;y個&#125;)\\) に対して \\(\\log_b^*(x)=y\\) である。
+
+次の定理が union by rank のときに成り立つことは、「union by rank の計算量」の節で示した。union by size の場合について示す。
+&lt;div class="statement"&gt;union by rank/size のどちらでも、rank r の木のサイズは \\(2^r\\) 以上である。&lt;/div&gt;
+&lt;div class="proof"&gt;証明：union by size において、rank k + 1 の木は形成過程で rank k の木 T' を、別の木 T の根に部分木として繋いでいる。union by size より size(T') ≦ size(T) であるから、rank k + 1 の木はサイズ \\(2^&#123;k+1&#125;\\) 以上となる。&lt;/div&gt;
+このとき、頂点の個数は葉から遠いほど指数関数的に抑えられ、次の定理が成り立つ。
+&lt;div class="statement"&gt;union by rank/size のどちらでも、rank r の頂点は高々 \\(n/2^r\\) 個しかない。&lt;/div&gt;
+例えば、完全2分木がこの条件を満たす。経路圧縮 の最悪計算量の例はrankが \\(\\Theta(n)\\) あるので満たさない。長さ \\(\\log(n)\\) のパスが \\(n/\\log(n)\\) 本だけ根に接続した木も駄目である。\\(n / 2^r ≥ 1 \\Leftrightarrow r ≤ \\log_2(n)\\) よりこの結果は木のrankが \\(O(\\log(n))\\) であることを包含している。しかし、それだけでは後の計算量解析には不十分である。というのも、経路圧縮の最悪計算量は高さ \\(\\log(n)\\) の二項木で構成できたが、\\(n / \\log(n)\\) 個の高さ \\(\\log\\log(n)\\) の二項木において同様のことをすると、rankを\\(O(\\log(n))\\)で抑えながら計算量が \\(\\log\\log(n)\\) のケースを作れるからである。そして、rank \\(O(\\log(n))\\) の木ではこれが最悪計算量であることが示せる。頂点の個数が葉から遠いほど指数関数的に減少することが\\(O(\\alpha(n))\\)には必要である。
+
+定理を証明する。
+&lt;div class="proof"&gt;証明：rank は経路圧縮しないときの高さであったから、（経路圧縮をしていても仮想的に）経路圧縮をしないときの木の形状を考える。任意のrank r の頂点の部分木は、部分木の根以外の頂点の rank が r 未満である。つまり、部分木の根以外に rank r の頂点が部分木に存在しない。従って、rank r の頂点を根とする部分木は互いに頂点を共有しない。この部分木のサイズが \\(2^r\\) 以上であったから rank r の頂点は高々 \\(n/2^r\\) 個しかない。
+
+証明2（by rank のみ）：rank k + 1 の木を作るには rank k の木が二つ必要なため。
+
+&lt;/div&gt;
+余談：部分木のサイズ \\(2^&#123;s + 1&#125; &gt; x ≥ 2^s\\) の頂点数が高々 \\(n / 2^s\\) でも後の証明は回ると思う（by size だと成り立つ。by rank で成り立つかは確かめていない）。
+
+最終的に全ての頂点が union によって連結になると仮定しても、計算量評価の一般性を失わない。find によって、与えられた頂点から根まで辿るパスの辺の数を評価すれば良い。
+
+ランク \\(h\\) の森に対して、ランク \\(\\log_2(h)\\) を境に上下に分割する（下図）。ランク \\(\\log_2(h)\\) 以上の頂点の数は \\(\\sum_&#123;r=\\log_2(h)&#125;^h n/2^r &lt; 2n/h\\) で抑えられる。この頂点同士を端点に持つ辺が find のパスに含まれるのは \\(O(h(2n/h)) = O(n)\\) 回。ランク \\(\\log_2(h)\\) 以上の頂点と未満の頂点を端点に持つ辺は 各find のパスに高々 1 回しか含まれないから、操作全体で \\(O(n)\\) 個。ランク \\(\\log_2(h)\\) 未満の森に対して分割統治を繰り返す。分割統治は \\(O(\\log^*(h))\\) 回繰り返せば終了するので、全体で \\(O(n\\log^*(h))\\) 時間。
+&lt;h2&gt;そして\\(\\alpha(n)\\)へ………&lt;/h2&gt;
+頂点数 \\(n\\)、ランク \\(h\\) の木に対して \\(n\\) 回の find を行った時の計算量を \\(T(n, h)\\) とする。ランク \\(s-1\\) 以上の頂点と未満の頂点で上下に分割すると、\\(O(n \\log^*(n))\\) のときと同様にして、計算量は
+$$T(n, h) \\leq T(n/2^&#123;s-2&#125;,h) + n + T(n, s)$$となる。\\(T(n, h) \\leq cng(h)\\) とすると、\\(s=\\log_2 (g(h))\\) とすることで
+\\begin&#123;align&#125;
+T(n, h) &amp;\\leq T(4n/g(h),h) + n + T(n, \\log_2 g(h))) \\\\
+&amp;= 4cn + n + T(n, \\log_2 g(h)) \\\\
+&amp;= (4c+1)n(\\log_2 g)^*(h)
+\\end&#123;align&#125;である。
+&lt;ul&gt;
+ 	&lt;li&gt;\\(T(n, h) \\leq cn^2\\) より \\(T(n, h) \\leq (4c+1)n \\log_2(n)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(T(n, h) \\leq (4c+1)n \\log_2 n\\) より \\(T(n, h) \\leq (4c+2)n (\\log_2 \\log_2)^* (n)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(T(n, h) \\leq (4c+2)n (\\log_2 \\log_2)^*(n)\\) より \\(T(n, h) \\leq (4c+3)n (\\log_2 (\\log_2 \\log_2)^*)^* (n)\\)&lt;/li&gt;
+&lt;/ul&gt;
+\\(g(h) = O(1) \\) となるまで \\(g \\leftarrow (\\log_2 g)^*\\) を適用する回数は \\(O(\\alpha(h))\\) で&lt;a href="https://37zigen.com/inverse-ackerman-function"&gt;抑えられ&lt;/a&gt;、このとき \\(c = O(\\alpha(n))\\) であるから \\(T(n, h) = O(n \\alpha(n))\\) である。
+
+&lt;img class="aligncenter size-large wp-image-8085" src="https://37zigen.com/wp-content/uploads/2020/09/unionfind-topdown-1024x488.png" alt="" width="1024" height="488"&gt;
+&lt;h2&gt;findを繰り返したときの計算量&lt;/h2&gt;
+union find で \\(\\Theta(n\\log(n))\\) 回 find (union 内部のそれを含む）すると、ならし \\(O(1)\\) になる。path compression を
+無視した仮想的な木は、高さが \\(O(\\log(n))\\) になるから。Gabowらの最小全域有向木問題の高速化に Union Find のオーバーヘッドが掛からない理由がこれだった。
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/UnionFind.pdf"&gt;Kevin Wayne 氏の授業スライド&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;図が豊富で分かりやすいです。アルゴリズムの挙動自体が分からないという場合はこちらを見ると良いと思います。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://dspace.library.uu.nl/handle/1874/15885"&gt;Alternative path compression techniques. van Leeuwen, J. van der Weide, R. (1977)&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;paht halving を提唱した論文。計算量解析の部分を勉強しました。彼らは path halving + link by rank はクエリ当たりの計算量が iterated logarithm \\(\\Theta(\\log^* n) \\) だと予想していたようです（実際はアッカーマンの逆関数）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://dspace.mit.edu/handle/1721.1/6201"&gt;Fischer, Michael J. "Efficiency of equivalence algorithms." Complexity of Computer Computations. Springer, Boston, MA, 1972. 153-167.&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;path compression の計算量解析のために二項木を導入した論文。二項木のフラクタルな構造が面白いと思いました。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://epubs.siam.org/doi/abs/10.1137/0202024"&gt;Hopcroft, John E., and Jeffrey D. Ullman. "Set merging algorithms." SIAM Journal on Computing 2.4 (1973): 294-303.&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;計算量が iterated logarithm で抑えられることを示した論文。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;&lt;a href="https://en.wikipedia.org/wiki/Disjoint-set_data_structure"&gt;Disjoint-set data structure - Wikipedia&lt;/a&gt;&lt;/li&gt;
+ 	&lt;li&gt;Seidel, Raimund, and Micha Sharir. "Top-down analysis of path compression."&nbsp;&lt;i&gt;SIAM Journal on Computing&lt;/i&gt;&nbsp;34.3 (2005): 515-525.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;関連記事&lt;/h2&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;&lt;a href="https://37zigen.com/k-uf-tree/"&gt;最悪計算量を最小化したUnion Find&lt;/a&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;永続化したい場合やオンラインで処理したい場合、ならしではなく最悪計算量を最小化した方が良いことがあります。ならし計算量 \\(O(\\alpha(n))\\) の Union Find は、最悪計算量が \\(\\Theta(\\log(n))\\) になることがあります。この記事では最悪計算量 \\(O(\\log(n)/\\log\\log(n))\\) の Union Find を紹介しています。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;

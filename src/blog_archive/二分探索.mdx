@@ -1,0 +1,77 @@
+---
+title: "二分探索"
+description: "二分探索 の過去ブログ記事"
+---
+
+# 二分探索
+
+> 📅 **投稿日**: 2022-06-14 07:00:52
+
+&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+\\(f : \\mathbb&#123;N&#125; \\to \\mathrm&#123;Bool&#125;\\) なる関数について、\\(f(L) \
+eq f(R)\\) ならば、
+&lt;ul&gt;
+ 	&lt;li&gt;\\(f(R)=f(r)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(f(L)=f(l)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(r=l+1\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(L \\leq l \\leq r \\leq R\\)&lt;/li&gt;
+&lt;/ul&gt;
+となる \\(l, r\\) のペアが一つ以上存在し、ある一つが次のアルゴリズムで必ず取れる。計算量は \\(O(\\log(n))\\)。
+&lt;pre&gt;&lt;code class="python"&gt;l = L
+r = R
+while (r - l &gt; 1):
+    m = (r + l) // 2
+    if f(m) == f(L):
+        l = m
+    else:
+        r = m
+&lt;/code&gt;&lt;/pre&gt;
+特に、インタラクティブ問題で鍵になることが多い。
+長さ2N（Nは奇数）の+1/-1の列aが与えられる。+1/-1はN個ずつある。f(l) は区間 [l,l+N) の和が負なら True, 正ならば False を返す。[l, l+N-1)の和が0, a[l] != a[r] となるような l を求めよ。
+
+a[0..i)の値の種類数をO(1)で得られる。a[0]以外が分かっている。a[0]と等しい箇所が他に必ず存在する。a[0]を特定せよ。
+
+ 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;
+\\(f : \\mathbb&#123;N&#125; \\to \\mathrm&#123;Bool&#125;\\) なる関数について、\\(f(L) \
+eq f(R)\\) ならば、
+&lt;ul&gt;
+ 	&lt;li&gt;\\(f(R)=f(r)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(f(L)=f(l)\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(r=l+1\\)&lt;/li&gt;
+ 	&lt;li&gt;\\(L \\leq l \\leq r \\leq R\\)&lt;/li&gt;
+&lt;/ul&gt;
+となる \\(l, r\\) のペアが一つ以上存在し、ある一つが次のアルゴリズムで必ず取れる。計算量は \\(O(\\log(n))\\)。
+&lt;pre&gt;&lt;code class="python"&gt;l = L
+r = R
+while (r - l &gt; 1):
+    m = (r + l) // 2
+    if f(m) == f(L):
+        l = m
+    else:
+        r = m
+&lt;/code&gt;&lt;/pre&gt;
+特に、インタラクティブ問題で鍵になることが多い。
+&lt;ul&gt;
+ 	&lt;li&gt;長さ2N（Nは奇数）の+1/-1の列aが与えられる。+1/-1はN個ずつある。f(l) は区間 [l,l+N) の和が負なら True, 正ならば False を返す。[l, l+N-1)の和が0, a[l] \
+eq a[r] となるような l を求めよ（ddcc2020_qual_e）。&lt;/li&gt;
+ 	&lt;li&gt;a[0..i)の値の種類数をO(1)で得られる。a[0]以外が分かっている。a[0]と等しい箇所が他に必ず存在する。a[0]を特定せよ。&lt;/li&gt;
+&lt;/ul&gt;
+\\(f\\) を \\(\\mathrm&#123;Bool&#125;\\) への関数ではなく \\(\\mathbb&#123;Z&#125;/\\mathbb&#123;2Z&#125;\\) への関数だと思うと \\(f(R) \
+eq f(L)\\) は
+\\begin&#123;align&#125;
+&amp;f(L) \
+eq f(R) \\bmod 2 \\\\
+\\Leftrightarrow &amp;f(R) \\pm f(L) = 1 \\bmod 2
+\\end&#123;align&#125;
+となる。例えば、\\(f(i)=g(i)+i\\) とすると、\\(g(R)-g(L)+(R-L) = 1 \\bmod 2\\)となるがこれは次のような問題に使える。
+&lt;div class="statement"&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;\\(L, R\\) に座っている２人が異性かつ \\(L-R\\) が偶数&lt;/li&gt;
+ 	&lt;li&gt;\\(L, R\\) に座っている２人が同性かつ \\(L-R\\) が奇数&lt;/li&gt;
+&lt;/ul&gt;
+のとき、区間 \\([L, R)\\) に空席があることが分かっている。空席を一つ見つけよ。長さ奇数の円環上に椅子が並んでいるときに空席を一つ見つけよ(APC001C)
+
+&lt;/div&gt;
+&lt;h2&gt;判定問題にすることで実装の簡略化&lt;/h2&gt;
+もっと良い計算量で解けるのに、あえて二分探索で判定問題に帰着し、実装を簡略化するテクニックがある。
+&lt;div class="statement"&gt;2 × n のマスがある。各マス \\((i, j)\\) には時刻 \\(a_&#123;i, j&#125;\\) 以降でないと入れない。隣接するマスには時間 1 を掛けて移動できる。\\((1, 1)\\) を始点とするハミルトンパスを作るのに必要な時間を求めよ。(ECF133C)&lt;/div&gt;

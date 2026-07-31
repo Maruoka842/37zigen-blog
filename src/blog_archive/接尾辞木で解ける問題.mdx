@@ -1,0 +1,106 @@
+---
+title: "接尾辞木で解ける問題"
+description: "接尾辞木で解ける問題 の過去ブログ記事"
+---
+
+# 接尾辞木で解ける問題
+
+> 📅 **投稿日**: 2022-04-04 05:03:27
+
+接尾辞木（suffix tree）でできること。
+&lt;ul&gt;
+ 	&lt;li&gt;文字列Sは部分文字列Tを持つか O(|T|)
+&lt;ul&gt;
+ 	&lt;li&gt;接尾辞木でTの文字を順に辿れば良い。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;文字列Sに含まれる部分文字列Tの位置を全て報告せよ。出現回数を occ
+として O(|T|+occ)
+&lt;ul&gt;
+ 	&lt;li&gt;接尾辞木でTの文字を順に辿れば良い。根を除いて、次数 2 の内部頂点が存在しないことから、葉の数が occ の部分木の頂点数は O(occ) である。従って、根からのパスのラベルがTとなるような頂点の部分木についてDFSして葉を列挙すれば良い。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;部分文字列の種類数
+&lt;ul&gt;
+ 	&lt;li&gt;Trieの根からのパスの個数、すなわち、Trieの頂点数に等しい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;S[i:]とS[j:]のLCP O(1)
+&lt;ul&gt;
+ 	&lt;li&gt;S[i:]とS[j:]に対応する葉のLCA&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;各iについてΣ[j]|LCP(S[i:], S[j:])|の列挙 O(|S|)
+（ABC213F）
+&lt;ul&gt;
+ 	&lt;li&gt;(LCAの深さ+1)の和を上手く取れば良い。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;i=1,..,|S|に対して、i/2を中心とする極大な回文の列挙 O(|S|)
+&lt;ul&gt;
+ 	&lt;li&gt;S[i+1:]とrev(S)[|S|-i+1:]のLCPと言い換えられる。LCPはLCAでO(1)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;2回以上現れる部分文字列のうち、最長であるもの
+&lt;ul&gt;
+ 	&lt;li&gt;深さ最大の内部頂点に対応する部分文字列。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;S, T の最長共通部分文字列 O(|S|+|T|)
+&lt;ul&gt;
+ 	&lt;li&gt;S, T 両方の終端文字を子孫に持つ深さ最大の内部頂点のパスラベル&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;S[1]+S[2]+..+S[k] の接尾辞木からS[i]の接尾辞木を構築せよ O(|S[i]|)
+&lt;ul&gt;
+ 	&lt;li&gt;S[i]の接頭辞を辞書順に並べる（接頭辞の葉を左から順に並べる）。隣り合う者同士のLCAでS[i]の接尾辞木の内部頂点が尽くされる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;Sの各部分文字列に対して、T[1],T[2],..,T[k] のうち何個が部分文字列として含まれるか数えよ。 O(|S|+Σ|T[i]|)
+&lt;ul&gt;
+ 	&lt;li&gt;特定の終端文字に着目する。その終端文字の頂点を DFS - in-order で並べて、隣り合う頂点の LCA を O(1) で計算する。各頂点について、部分木内の LCA に選ばれた頂点の個数は、max(0, (特定の終端文字の個数) - 1) に等しい。従って、和を取ると、(終端文字の個数) - (終端文字の種類数) となる。部分期に含まれる終端文字の個数は簡単に求まるので、終端文字の種類数も求まる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;文字列Sが円環状になっている。好きな位置で切ったときにできる辞書順最小の文字列を求めよ O(|S|)。
+&lt;ul&gt;
+ 	&lt;li&gt;S+Sの辞書順最小の接尾辞を求めれば良い。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;各iについて、T[i:]がS[1],..,S[k]のうち何個を接頭辞として持つか列挙せよ
+&lt;ul&gt;
+ 	&lt;li&gt;Tの接尾辞木に対して、S[1],S[2],..,S[k]に対応する頂点の部分木にそれぞれ１加える。和が接頭辞の個数に等しい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;各iについて、T[:i]がS[1],..,S[k]のうち何個を接尾辞として持つか列挙せよ
+&lt;ul&gt;
+ 	&lt;li&gt;reverseして接頭辞に帰着する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;全てのペア(i,j)について、S[i]+S[j]がTに何箇所部分文字列として含まれるかの総和を求めよ。（ECR070E）
+&lt;ul&gt;
+ 	&lt;li&gt;T[:i]に接尾辞として含まれるS[1],..,S[k]の個数をf(i), T[i+1:]に接頭辞として含まれるS[1],..,S[k]の個数をg(i+1)としてΣf(i)g(i+1)が求まれば良い。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;Sの接尾辞木をS+Tの接尾辞木に更新せよ。
+&lt;ul&gt;
+ 	&lt;li&gt;Ukkonenのアルゴリズム&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;各iについて、S[:i]が部分文字列としてTに何個含まれるか求めよ O(|S|)
+&lt;ul&gt;
+ 	&lt;li&gt;iの昇順に接尾辞木で探索すれば良い。S[:i+1]の探索にはS[:i]の探索を再利用する。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;Sの部分文字列の集合の要素のうち、辞書順でk番目のものを求めよ。
+&lt;ul&gt;
+ 	&lt;li&gt;二分探索木とほぼ同様&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;Sの部分文字列のうち、辞書順でTより大きい最小の部分文字列を答えよ。O(|S|)
+&lt;ul&gt;
+ 	&lt;li&gt;二分探索木とほぼ同様&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+ 	&lt;li&gt;Sの部分文字列のうち、uniqueな回分の個数を答えよ O(|S|)&lt;/li&gt;
+ 	&lt;li&gt;Sの部分文字列のうち、uniqueな回分の辞書順 k 番目のものを答えよ O(|S|)&lt;/li&gt;
+&lt;/ul&gt;

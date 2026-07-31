@@ -1,0 +1,25 @@
+---
+title: "Union Find の計算量 (1)"
+description: "Union Find の計算量 (1) の過去ブログ記事"
+---
+
+# Union Find の計算量 (1)
+
+> 📅 **投稿日**: 2020-09-18 00:44:45
+
+Union Find の計算量を解説します。
+&lt;h2&gt;Union by Size&lt;/h2&gt;
+&lt;h2&gt;Union by Rank&lt;/h2&gt;
+各頂点に対してランクを割り当てる。path compression, halving, splitting をしない限り、ランクは高さ（葉までの最長距離）と同じ値である。根と根を繋ぐときランクの高い根を新たな根とし、ランクの低い根は新たな根の子とする。
+
+rank(u)=1 のとき サイズ 1 である。
+u と v (rank(u) \\geq rank(v)) をつなげる rank(u) が増加するのは rank(u)=rank(v) のときのみ。
+帰納法の仮定から size(u)=size(v) \\geq 2^rank(u) だから合併後のサイズは 2^&#123;rank(u)+1&#125; 以上となる。
+よって示された。
+&lt;h2&gt;Path Compression, Splitting, Halving&lt;/h2&gt;
+&lt;a href="https://www.cs.princeton.edu/~wayne/kleinberg-tardos/pdf/UnionFind.pdf"&gt;Kevin Wayne の授業スライド&lt;/a&gt;
+&lt;a href="https://www.ccs.neu.edu/home/lieber/courses/algorithms/cs4800/f10/lectures/union-find.pdf"&gt;union by size + path compression で iterated logarithm の証明&lt;/a&gt;
+&lt;a href="https://www.cs.upc.edu/~mjserna/docencia/grauA/T19/Union-Find.pdf"&gt;union by rank + path compression で iterated logarithm の証明&lt;/a&gt;
+
+https://core.ac.uk/download/pdf/161439519.pdf survy?
+https://www.cs.cmu.edu/~avrim/451f11/lectures/lect1020.pdf 真面目なiterated logarithm の証明

@@ -1,0 +1,90 @@
+---
+title: "エラトステネスの篩"
+description: "エラトステネスの篩 の過去ブログ記事"
+---
+
+# エラトステネスの篩
+
+> 📅 **投稿日**: 2021-03-16 02:08:34
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"&gt;&lt;/script&gt;&lt;script&gt;hljs.initHighlightingOnLoad();&lt;/script&gt;\\(N\\) 以下の素数を \\(O(N\\log\\log(N))\\) で列挙するアルゴリズムである、エラトステネスの篩（ふるい）を解説します。
+
+[toc]
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+アルゴリズムは非常にシンプルです。  	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css"&gt;
+&lt;ul&gt;
+ 	&lt;li&gt;次の操作を可能な限り繰り返します。
+&lt;ol type="i"&gt;
+ 	&lt;li&gt;\\(2\\) から \\(N\\) のうち、まだ素数とも合成数とも分かっていない、最小の自然数 \\(x\\) を取り出します。iiより、\\(x\\) 未満の素数を因子に持つ合成数は全て確定しているので、\\(x\\) は素数確定です。&lt;/li&gt;
+ 	&lt;li&gt;\\(x\\) 以外の \\(x\\) の正の倍数 \\(2x, 3x, \\ldots\\) を合成数として確定させます。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+つまり、素数 \\(2\\) の倍数 \\(4,6,8,\\ldots\\) を取り除き、次に素数 \\(3\\) の倍数 \\(6,9,12,\\ldots\\) を取り除き......というようになります。Python のコードは次の通りです：
+&lt;pre&gt;&lt;code class="python"&gt;is_prime = [True] * (N + 1)
+is_prime[0] = False
+is_prime[1] = False
+for i in range(2, N + 1):
+    if not is_prime[i]:
+        continue
+    for j in range(2 * i, N + 1, i):
+        is_prime[j] = False
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;計算量解析&lt;/h2&gt;
+アルゴリズムのシンプルさに反して、計算量解析は少し難しいです（ですが、計算量が軽いのがこのアルゴリズムの凄いところです）。素数 \\(p\\) の倍数 \\(2p, 3p, \\ldots\\) を合成数として取り除くのに必要な計算量は \\(O(N/p)\\) です。各素数 \\(p\\) について足し合わせて、全体の計算量は \\(O(N\\sum_&#123;p \\leq N&#125; \\frac&#123;1&#125;&#123;p&#125;)\\) になります。
+
+厳密な \\(O(\\sum_&#123;p \\leq N&#125; \\frac&#123;1&#125;&#123;p&#125;)\\) の評価は込み入った計算になるので、フェルミ推定します。カギは素数定理です：
+&lt;div class="statement"&gt;素数定理：
+\\(x\\) 以下の素数の個数 \\(\\pi(x)\\) について、$$\\pi(x)=\\Theta\\left(\\int_2^x \\frac&#123;1&#125;&#123;\\log&#123;t&#125;&#125; dt\\right)$$ が成り立つ。&lt;/div&gt;
+素数定理より、\\(t\\) が素数である確率密度は \\(\\frac&#123;1&#125;&#123;\\log&#123;t&#125;&#125;\\) で近似できます。積分で素数の逆数和を近似すると$$\\sum_&#123;p \\leq N&#125; \\frac&#123;1&#125;&#123;p&#125; \\approx \\int_&#123;2&#125;^&#123;N&#125; \\frac&#123;1&#125;&#123;t\\log&#123;t&#125;&#125; dt = \\log \\log(N)-\\log \\log(2) $$です。従って、厳密な証明ではないですが、エラトステネスの篩の計算量が \\(O(N \\log \\log(N))\\) だろうということが分かりました。実際、この推定は正しいことが知られています。
+
+\\(N=10^8\\) のとき、\\(\\sum_&#123;p \\leq N&#125; \\frac&#123;1&#125;&#123;p&#125;=3.17\\cdots\\) と \\(O(\\log\\log(N))\\) の因子は実用上小さく抑えられます。この計算量の軽さとアルゴリズムのシンプルさがエラトステネスの篩の魅力だと思います。
+&lt;h2&gt;\\(\\sqrt&#123;N&#125;\\) で十分：定数倍改善&lt;/h2&gt;
+\\(N\\) 以下の合成数は \\(\\sqrt&#123;N&#125;\\) 以下の素因数を持つことから、次の二つの計算量改善ができます：
+&lt;ol&gt;
+ 	&lt;li style="list-style-type: none;"&gt;
+&lt;ol&gt;
+ 	&lt;li&gt;篩に使う素因数 \\(p\\) は \\(p \\leq \\sqrt&#123;N&#125;\\) で十分。&lt;/li&gt;
+ 	&lt;li&gt;素数 \\(p\\) によって篩う合成数は \\(p^2,p(p+1),p(p+2),\\ldots\\) のみで十分。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+\\(\\sum_&#123;p \\leq \\sqrt&#123;N&#125;&#125; \\frac&#123;1&#125;&#123;p&#125; = O(\\log\\log(\\sqrt&#123;N&#125;)) = O(\\frac&#123;1&#125;&#123;2&#125; \\log\\log(N))\\) ですから、改善1は約半分の定数倍改善です。改善2で削減できた計算量は、積分を長方形で近似して \\(\\sum_&#123;p \\leq \\sqrt&#123;N&#125;&#125; p \\approx O(\\sqrt&#123;N&#125;\\frac&#123;\\sqrt&#123;N&#125;&#125;&#123;\\log\\sqrt&#123;N&#125;&#125;)=O(N/\\log&#123;N&#125;)\\) だと推定できます。どちらもよく用いられる定数倍改善です。
+
+Pythonによるコードは次の通りです：
+&lt;pre&gt;&lt;code class="python"&gt;is_prime = [True]*(N + 1)
+is_prime[0] = False
+is_prime[1] = False
+prime_list = []
+for i in range(2, N+1):
+    if not is_prime[i]:
+        continue
+    if i * i &gt;= N:
+        break
+    for j in range(i * i, N + 1, i):
+        is_prime[j] = False
+&lt;/code&gt;&lt;/pre&gt;
+\\(n=10^7\\) で計測（LIFEBOOK A550/B（Core i5, 4GB）10回平均）すると、改善前後で速度が２倍になりました。
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;\\(n\\)&lt;/th&gt;
+&lt;th&gt;改善前&lt;/th&gt;
+&lt;th&gt;改善後&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;\\(n=10^7\\)&lt;/td&gt;
+&lt;td&gt;3.719 sec&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;1.875 sec&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+\\(N^&#123;1/2&#125;\\) までの素数の試し割りでよいことから、区間を \\(N^&#123;1/2&#125;\\) ずつ区切れば、空間計算量 \\(O(N^&#123;1/2&#125;)\\) で、エラトステネスの篩ができます。ただし、\\([iN^&#123;1/2&#125;, (i+1)N^&#123;1/2&#125;)\\) での計算結果は \\(i\\) をインクリメントすると捨てる必要があるので、使用場面は限定的だと思います。素数カウントでの&lt;a href="https://37zigen.com/prime-count/"&gt;使用例&lt;/a&gt;があります。
+&lt;h2&gt;区間篩&lt;/h2&gt;
+\\([n-x,n]\\) の範囲の素数を見つけるエラトステネスの篩を特別に区間篩と呼びます。\\(p \\leq \\sqrt&#123;n&#125;\\) までの素因数で、\\([n-x,n]\\) の範囲の素因数を列挙できました。\\(p \\leq \\sqrt&#123;n&#125;\\) までの素因数を見つけるのに \\(O(\\sqrt&#123;n&#125;\\log\\log(n))\\)、\\([n-x,n]\\) での素数判定に \\(O(x\\log\\log(n))\\) かかります。
+
+\\(w \\leq \\sqrt&#123;N&#125;\\) とします。\\([1,w),[w,2w),[2w,3w),\\ldots \\) のそれぞれで区間篩を行い、見つけた素数をハードディスクに書き込むと、\\([1,N]\\) でのエラトステネスの篩が時間 \\(O(N \\log\\log(N))\\) 、メモリ（RAM）\\(O(\\sqrt&#123;N&#125;)\\) でできます。これは、\\(N\\) が大きいときに有効です。
+&lt;h2&gt;発展形&lt;/h2&gt;
+合成数が一度しか篩に掛けられないようにすることで、計算量を \\(O(N)\\) にできます：&lt;a href="https://37zigen.com/linear-sieve/"&gt;線形篩&lt;/a&gt;
+
+素数か判断する数を \\(2\\) と奇数に限定すれば、定数倍高速化できます。更に、素数か判断する数を \\(2,3\\) と \\(6k+1,6k+5\\) の形に限定することもできます。この考えを発展させると &lt;a href="https://37zigen.com/wheel-sieve"&gt;wheel sieve&lt;/a&gt; になり、計算量は \\(O(N)\\) です。wheel sieve と線形篩を合体すると、\\(O(N/\\log\\log(N))\\) になります。

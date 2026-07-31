@@ -1,0 +1,87 @@
+---
+title: "Turán の定理"
+description: "Turán の定理 の過去ブログ記事"
+---
+
+# Turán の定理
+
+> 📅 **投稿日**: 2020-10-10 07:19:10
+
+&lt;p&gt;\\(r\\) 頂点完全グラフ \\(K^r\\) を含まない辺の数が最大のグラフとは何か。この疑問に答える Turán の定理を解説する。もしそのようなグラフの部集合の数が \\(r-1\\) 個以下ならば、いくら辺を増やしても \\(K^r\\) を含み得ないから、完全多部グラフである。また、部集合の数が多い方が辺の数が多いから \\(r-1\\) 部グラフである。直感的には部集合のサイズが揃っている方が辺数は多そうである。実際、サイズ \\(A, A+d\\) の2つの部集合のサイズを \\(A+1, A+d-1\\) にすれば辺の数は \\(d-1\\) だけ増える。つまり、部集合のサイズは互いに高々一つしか異ならない。このような \\(n\\) 頂点 \\(r-1\\) 部完全グラフを Turán グラフ \\(T^&#123;r-1&#125;(n)\\) といい、辺の数を \\(t_&#123;r-1&#125; (n)\\) で表す。例えば \\(T^2(7)、T^3(8)\\) は下図のようになる。&lt;/p&gt;
+&lt;figure class="wp-block-image size-large"&gt;&lt;img class="wp-image-1272" src="https://37zigen.com/wp-content/uploads/2020/10/turan-1-1024x603.png" alt=""&gt;&lt;/figure&gt;
+&lt;p&gt;\\(r\\) と \\(n\\) が決まると、Turán グラフは一意に定まる事に注意。Turán の定理はこの Turán グラフが \\(K^r\\) を含まない辺数最大のグラフであることを表している。&lt;/p&gt;
+
+
+&lt;div class="statement"&gt;Turán の定理（1941）：&lt;br&gt;頂点数 \\(n\\) のグラフのうち、\\(r\\) 頂点完全グラフ \\(K^r\\) を部分グラフに含まない辺数最大のグラフ \\(G\\) は Turán グラフ \\(T^&#123;r-1&#125;(n)\\) 唯一である。 &nbsp;&lt;/div&gt;
+
+
+&lt;p&gt;以下ではこの定理の証明を幾つか見ていく。&lt;/p&gt;
+
+
+&lt;/p&gt;
+
+
+&lt;h2&gt;1. Zykov's Symmetrisation による証明&lt;/h2&gt;
+&lt;p&gt;頂点 \\(v\\) と同じ隣接頂点を持つ頂点 \\(v'\\) を追加する操作を頂点 \\(v\\) の複製と呼ぶことにする。この操作の前後では、\\(K^r\\) を含まないという性質は保たれ、上手く利用することで次のようにより辺数の多い \\(K^r\\) を含まないグラフが構成できる。このテクニックを Zykov's Symmetrisation という。&lt;/p&gt;
+&lt;div class="proof"&gt;&lt;b&gt;証明&lt;/b&gt;：&lt;br&gt;G が完全多部グラフであることを示す。完全多部グラフでないと仮定する。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img class="alignright" src="https://37zigen.com/wp-content/uploads/2020/10/20201012.png" alt="" width="250"&gt;&lt;span style="font-size: inherit;"&gt;各頂点を一つの部集合に割り当てれば、n 頂点のグラフは n 部集合に分けられる。隣接していない部集合を合体しても部集合のままであるから、隣接していない部集合がなくなるまで合体を繰り返す。完全多部グラフでないから、図のように、\\(xy_1, xy_2 \
+otin E(G), y_1y_2 \\in E(G)\\) となる頂点 \\(x,y_1,y_2\\) が取れる。&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;(i) 次数 \\( d(x) &lt; d(y_1) \\) のとき&lt;br&gt;頂点 \\(x\\) を消去して頂点 \\(y_1\\) を複製する。&lt;/p&gt;
+&lt;p&gt;(ii) 次数 \\( d(x) &lt; d(y_2) \\) のとき&lt;br&gt;頂点 \\(x\\) を消去して頂点 \\(y_2\\) を複製する。&lt;/p&gt;
+&lt;p&gt;(iii) 次数 \\( d(x) \\geq d(y_1) \\) かつ \\( d(x) \\geq d(y_2) \\) のとき&lt;br&gt;頂点 \\(y_1,y_2\\) を消去して頂点 \\(x\\) を 2 回複製する。&lt;/p&gt;
+&lt;p&gt;いずれの場合も頂点数を不変のまま、\\(K^r\\) を含まないより辺数の多いグラフを構成できたので矛盾。従って G は完全多部グラフである。完全多部グラフのうち、辺数が最も多くなるのは Turán グラフのときであったから証明完了。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2&gt;2. Turán グラフの再帰的構造による証明&lt;/h2&gt;
+&lt;h3&gt;・再帰的構造による証明１（by Turán）&lt;/h3&gt;
+&lt;p&gt;\\(T^&#123;r-1&#125;(n)\\) の部集合からそれぞれ一つずつ頂点を削除すると下図のように \\(T^&#123;r-1&#125;(n-(r-1)) \\) が得られる。また、削除した頂点は元のグラフで完全グラフ \\(K^&#123;r-1&#125;\\) をなす。この再帰的構造を用いたのが次の証明である。&lt;/p&gt;
+&lt;p&gt;&lt;img class="aligncenter size-full wp-image-1508" src="https://37zigen.com/wp-content/uploads/2020/10/turan3-1.png" alt="" width="3268" height="1468"&gt;&lt;/p&gt;
+&lt;div class="proof"&gt;&lt;b&gt;証明&lt;/b&gt;：&lt;br&gt;頂点数に関する帰納法で \\(G\\) が Turán グラフであることを示す。頂点数 \\(n (&lt; r)\\) のとき \\(G=K^n\\) だから Turán の定理は成立。頂点数 \\(n(\\geq r)\\) 未満のとき Turán の定理が成立することを仮定する。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;辺数の最大性より、\\(G\\) に 1 辺 \\(e\\) を追加した \\(G+e\\) は \\(K^r\\) を部分グラフに含む。よって \\(G\\) は \\(K^&#123;r-1&#125;\\) を部分グラフに持つ。部分グラフ \\(K^&#123;r-1&#125;\\) を 1 つ固定して \\(K\\) と置く。\\(K\\) の頂点を削除したグラフ \\(G-K\\) は \\(K^&#123;r&#125;\\) を部分グラフに持たないから、辺数は \\(t_&#123;r-1&#125;(n-(r-1))\\) で抑えられる。\\(H\\) の各頂点 \\(v\\) は \\(K\\) の高々 \\(r-2\\) 個の頂点としか隣接しない。さもなくば \\(K * v \\cong K^r\\) が \\(G\\) の部分グラフとなり矛盾。以上から、次の不等式で \\(G\\) の辺数 \\(||G||\\) が抑えられる：&lt;br&gt;$$||G|| \\leq t_&#123;r-1&#125;\\left(n-(r-1)\\right)+(n-(r-1))(r-2)+&#123;r-1\\choose 2&#125;.$$下図から不等式の右辺は \\(t_&#123;r-1&#125;(n)\\) と等しい。\\(||G||\\) の辺数の最大性から不等号は等号で常に成立。よって \\(G-K\\) は Turán グラフ \\(T^&#123;r-1&#125;(n-(r-1))\\) である。\\(K\\) の各頂点 \\(v\\) を \\(G-K=T^&#123;r-1&#125;(n-(r-1))\\) の非隣接な頂点の部集合に追加すれば、\\(G\\) は Turán グラフ \\(T^&#123;r-1&#125;(n)\\) となる。&lt;/p&gt;
+&lt;p&gt;&lt;img class="aligncenter size-full wp-image-1369" src="https://37zigen.com/wp-content/uploads/2020/10/turan2.png" alt="" width="2804" height="1472"&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;h3&gt;・再帰的構造による証明2&lt;/h3&gt;
+&lt;p&gt;Turán グラフ \\(T^&#123;r-1&#125;(n)\\) の次数最小の頂点 \\(v\\) を削除すると、下図のように \\(T^&#123;r-1&#125;(n)-v=T^&#123;r-1&#125;(n-1)\\) が得られる。この再帰的構造を用いたのが次の証明である。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;&lt;img class="aligncenter size-full wp-image-1396" src="https://37zigen.com/wp-content/uploads/2020/10/turan3.png" alt="" width="3644" height="1468"&gt;&lt;/div&gt;
+&lt;div class="proof"&gt;&lt;b&gt;証明&lt;/b&gt;：&lt;br&gt;Turán グラフは \\(K^r\\) を含まないことについて辺極大である。従って、\\(K^r\\) を含まない辺数 \\(t_&#123;r-1&#125;(n)\\) のグラフが Turán グラフのみであることを示せばよい。なぜなら、辺数 \\(t_&#123;r-1&#125;(n)+1\\) 以上の \\(K^r\\) を含まないグラフが存在するならば、辺極大であるはずの Turán グラフを部分グラフに持ち矛盾するからである。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;頂点数についての帰納法で示す。1頂点のときは成立。&lt;br&gt;\\(|G|\\) 頂点未満のとき成立を仮定する。&lt;br&gt;次数最小の頂点 \\(v\\) について \\(G-v\\) の辺数は \\(t_&#123;r&#125;(n-1)\\) 以上。\\(G-v\\) は \\(K^r\\) を含まないから帰納法の仮定より \\(G-v=T^&#123;r&#125;(n-1)\\) である。\\(v\\) が \\(T^&#123;r&#125;(n-1)\\) の全ての部集合の頂点と隣接すると \\(K^r\\) が生じてしまうから、\\(G=T^&#123;r&#125;(n)\\) となる。\\(|G|\\) 頂点のときも成立したので証明完了。&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;h3&gt;・再帰的構造による証明3&lt;/h3&gt;
+&lt;p&gt;詳細は述べないが、部集合の個数を一つ減少して、\\(T^&#123;r-1&#125;(n)\\) から \\(T^&#123;r-2&#125;(n)\\) を生成するような再帰的構造を用いた証明もある。詳細は Andrzej Czygrinow 氏の授業ノートを参照せよ。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2&gt;弱い主張と証明&lt;/h2&gt;
+&lt;p&gt;Turán グラフ \\(T^&#123;r-1&#125;(n)\\) がサイズ \\(t\\) の部集合 \\(a\\) 個とサイズ \\(t + 1\\) の部集合 \\(r-1-a\\) 個からなるとすると&lt;br&gt;$$T^&#123;r-1&#125;(n)=\\frac&#123;n^2&#125;&#123;2&#125;\\frac&#123;r-2&#125;&#123;r-1&#125;-\\frac&#123;a((r-1)-a)&#125;&#123;2(r-1)&#125;&lt;br&gt;\\leq \\frac&#123;n^2&#125;&#123;2&#125;\\frac&#123;r-2&#125;&#123;r-1&#125; $$&lt;br&gt;となる。不等号は部集合のサイズが揃っているときに成り立つ。次の2つの証明では弱い主張「 \\(K^r\\) を含まないグラフの辺数が不等号の右辺 \\(\\frac&#123;n^2&#125;&#123;2&#125;\\frac&#123;r-2&#125;&#123;r-1&#125;\\) 以下であること」を示す。&lt;/p&gt;
+&lt;h3&gt;1. 謎の証明方法&lt;/h3&gt;
+&lt;p&gt;この証明方法は謎である。面白いが、何をしているのかよく分からない。&lt;/p&gt;
+&lt;div class="proof"&gt;&lt;b&gt;証明：&lt;/b&gt;&lt;br&gt;各頂点 \\(i\\) に \\(\\sum w_i = 1\\) を満たすように非負の重み \\(w_i\\) を割り振る。\\(S:=\\sum_&#123;(i,j)\\in E(G)&#125; w_iw_j\\) を最大化してみよう。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;非隣接な2頂点 \\(u,v\\) の隣接頂点の重みの総和が \\(x,y\\ (x \\geq y)\\) だとする。微小量 \\(\\varepsilon &gt; 0\\) に対して、$$x(w_u+\\varepsilon)+y(w_v-\\varepsilon) \\geq xw_u+yw_v$$だから、\\(S\\) を減少させずに特定のクリークに重みを集めることができる。&lt;/p&gt;
+&lt;p&gt;頂点 \\(1,2,\\ldots,m\\) からなるクリーク \\(K^m\\) に重みを集めると \\(2S\\) は次のようになる：\\begin&#123;align&#125;&lt;br&gt;2\\sum_&#123;(i,j)\\in E(K^m)&#125; z_iz_j&lt;br&gt;=&amp;\\left(\\sum_&#123;i=1&#125;^m z_i\\right)^2-\\sum_&#123;i=1&#125;^m z_i^2\\\\&lt;br&gt;=&amp;1-\\sum_&#123;i=1&#125;^m z_i^2\\\\&lt;br&gt;\\leq&amp;1-\\frac&#123;1&#125;&#123;m&#125;\\sum_&#123;i=1&#125;^m z_i\\\\&lt;br&gt;=&amp;1-\\frac&#123;1&#125;&#123;m&#125;&lt;br&gt;\\end&#123;align&#125;2行目から3行目にかけてコーシー・シュワルツの不等式を用いた。等号は \\(z_i=1/m\\) のとき成立。 \\(m\\) が大きいほどその値は大きくなる。\\(G\\) は \\(K^r\\) を部分グラフに持たないことについて辺極大だから、\\(K^&#123;r-1&#125;\\) を部分グラフに持つ。全ての重みが \\(z_&#123;i&#125;=1/n\\) のとき \\(S=\\frac&#123;||G||&#125;&#123;n^2&#125; \\frac&#123;1&#125;&#123;2&#125;\\leq (1-\\frac&#123;1&#125;&#123;r-1&#125;)\\) であるから $$||G||\\leq \\frac&#123;n^2&#125;&#123;2&#125;\\frac&#123;r-2&#125;&#123;r-1&#125;$$を得る。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h3&gt;2. 次数を用いたクリークの発見による証明&lt;/h3&gt;
+&lt;p&gt;次数の大きさからある大きさのクリークの存在が必ず言えることを用いた証明。&lt;/p&gt;
+&lt;div class="proof"&gt;&lt;b&gt;証明：&lt;/b&gt;&lt;br&gt;クリークをなす頂点集合 \\(U\\) のサイズを求めたい。&lt;br&gt;\\(\\&#123;1,2,\\ldots,n\\&#125;\\) のランダムな置換 \\(\\&#123;\\pi(1),\\pi(2),\\ldots,\\pi(n)\\&#125;\\) の先頭から順に頂点 \\(v=\\pi(i)\\) を選ぶ。最初 \\(U\\) は空集合である。頂点 \\(v\\) を \\(U\\) に加えてもクリークならば、\\(U\\) に \\(v\\) を加える。\\(v\\) が \\(U\\) に加えられる確率は \\(v\\) が、 \\(v\\) の隣接頂点以外の頂点 \\(n-d(v)-1\\) 個より先に選ばれる確率 \\(\\frac&#123;1&#125;&#123;n-d(v)&#125;\\) と等しい。よって \\(|U|\\) の期待値は \\(\\sum_&#123;v \\in V(G)&#125; \\frac&#123;1&#125;&#123;n-d(v)&#125;\\) であるから \\(G\\) は必ずサイズ \\(\\lceil\\sum_&#123;v\\in V(G)&#125; \\frac&#123;1&#125;&#123;n-d(v)&#125;\\rceil\\) 以上のクリークを部分グラフに持つ。&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;\\(|G|\\) が \\(K^r\\) を部分グラフに持たないという条件から次を得る：\\begin&#123;align&#125;&lt;br&gt;r-1 \\geq &amp;\\sum_&#123;v \\in V(G)&#125; \\frac&#123;1&#125;&#123;n-d(v)&#125;\\\\&lt;br&gt;\\geq &amp;\\frac&#123;n&#125;&#123;n-\\sum_&#123;v \\in V(G)&#125; \\frac&#123;d(v)&#125;&#123;n&#125;&#125;\\\\&lt;br&gt;=&amp;\\frac&#123;n&#125;&#123;n-\\frac&#123;2||G||&#125;&#123;n&#125;&#125;&lt;br&gt;\\end&#123;align&#125;2行目から3行目にかけてイェンセンの不等式を用いた。\\(G\\) について解いて \\(||G||\\leq \\frac&#123;n^2&#125;&#123;2&#125;\\frac&#123;r-2&#125;&#123;r-1&#125;\\) を得る。&lt;/p&gt;
+&lt;/div&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.amazon.co.jp/gp/product/4431708766/ref=as_li_tl?ie=UTF8&amp;camp=247&amp;creative=1211&amp;creativeASIN=4431708766&amp;linkCode=as2&amp;tag=37zigen-22&amp;linkId=29606d9bfc877ac97677fe7bb9ca7082"&gt;Diestel, Reinhard. "Graph theory. 1997." Grad. Texts in Math 2 (2016). Section 7.1.&lt;/a&gt; (&lt;a href="https://www.math.uni-hamburg.de/home/diestel/books/graph.theory/preview/Ch7.pdf"&gt;preview&lt;/a&gt;)
+&lt;ul&gt;
+&lt;li&gt;簡潔にまとまっています。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a target="_blank" href="https://www.amazon.co.jp/gp/product/4621302450/ref=as_li_tl?ie=UTF8&amp;camp=247&amp;creative=1211&amp;creativeASIN=4621302450&amp;linkCode=as2&amp;tag=37zigen-22&amp;linkId=e654a7b64df580ba66e890e8d3d77540" rel="noopener noreferrer"&gt;ヴァン・リント&amp;ウィルソン 組合せ論 上 第 4 章&lt;/a&gt;&lt;img src="//ir-jp.amazon-adsystem.com/e/ir?t=37zigen-22&amp;l=am2&amp;o=9&amp;a=4621302450" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;"&gt;
+&lt;ul&gt;
+&lt;li&gt;謎の証明方法をこの本で読んで、とても印象に残りました。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=" https:=" "="" math.la.asu.edu="" ~andrzej="" teach="" mat598="" lec1.pdf"=""&gt;Andrzej Czygrinow 氏の授業ノート&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;この記事では扱わなかった再帰的構造を用いた証明が載っています。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://math.la.asu.edu/~andrzej/teach/mat598/lec1.pdf"&gt;"Extremal Graph Theory". B. Bollobas.&lt;/a&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hitokoto"&gt;色々面白い証明テクニックが使われていて勉強になりました。&lt;/div&gt;

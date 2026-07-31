@@ -1,0 +1,28 @@
+---
+title: "xor"
+description: "xor の過去ブログ記事"
+---
+
+# xor
+
+> 📅 **投稿日**: 2022-08-04 22:59:44
+
+\\(f(i) = 1 \\oplus 2 \\oplus\\cdots\\oplus i\\) とすると、\\begin&#123;eqnarray&#125;
+f(i)
+=
+\\begin&#123;cases&#125;
+0 &amp; ( i = 4k) \\\\
+4k+1 &amp; ( i = 4k+1) \\\\
+3 &amp; ( i = 4k+2) \\\\
+4k &amp; ( i = 4k+3) \\\\
+\\end&#123;cases&#125;
+\\end&#123;eqnarray&#125;
+となる(ARC133D)。\\(4k+2\\) の形は現れない。
+&lt;h2&gt;多項式として見る&lt;/h2&gt;
+\\(\\mathbb&#123;F&#125;_2[x]\\) と解釈するとよい場合がある。例えば、xor と shift でできる集合は gcd の倍数である(AEC084F)。
+
+Trie木において、+1は最右パスの子のswapに対応する(AGC057C)。
+
+&lt;a href="https://atcoder.jp/contests/zone2021/tasks/zone2021_f"&gt;atc&lt;/a&gt;
+&lt;a href="https://atcoder.jp/contests/arc127/tasks/arc127_d"&gt;maroon&lt;/a&gt;
+&lt;a href="https://atcoder.jp/contests/tokiomarine2020/tasks/tokiomarine2020_e"&gt;yutaka&lt;/a&gt;

@@ -1,0 +1,70 @@
+---
+title: "Multipoint Evaluation の アルゴリズム"
+description: "Multipoint Evaluation の アルゴリズム の過去ブログ記事"
+---
+
+# Multipoint Evaluation の アルゴリズム
+
+> 📅 **投稿日**: 2021-03-11 16:14:49
+
+&lt;p&gt;multipoint evaluation （多点評価）とは、与えられた \\(m\\) 点での多項式の値を評価する問題です：&lt;/p&gt;
+&lt;div class="statement"&gt;Multipoint Evalution :&lt;br&gt;相異なる \\(m\\) 点 \\(x_1, x_2, \\ldots, x_m\\) が与えられます。\\(f(x) = \\sum_&#123;i=0&#125;^n a_i x^i\\) の各点での値 \\(f(x_1), f(x_2), \\ldots, f(x_m)\\) を求めてください。&lt;/div&gt;
+&lt;p&gt;※ multipoint evaluation は多項式に対する操作であって、形式的べき級数に対する操作ではありません。&lt;/p&gt;
+&lt;p&gt;愚直に計算すると \\(O(nm)\\) ですが、工夫すると \\(O(m \\log(m)^2 + n\\log(n))\\) にできます。&lt;/p&gt;
+&lt;p&gt;[toc]&lt;/p&gt;
+&lt;h2&gt;アルゴリズム&lt;/h2&gt;
+&lt;p&gt;アルゴリズムを構築します。カギになるのは剰余の定理です：&lt;/p&gt;
+&lt;div class="statement"&gt;剰余の定理 :&lt;br&gt;任意の \\(a\\) に対して \\(f(a) = f(x) \\bmod (x-a)\\) が成立。&lt;/div&gt;
+&lt;p&gt;剰余の定理より、\\(f(x) \\bmod (x-x_1), f(x) \\bmod (x-x_2), \\ldots, f(x) \\bmod (x-x_m)\\) を列挙する問題に言い換えられます。\\(k\\) 次多項式の割り算には \\(O(k \\log (k))\\) 時間が掛かるので、そのまま剰余の定理を適用すると \\(O(nm \\log(n))\\) になってしまいます。そこで、doublingを使います。&lt;/p&gt;
+&lt;p&gt;まず、次の二つの条件を満たす根付き木 "subproduct tree" を構築します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li style="list-style-type: none;"&gt;
+&lt;ol&gt;
+&lt;li&gt;\\(m\\) 個の葉があり、それぞれ \\(x-x_1, x-x_2, \\ldots, x-x_m\\) が書いてあります。&lt;/li&gt;
+&lt;li&gt;葉以外の頂点には、子に書かれた多項式の積が書いてあります。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;\\(m = 4\\) のときは下図のようになります。&lt;img class="aligncenter size-large wp-image-6130" src="https://37zigen.com/wp-content/uploads/2021/03/multipoint_evaluation_tree-1024x285.png" alt="" width="1024" height="285"&gt;\\(1\\) が書かれた葉を全2分木になるまでつけ足しても答えは変わらず、\\(m\\) のオーダーも変化しません。従って、\\(m=2^d\\) だと仮定して一般性を失いません。subproduct tree の構築では \\(2^k\\)次多項式の掛け算が \\(2^&#123;d-k&#125;\\) 回現れます。掛け算の計算量が \\(O(k2^k)\\) なので全体では \\(O(\\sum_&#123;k=0&#125;^d 2^&#123;d-k&#125;k2^k) = O(2^dd^2) = O(m \\log(m)^2)\\) です。&lt;/p&gt;
+&lt;p&gt;次に、subproduct tree に書かれた多項式で \\(f(x)\\) を割った余りを、各頂点に書いた根付き木 "subremainder tree"を構築します。subremainder tree の葉に書き込まれた余りが、求めたい値です。親に書き込まれた多項式が \\(f \\bmod g_0g_1\\)、自身に書き込まれた多項式が \\(f \\bmod g_0\\) だとすると、\\((f \\bmod g_0g_1) \\bmod g_0 = f \\bmod g_0 \\) が成り立ちます。この式に従って根から順に BFS で余りを書き込んでいきます。&lt;/p&gt;
+&lt;p&gt;&lt;img class="aligncenter size-large wp-image-6138" src="https://37zigen.com/wp-content/uploads/2021/03/multipoint_evaluation_tree2-1-1024x278.png" alt="" width="1024" height="278"&gt;&lt;/p&gt;
+
+
+&lt;p&gt;subremainder tree の計算量は subproduct tree と同様に計算すると \\(O(m\\log(m)^2 + n\\log(n))\\) となります（2項目は根の余りを計算する計算量）。全体の計算量も \\(O(m\\log(m)^2+n\\log(n))\\) となります。&lt;/p&gt;
+
+
+&lt;h2&gt;評価点が等比数列のとき（Chirp Z-transform）&lt;/h2&gt;
+&lt;p&gt;評価する点が等比数列 \\(x_1=q^1,x_2=q^2,\\ldots,x_m=q^m\\) のとき、\\(O(n\\log(n))\\) で multipoint evaluation できます。FFTの一般化です。&lt;/p&gt;
+&lt;p&gt;\\(2ij = (i+j)^2-i^2-j^2\\) を用いて、&lt;br&gt;\\begin&#123;align&#125; f(q^j) =&amp; \\sum_&#123;i=0&#125;^&#123;n-1&#125; a_iq^&#123;ij&#125; \\\\&lt;br&gt;=&amp; q^&#123;-j^2/2&#125; \\sum_&#123;i=0&#125;^&#123;n-1&#125; a_iq^&#123;-i^2/2&#125; \\cdot q^&#123;(i+j)^2/2&#125;\\end&#123;align&#125;となります。\\(\\sum\\) の中が畳み込みの形なので、FFTで \\(O((n+m)\\log(n+m))\\) です。\\(q^&#123;1/2&#125;\\) が \\(f(x)\\) の係数体に含まれないときは、添加して拡大する必要があることに注意。$$ij = &#123;i+j \\choose 2&#125;-&#123;i \\choose 2&#125;-&#123;j \\choose 2&#125; $$ を使えば、全て偶数になって、\\(q^&#123;1/2&#125;\\) が出てこないようにすることができる（&lt;a href="https://dic.kimiyuki.net/chirp-z-transform"&gt;熨斗袋さんの解説&lt;/a&gt;）。&lt;/p&gt;
+&lt;h2&gt;multipoint evaluationの転置&lt;/h2&gt;
+&lt;p&gt;余談ですが、\\(f(x) := \\sum_&#123;i=0&#125;^n a_i x^i \\) を \\(x_0, \\ldots, x_m\\) で求めよという問題は、&lt;br&gt;$$\\begin&#123;pmatrix&#125;f(x_&#123;0&#125;) \\\\ f(x_&#123;1&#125;) \\\\ \\vdots \\\\ f(x_m) \\end&#123;pmatrix&#125;=\\begin&#123;pmatrix&#125;x_&#123;0&#125;^0 &amp; x_&#123;0&#125;^1 &amp; \\ldots &amp; x_&#123;0&#125;^n \\\\ x_&#123;1&#125;^0 &amp; x_&#123;1&#125;^1 &amp; \\ldots &amp; x_&#123;1&#125;^n \\\\ \\vdots &amp; \\vdots &amp; \\ddots &amp; \\vdots \\\\ x_&#123;m&#125;^0 &amp; x_&#123;m&#125;^1 &amp; \\ldots &amp; x_&#123;m&#125;^n \\end&#123;pmatrix&#125;\\begin&#123;pmatrix&#125;a_&#123;0&#125; \\\\ a_&#123;1&#125; \\\\ \\vdots \\\\ a_n \\end&#123;pmatrix&#125;$$という行列とベクトルの積を求める問題に言い換えられます。Tellegen's principle より、転置を取った$$\\begin&#123;pmatrix&#125;v_&#123;0&#125; \\\\ v_&#123;1&#125; \\\\ \\vdots \\\\ v_n \\end&#123;pmatrix&#125;=\\begin&#123;pmatrix&#125;x_&#123;0&#125;^0 &amp; x_&#123;1&#125;^0 &amp; \\ldots &amp; x_&#123;m&#125;^0 \\\\ x_&#123;0&#125;^1 &amp; x_&#123;1&#125;^1 &amp; \\ldots &amp; x_&#123;m&#125;^1 \\\\ \\vdots &amp; \\vdots &amp; \\ddots &amp; \\vdots \\\\ x_&#123;0&#125;^n &amp; x_&#123;1&#125;^n &amp; \\ldots &amp; x_&#123;m&#125;^n \\end&#123;pmatrix&#125;\\begin&#123;pmatrix&#125;b_&#123;0&#125; \\\\ b_&#123;1&#125; \\\\ \\vdots \\\\ b_m \\end&#123;pmatrix&#125;$$を（入出力を除き）同じ計算量で求めるアルゴリズムを機械的に導出できます。逆にこちらの問題は \\(\\sum_&#123;i=1&#125;^n v_it^i = \\sum_&#123;i=1&#125;^n \\frac&#123;b_i&#125;&#123;1-x_it&#125; \\bmod t^&#123;n+1&#125;\\) を求めよという問題に言い換えられ、分割統治で通分していくことで multipoint evaluation と同じ計算量 \\(O(m\\log(m)^2+n\\log(n))\\) になります。そして、Tellegen’s principle により multipoint evaluation のアルゴリズムが機械的に導出できます。&lt;/p&gt;
+&lt;h2&gt;演習問題&lt;/h2&gt;
+&lt;div class="statement"&gt;問題１：\\(N! \\bmod p\\) (\\(p\\) : 素数) を \\(O(\\sqrt&#123;p&#125;\\log(p)^2)\\) で求めて下さい。&lt;/div&gt;
+&lt;p&gt;解答：\\(M:=\\lfloor \\sqrt&#123;N&#125; \\rfloor\\) と置きます。まず、\\(f(x):=\\prod_&#123;i=1&#125;^&#123;M&#125;(i+x)\\) を分割統治法を用いて \\(O(M\\log(M)^2)\\) で求めます。\\(f(x)\\) と \\(N!\\) の間に $$N!=f(0)f(M)f(2M) \\cdots f(M(M-1)) \\prod_&#123;i=M^2+1&#125;^N i$$ が成り立ちます。\\(f(0),f(M),f(2M),\\ldots,f(M(M-1))\\) は multipoint evaluation により \\(O(M\\log(p)^2)\\) で求まります。\\(O(N-M^2)=O(M)\\) なので、全体で所望の計算量を達成できました。&lt;/p&gt;
+&lt;p&gt;更に工夫すると、\\(O(\\log p)\\) を落とせることが知られています[4]。&lt;/p&gt;
+&lt;div class="statement"&gt;問題２：２つの \\(K\\) 変数多項式 \\(f(x_1,\\ldots,x_K),g(x_1,\\ldots,x_K)\\) が与えられます。巡回畳み込み \\(fg \\bmod (x_1^&#123;n_1&#125;-1,\\ldots,x_K^&#123;n_K&#125;-1)\\) を求めて下さい。想定解は \\(N=\\prod n_i\\) としたとき、\\(O(N\\log(N))\\) です。&lt;/div&gt;
+&lt;p&gt;解答：&lt;a href="https://twitter.com/noshi91/status/1392909447509417984"&gt;こちら&lt;/a&gt;で熨斗袋さんに教えて頂きました。1変数ずつFFTします。通常、FFT では各 \\(n_i\\) を \\(2\\) 冪にキャストするため、\\(O(2^K)\\) だけ余分に掛かってしまいます。評価点が等比数列なら個数 \\(n\\) が２冪でなくとも多項式補間・評価が \\(O(n\\log(n))\\) でできることを用いると、この \\(O(2^K)\\) は消すことができます。&lt;a href="https://mobile.twitter.com/maspy_stars/status/1478750957165228035"&gt;計算量解析&lt;/a&gt;はmaspyさんに教えて頂きました。&lt;/p&gt;
+&lt;div class="statement"&gt;問題３：\\(i\\) が \\(a_i\\) 個ある多重集合 \\(U = \\&#123;1^&#123;a_1&#125;, 2^&#123;a_2&#125;, \\ldots, n^&#123;a_n&#125;\\&#125;\\) を非空な \\(k\\) 個の多重集合へ分割する方法の個数を求めてください。ただし \\(\\sum ia_i = n\\) とします。\\(\\forall i, a_i = 1\\) ならばスターリング数、\\(1 &lt; i \\leq n\\) について \\(a_i = 0\\) ならば分割数になります。想定解は \\(O(N\\log(N)^2)\\) です。&lt;/div&gt;
+&lt;p&gt;解答：&lt;a href="https://twitter.com/SSRS_cp/status/1567137733742833664"&gt;こちら&lt;/a&gt;でSSRSさんに教えて頂きました。\\(g(S) = 「\\) \\(U\\) を集合の列 \\((U_1, U_2, \\ldots, U_k)\\) に分割する方法のうち、\\(i \
+ot \\in S\\) について、\\(U_i = \\emptyset\\) となる場合の数」とすると、求める値は包除原理より&lt;br&gt;
+\\begin&#123;align&#125;&lt;br&gt;
+&amp;\\frac&#123;1&#125;&#123;k!&#125;\\sum_&#123;T \\subset [k]&#125;g(T)(-1)^&#123;|S|-|T|&#125; \\\\&lt;br&gt;
+=&amp;\\frac&#123;1&#125;&#123;k!&#125;\\sum_&#123;i&#125; &#123;k \\choose i&#125;(-1)^&#123;k-i&#125;\\prod_j \\left(\\!\\!\\!&#123;i \\choose a_j&#125;\\!\\!\\!\\right)&lt;br&gt;
+\\end&#123;align&#125;&lt;br&gt;
+となります。\\(\\prod_j \\left(\\!\\!\\!&#123;x \\choose a_j&#125;\\!\\!\\!\\right)\\) は一次式の積の形をした \\(n\\) 次多項式なので、\\(O(n \\log(n)^2)\\) で求められます。また、\\(x = 0, 1, \\ldots, n\\) での多点評価も \\(O(n \\log(n)^2)\\) でできます。&lt;/p&gt;
+&lt;h2&gt;参考文献&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href="https://www.sciencedirect.com/science/article/pii/S0022000074800292"&gt;Borodin, Allan, and Robert Moenck. "Fast modular transforms." Journal of Computer and System Sciences 8.3 (1974): 366-386.&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;このアルゴリズムが提案された論文&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://specfun.inria.fr/bostan/publications/BoLeSc03.pdf"&gt;Bostan, Alin, Grégoire Lecerf, and Éric Schost. "Tellegen's principle into practice." Proceedings of the 2003 international symposium on Symbolic and algebraic computation. 2003.&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;Tellegens's principle を用いて multipoint evaluation を定数倍高速化しています。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://37zigen.com/algorithm-datastructure-talk/"&gt;アルゴリズム/データ構造を語る会第1回tkoさん&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Alin Bostan, Pierrick Gaudry, and Eric Schost, Linear recurrences with polynomial coefficients and application to integer factorization and Cartier-Manin operator.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="hitokoto"&gt;掛け算の doubling はよく見ますが、割り算の doubling とは驚き。&lt;/div&gt;

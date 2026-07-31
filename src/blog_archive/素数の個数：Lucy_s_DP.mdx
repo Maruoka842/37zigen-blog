@@ -1,0 +1,20 @@
+---
+title: "素数の個数：Lucy's DP"
+description: "素数の個数：Lucy's DP の過去ブログ記事"
+---
+
+# 素数の個数：Lucy's DP
+
+> 📅 **投稿日**: 2022-06-26 01:10:25
+
+包除原理より \\(n\\) 以下の素数の個数 \\(\\pi(n)\\) は
+\\begin&#123;align&#125;
+\\pi(n)=\\sum \\mu(d) \\lfloor n/d \\rfloor \\\\
+\\end&#123;align&#125;と書ける。
+
+\\(n\\) を固定する。\\(\\lfloor n / i\\rfloor\\) を基底とする整数係数ベクトル空間 \\(V\\) を考えて \\(\\boldsymbol&#123;v&#125; = \\sum a_i \\lfloor n / i\\rfloor\\) に対する作用素 \\(D_m\\) を \\(D_m \\boldsymbol&#123;v&#125; = \\sum a_i \\lfloor n / (im)\\rfloor\\) と定義する。\\(\\mathbb&#123;N&#125;\\) と \\(V\\) の元を区別して、\\(\\sum a_i \\lfloor n / i\\rfloor\\) は \\(\\sum a_i\\boldsymbol&#123;e&#125;_&#123;i&#125;\\) のように書くべきかもしれないが、分かりやすいので混同する。
+\\(i\\) 番目の素数 \\(p_i\\) を用いて \\(f_i = 1 - D_&#123;p_i&#125;\\) とすると $$\\pi(n) = \\left(\\prod_&#123;i=1&#125;^\\infty f_i \\right) \\left\\lfloor \\frac&#123;n&#125;&#123;1&#125; \\right\\rfloor $$  になる（左辺と右辺で型が違いますが、自然に解釈してください）。合成数 \\(m\\) の素因数には \\(\\sqrt&#123;m&#125;\\) 以下のものが必ず存在するから、\\(p_i^2 \\leq n\\) となる最大の \\(i\\) を \\(k\\) と置くと
+
+$$\\pi(n) = \\left(\\prod_&#123;i=1&#125;^k f_i \\right) \\left\\lfloor \\frac&#123;n&#125;&#123;1&#125; \\right\\rfloor $$
+
+である。
