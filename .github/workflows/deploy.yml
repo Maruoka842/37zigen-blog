@@ -7,10 +7,11 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -34,3 +35,8 @@ jobs:
           branch: gh-pages
           clean-exclude: pr-preview
           force: false
+      - name: Trigger GitHub Pages build
+        run: |
+          gh api --method POST /repos/${{ github.repository }}/pages/builds
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
