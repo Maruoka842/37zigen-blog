@@ -35,8 +35,4 @@ jobs:
           branch: gh-pages
           clean-exclude: pr-preview
           force: false
-      - name: Trigger GitHub Pages build
-        run: |
-          gh api --method POST /repos/${{ github.repository }}/pages/builds
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
