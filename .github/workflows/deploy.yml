@@ -2,12 +2,12 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
   group: pages
@@ -16,18 +16,33 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Build
         run: npm run build
+
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
+
+      - name: Verify build output
+        run: |
+          test -f dist/.nojekyll
+          test -d dist/_astro
+          ls -la dist
+          ls -la dist/_astro | head
+
       - name: Deploy to GitHub Pages Branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
@@ -35,4 +50,3 @@ jobs:
           branch: gh-pages
           clean-exclude: pr-preview
           force: false
-
