@@ -1,0 +1,177 @@
+---
+title: KValueMinCut（多値最小カット・燃やす埋める）
+description: 変数の値を複数（K個）の選択肢から決定し、コスト和を最小化する問題を最小カットに帰着させて解くアルゴリズム・ライブラリの解説
+---
+
+<strong>KValueMinCut</strong> は、各変数に対して $K$ 個の選択肢 $\{0, 1, \dots, K-1\}$ から $1$ つの値（状態）を割り当てる際の総コストを最小化する問題を、<strong>最小カット（燃やす埋める問題）</strong>に帰着させて解く手法・アルゴリズムです。
+
+通常の「燃やす埋める」問題は、各変数が $\{0, 1\}$ の $2$ 値のみをとる問題（Project Selection Problem）を扱いますが、これを $K$ 値（多値）の割り当て問題へと拡張したものが、この `KValueMinCut` です。
+
+---
+
+## 💡 対象となる問題設定
+
+以下の条件を満たす問題（多値変数割当問題）を効率的に解くことができます。
+
+- <strong>変数</strong>: $N$ 個の変数 $x_0, x_1, \dots, x_{N-1}$
+- <strong>ドメイン（値域）</strong>: 各変数 $x_i$ は、整数値 $\{0, 1, \dots, K-1\}$ のいずれかを取る
+- <strong>コスト関数（最小化対象）</strong>:
+  1. <strong>一変数コスト</strong>: $x_i = j$ としたときに発生する個別コスト $C_i(j)$
+  2. <strong>差分制約（ハード制約）</strong>: $x_i - x_j \le d$（これを満たさない状態には無限大のペナルティを課す）
+  3. <strong>単調な二変数コスト（応用）</strong>: $x_i$ と $x_j$ の値の大小関係に基づき発生するコスト
+
+---
+
+## 🛠️ アルゴリズムの仕組みとグラフ構成
+
+多値変数を $2$ 値の最小カットに帰着させるために、各変数 $x_i$ に対して $K-1$ 個の二値変数（Boolean変数）を導入します。
+
+### 1. 状態の二値変数への分解
+
+各変数 $x_i$ に対して、以下のように定義される $K$ 個の二値変数 $s_{i, t}$ （$0 \le t < K$）を考えます。
+
+$$
+s_{i, t} = [x_i \ge t] \quad (t \in \{0, 1, \dots, K-1\})
+$$
+
+ここで、$s_{i, t}$ が $\text{True}$（真）であることは $x_i \ge t$ であることを表し、$\text{False}$（偽）であることは $x_i < t$ であることを表します。
+
+この定義より、以下の自明な性質が成り立ちます：
+- <strong>下界の固定</strong>: $x_i \ge 0$ は常に成り立ちます。したがって、 $s_{i, 0}$ は常に $\text{True}$ に固定されます。
+- <strong>上界</strong>: $x_i \ge K$ となることはあり得ないため、 $s_{i, K}$ という状態は実質的に $\text{False}$ 固定（あるいは考えない）となります。
+
+### 2. 整合性制約（単調性）の表現
+
+定義から、 $x_i \ge t+1$ であれば必ず $x_i \ge t$ も成立しなければなりません。これは、すべての $t$ に対して以下の<strong>整合性制約（単調性）</strong>を満たす必要があることを意味します。
+
+$$
+s_{i, t+1} \implies s_{i, t} \quad (0 \le t < K-1)
+$$
+
+この「命題 $A \implies B$」という関係は、最小カットの文脈で「$A$ が $\text{True}$ でありながら $B$ が $\text{False}$ になることを禁止する」と解釈できます。
+当ライブラリ（`MinCut`）では、source 側を $\text{False}$、sink 側を $\text{True}$ とするカットの構成を採用しています。
+そのため、 $A \implies B$ を強制するためには、 $B$ から $A$ へ容量 $\infty$ の有向辺を張ります。
+これにより、 $B$ が $\text{False}$（source 側）かつ $A$ が $\text{True}$（sink 側）というカット（$B$ から $A$ へ流れるカット）が発生した際に、カット容量が $\infty$ となり、そのような状態への割り当てが自動的に排除されます。
+
+したがって、各変数 $i$ について、 $t = 0, \dots, K-2$ に対して以下の辺を張ります：
+- `node(i, t)` から `node(i, t + 1)` へ容量 $\infty$ の有向辺（※ `MinCut.ifThen(node(i, t + 1), node(i, t))` に相当）
+
+### 3. 一変数コストの追加
+
+変数 $x_i$ が特定の値 $j \in \{0, 1, \dots, K-1\}$ を取るときの個別コスト $C_i(j)$ を表現します。
+扱いを簡単にするため、あらかじめ $min = \min_{j} C_i(j)$ を求めて全体のベースコスト（下底）に $min$ を加算しておき、各値をとるときの追加コスト $C_i(j) - min \ge 0$ をグラフに反映させます。
+
+$s_{i, t} = [x_i \ge t]$ の真偽の組み合わせと、変数 $x_i$ が確定する値 $j$ の対応関係は以下の通りです：
+
+- <strong>$x_i = 0$ のとき</strong>:
+  $s_{i, 0} = \text{True}$ 且つ $s_{i, 1} = \text{False}$ となるため、 $s_{i, 1}$ が $\text{False}$ のときに追加コスト $C_i(0) - min$ を支払います。
+  （`cut.addCostIfFalse(node(i, 1), C_i(0) - min)`）
+
+- <strong>$0 < j < K - 1$ のとき</strong>:
+  $s_{i, j} = \text{True}$ 且つ $s_{i, j+1} = \text{False}$ となるため、 $s_{i, j+1}$ が $\text{False}$ かつ $s_{i, j}$ が $\text{True}$ のときに追加コスト $C_i(j) - min$ を支払います。
+  （`cut.addPositiveCostIfFalseTrue(node(i, j + 1), node(i, j), C_i(j) - min)`）
+
+- <strong>$x_i = K - 1$ のとき</strong>:
+  $s_{i, K-1} = \text{True}$ となるため（$s_{i, K}$ は常に $\text{False}$ とみなせる）、 $s_{i, K-1}$ が $\text{True}$ のときに追加コスト $C_i(K-1) - min$ を支払います。
+  （`cut.addCostIfTrue(node(i, K - 1), C_i(K - 1) - min)`）
+
+このように表現することで、すべての $x_i$ の取りうる選択肢に対して正確にコストを反映させることができます。
+
+### 4. 差分制約の表現
+
+「変数 $x_i$ と変数 $y_j$ の間に $x_i - x_j \le d$ という制約を課したい（満たさない場合は違反コスト $\infty$）」という状況を考えます。
+
+この不等式は、以下のように変形できます：
+
+$$
+x_i - x_j \le d \iff x_i \ge a \implies x_j \ge a - d \quad (\forall a)
+$$
+
+これを各 $a \in \{0, 1, \dots, K-1\}$ について、二値変数 $s_{x, a} = [x_i \ge a]$ と $s_{y, b} = [x_j \ge b]$ （ここで $b = a - d$）の関係式 $s_{x, a} \implies s_{y, b}$ として構築します：
+
+- <strong>$b \le 0$ のとき</strong>:
+  $s_{y, b} = [x_j \ge b]$ は $y \ge 0$ より常に $\text{True}$ です。そのため、 $s_{x, a} \implies \text{True}$ は常に成り立ち、追加の制約は不要です。
+
+- <strong>$b \ge K$ のとき</strong>:
+  $s_{y, b} = [x_j \ge b]$ は $y \le K-1 < b$ より常に $\text{False}$ です。したがって、 $s_{x, a} \implies \text{False}$ が成り立つためには、 $s_{x, a}$ 自体が常に $\text{False}$ でなければなりません。
+  （`cut.forceFalse(node(x, a))`）
+
+- <strong>$0 < b < K$ のとき</strong>:
+  通常の命題含意 $s_{x, a} \implies s_{y, b}$ を課します。
+  （`cut.ifThen(node(x, a), node(y, b))`）
+
+この制約によって、多値変数間の差分の最大値を厳密に制限することが可能になります。
+
+---
+
+## 💻 使用方法と Java 実装例
+
+以下は、`KValueMinCut` クラスを用いた具体的な実装例です。
+
+```java
+import library.util.graph.KValueMinCut;
+
+public class Main {
+    public static void main(String[] args) {
+        int n = 2; // 変数の数
+        int k = 3; // 各変数の値数 (0, 1, 2)
+
+        KValueMinCut kmc = new KValueMinCut(n, k);
+
+        // 変数 0 のコスト: C_0(0)=10, C_0(1)=30, C_0(2)=20
+        int[] costX = {10, 30, 20};
+        kmc.addCost(0, costX);
+
+        // 変数 1 のコスト: C_1(0)=40, C_1(1)=10, C_1(2)=50
+        int[] costY = {40, 10, 50};
+        kmc.addCost(1, costY);
+
+        // 差分制約: y - x <= -1  <=>  x - y >= 1
+        // これは x - y <= -1 ではない（x - y <= d において x=1, y=0, d=-1 に対応）
+        // つまり forceDifferenceLeq(y, x, -1)
+        kmc.forceDifferenceLeq(1, 0, -1);
+
+        // 最小カット（最小コスト）を計算
+        long minCost = kmc.minCutValue();
+        System.out.println("最小コスト: " + minCost); // 30
+
+        // 各変数の最適値を復元
+        int[] optimalValues = kmc.restoreValues();
+        System.out.println("変数 0 の値: " + optimalValues[0]); // 2
+        System.out.println("変数 1 の値: " + optimalValues[1]); // 1
+    }
+}
+```
+
+### ⚡ 主な API と計算量
+
+- <strong>`new KValueMinCut(variableCount, k)`</strong>:
+  $variableCount$ 個の変数、それぞれ $k$ 個の状態をもつ問題インスタンスを初期化します。内部グラフの頂点数は $N \times K$ となります。
+
+- <strong>`addCost(node, cost[])`</strong>:
+  変数 `node` が各状態をとるときの個別コストを設定します（計算量: $O(K)$）。
+
+- <strong>`forceDifferenceLeq(x, y, d)`</strong>:
+  制約 $x - y \le d$ を設定します（計算量: $O(K)$）。
+
+- <strong>`forceValue(node, v)`</strong>:
+  変数 `node` の値を強制的に `v` に固定します（計算量: $O(1)$）。
+
+- <strong>`addCostPerUnit(node, w)`</strong>:
+  変数 `node` の値が 1 増えるごとに一律でコスト `w` を支払う設定を追加します（計算量: $O(K)$）。
+
+- <strong>`minCutValue()`</strong>:
+  最大流（Dinic法など）を用いて最小コストを算出します。計算量は構築されたネットワークのフロー計算量に依存します。
+
+- <strong>`restoreValues()`</strong>:
+  各変数に対する最適な割り当て値 $\{0, \dots, K-1\}$ の配列を復元します（計算量: $O(N K)$）。
+
+---
+
+## 🎯 典型的な応用例
+
+1. <strong>多段階のグリッド決定問題</strong>:
+   グリッド上の各列において「高さ（行）」を $0$ から $K-1$ の中から決定し、隣接する列同士の高さの差が一定以下でなければならない、といった制約下でコストを最小化する問題。
+
+2. <strong>プロジェクトスケジューリング（期間選択）</strong>:
+   各タスクを $K$ 個の時間帯（日付）のいずれかで実行する際、前提となる依存関係（タスク A が終わってからタスク B を開始するなど）を $B - A \ge \text{duration}$ すなわち $A - B \le -\text{duration}$ と表現して、総費用や遅延ペナルティを最小化する問題。
